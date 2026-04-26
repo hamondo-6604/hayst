@@ -2,14 +2,14 @@
 
 use Illuminate\Support\Facades\Route;
 
-require __DIR__ . '/public.php';
+require base_path('routes/public.php');
 
 Route::middleware(['web','admin'])
     ->prefix('admin')
     ->as('admin.')
-    ->group(__DIR__ . './admin.php');
+    ->group(base_path('routes/admin.php'));
 
 Route::middleware(['web','user'])
     ->prefix('user')
     ->as('user.')
-    ->group(__DIR__ . './user.php')
+    ->group(base_path('routes/user.php'));

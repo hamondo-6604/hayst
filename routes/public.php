@@ -2,18 +2,65 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\Landing\HomeController;
+use App\Http\Controllers\Landing\TicketBookingController;
+use App\Http\Controllers\Landing\BookingRoutesController;
+use App\Http\Controllers\Landing\ManageBookingController;
+use App\Http\Controllers\Landing\AccountController;
 
-Route::middleware('guest')->group(function () {
-    Route::get(./login, function () {
-        return view(auth.login);
-    })->name('login');
+/*
+|--------------------------------------------------------------------------
+| PUBLIC — Guest + Auth
+|--------------------------------------------------------------------------
+*/
 
-    Route::get('register', function() {
-        return view('auth.register');
-    })->name('register');
+// Home
+Route::get('/', [HomeController::class, 'index'])->name('landing.home');
+
+// Search Trips
+Route::get('/ticket-booking',  [TicketBookingController::class, 'index'])->name('landing.ticket_booking');
+Route::post('/ticket-booking', [TicketBookingController::class, 'search'])->name('landing.ticket_booking.search');
+
+// Routes & Terminals
+Route::get('/routes', [BookingRoutesController::class, 'index'])->name('landing.booking_routes');
+
+// Promos (public)
+Route::get('/promos', [HomeController::class, 'promos'])->name('landing.promos');
+
+/*
+|--------------------------------------------------------------------------
+| AUTH-GATED — Requires login
+|--------------------------------------------------------------------------
+*/
+
+Route::middleware('auth')->group(function () {
+
+    // My Bookings
+    Route::get('/my-bookings', [ManageBookingController::class, 'index'])
+        ->name('manage.bookings');
+
+    Route::post('/my-bookings/{booking}/cancel', [ManageBookingController::class, 'cancel'])
+        ->name('manage.bookings.cancel');
+
+    Route::post('/my-bookings/notifications/read', [ManageBookingController::class, 'markNotificationsRead'])
+        ->name('manage.bookings.notifications.read');
+
+    // Account & Support
+    Route::get('/account', [AccountController::class, 'index'])->name('landing.account');
+
+    // Profile update (from AccountController)
+    Route::post('/account/profile',  [AccountController::class, 'updateProfile'])->name('settings.updateProfile');
+    Route::post('/account/password', [AccountController::class, 'updatePassword'])->name('settings.updatePassword');
 });
 
+/*
+|--------------------------------------------------------------------------
+| AUTH AJAX — Login / Register / Logout / Forgot
+|--------------------------------------------------------------------------
+*/
 
+Route::post('/login',          [AuthController::class, 'login_post'])->name('login_post');
+Route::post('/register',       [AuthController::class, 'register_post'])->name('register_post');
+Route::post('/forgot-password',[AuthController::class, 'forgotPassword'])->name('forgot-password');
 
-Route::get('/' [AuthController::class, 'landing'])->name('landing.home');
-
+Route::middleware('auth')->post('/logout', [AuthController::class, 'logout'])->name('logout');
