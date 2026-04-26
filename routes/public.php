@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\AuthController;
+use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Landing\HomeController;
 use App\Http\Controllers\Landing\TicketBookingController;
 use App\Http\Controllers\Landing\BookingRoutesController;
@@ -59,8 +59,8 @@ Route::middleware('auth')->group(function () {
 |--------------------------------------------------------------------------
 */
 
-Route::post('/login',          [AuthController::class, 'login_post'])->name('login_post');
-Route::post('/register',       [AuthController::class, 'register_post'])->name('register_post');
-Route::post('/forgot-password',[AuthController::class, 'forgotPassword'])->name('forgot-password');
+Route::post('/login',           [AuthController::class, 'login_post'])->name('login_post');
+Route::post('/register',        [AuthController::class, 'register_post'])->name('register_post');
+Route::post('/forgot-password', [AuthController::class, 'forgotPassword'])->name('forgot-password');
 
 Route::middleware('auth')->post('/logout', [AuthController::class, 'logout'])->name('logout');
