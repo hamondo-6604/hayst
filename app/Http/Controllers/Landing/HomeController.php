@@ -59,7 +59,7 @@ class HomeController extends Controller
             ->get();
 
         // Government discount types (for the strip)
-        $discountTypes = DiscountType::active()->where('percentage', '>', 0)->get();
+        $discountTypes = DiscountType::active()->get();
 
         // Stats
         $stats = [

@@ -13,10 +13,11 @@
       <div class="relative">
         <i data-lucide="mail"
            style="width:14px;height:14px;position:absolute;left:11px;top:50%;transform:translateY(-50%);color:#94a3b8"></i>
-        <input type="email" name="email" required autocomplete="email" placeholder="you@email.com"
-               class="w-full pl-9 pr-4 py-2.5 text-sm border border-slate-200 rounded-xl
+        <input type="email" name="email" id="input-login-email" autocomplete="email" placeholder="you@email.com"
+               class="log-input w-full pl-9 pr-4 py-2.5 text-sm border border-slate-200 rounded-xl
                       focus:outline-none focus:ring-2 focus:ring-primary-500 transition">
       </div>
+      <p class="error-msg text-xs text-red-500 mt-1 hidden" id="err-login-email"></p>
     </div>
 
     {{-- Password --}}
@@ -25,15 +26,16 @@
       <div class="relative">
         <i data-lucide="lock"
            style="width:14px;height:14px;position:absolute;left:11px;top:50%;transform:translateY(-50%);color:#94a3b8"></i>
-        <input type="password" id="pwd-login" name="password" required autocomplete="current-password"
+        <input type="password" id="input-login-password" name="password" autocomplete="current-password"
                placeholder="••••••••"
-               class="w-full pl-9 pr-10 py-2.5 text-sm border border-slate-200 rounded-xl
+               class="log-input w-full pl-9 pr-10 py-2.5 text-sm border border-slate-200 rounded-xl
                       focus:outline-none focus:ring-2 focus:ring-primary-500 transition">
-        <button type="button" onclick="togglePwd('pwd-login')"
+        <button type="button" onclick="togglePwd('input-login-password')"
                 class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors">
           <i data-lucide="eye" style="width:14px;height:14px"></i>
         </button>
       </div>
+      <p class="error-msg text-xs text-red-500 mt-1 hidden" id="err-login-password"></p>
     </div>
 
     {{-- Remember + Forgot --}}

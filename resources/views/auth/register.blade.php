@@ -13,10 +13,11 @@
       <div class="relative">
         <i data-lucide="user"
            style="width:14px;height:14px;position:absolute;left:11px;top:50%;transform:translateY(-50%);color:#94a3b8"></i>
-        <input type="text" name="name" required autocomplete="name" placeholder="Juan dela Cruz"
-               class="w-full pl-9 pr-4 py-2.5 text-sm border border-slate-200 rounded-xl
+        <input type="text" name="name" id="input-reg-name" autocomplete="name" placeholder="Juan dela Cruz"
+               class="reg-input w-full pl-9 pr-4 py-2.5 text-sm border border-slate-200 rounded-xl
                       focus:outline-none focus:ring-2 focus:ring-primary-500 transition">
       </div>
+      <p class="error-msg text-xs text-red-500 mt-1 hidden" id="err-reg-name"></p>
     </div>
 
     {{-- Email --}}
@@ -25,10 +26,11 @@
       <div class="relative">
         <i data-lucide="mail"
            style="width:14px;height:14px;position:absolute;left:11px;top:50%;transform:translateY(-50%);color:#94a3b8"></i>
-        <input type="email" name="email" required autocomplete="email" placeholder="you@email.com"
-               class="w-full pl-9 pr-4 py-2.5 text-sm border border-slate-200 rounded-xl
+        <input type="email" name="email" id="input-reg-email" autocomplete="email" placeholder="you@email.com"
+               class="reg-input w-full pl-9 pr-4 py-2.5 text-sm border border-slate-200 rounded-xl
                       focus:outline-none focus:ring-2 focus:ring-primary-500 transition">
       </div>
+      <p class="error-msg text-xs text-red-500 mt-1 hidden" id="err-reg-email"></p>
     </div>
 
     {{-- Phone --}}
@@ -40,10 +42,13 @@
       <div class="relative">
         <i data-lucide="phone"
            style="width:14px;height:14px;position:absolute;left:11px;top:50%;transform:translateY(-50%);color:#94a3b8"></i>
-        <input type="tel" name="phone" autocomplete="tel" placeholder="09XXXXXXXXX"
-               class="w-full pl-9 pr-4 py-2.5 text-sm border border-slate-200 rounded-xl
+        <input type="tel" name="phone" id="input-reg-phone" autocomplete="tel" placeholder="09XXXXXXXXX"
+               maxlength="11"
+               oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+               class="reg-input w-full pl-9 pr-4 py-2.5 text-sm border border-slate-200 rounded-xl
                       focus:outline-none focus:ring-2 focus:ring-primary-500 transition">
       </div>
+      <p class="error-msg text-xs text-red-500 mt-1 hidden" id="err-reg-phone"></p>
     </div>
 
     {{-- ── PASSENGER TYPE ──────────────────────────────────────── --}}
@@ -124,15 +129,16 @@
       <div class="relative">
         <i data-lucide="lock"
            style="width:14px;height:14px;position:absolute;left:11px;top:50%;transform:translateY(-50%);color:#94a3b8"></i>
-        <input type="password" id="pwd-reg" name="password" required autocomplete="new-password"
+        <input type="password" id="input-reg-password" name="password" autocomplete="new-password"
                placeholder="Min. 6 characters"
-               class="w-full pl-9 pr-10 py-2.5 text-sm border border-slate-200 rounded-xl
+               class="reg-input w-full pl-9 pr-10 py-2.5 text-sm border border-slate-200 rounded-xl
                       focus:outline-none focus:ring-2 focus:ring-primary-500 transition">
-        <button type="button" onclick="togglePwd('pwd-reg')"
+        <button type="button" onclick="togglePwd('input-reg-password')"
                 class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors">
           <i data-lucide="eye" style="width:14px;height:14px"></i>
         </button>
       </div>
+      <p class="error-msg text-xs text-red-500 mt-1 hidden" id="err-reg-password"></p>
     </div>
 
     {{-- Confirm password --}}
@@ -141,11 +147,12 @@
       <div class="relative">
         <i data-lucide="lock"
            style="width:14px;height:14px;position:absolute;left:11px;top:50%;transform:translateY(-50%);color:#94a3b8"></i>
-        <input type="password" name="password_confirmation" required autocomplete="new-password"
+        <input type="password" id="input-reg-password_confirmation" name="password_confirmation" autocomplete="new-password"
                placeholder="••••••••"
-               class="w-full pl-9 pr-4 py-2.5 text-sm border border-slate-200 rounded-xl
+               class="reg-input w-full pl-9 pr-4 py-2.5 text-sm border border-slate-200 rounded-xl
                       focus:outline-none focus:ring-2 focus:ring-primary-500 transition">
       </div>
+      <p class="error-msg text-xs text-red-500 mt-1 hidden" id="err-reg-password_confirmation"></p>
     </div>
 
     {{-- ID disclaimer --}}

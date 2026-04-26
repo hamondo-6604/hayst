@@ -14,7 +14,7 @@ class AccountController extends Controller
     public function index()
     {
         $user          = Auth::user()->load('userType', 'discountType');
-        $discountTypes = DiscountType::active()->where('percentage', '>', 0)->get();
+        $discountTypes = DiscountType::active()->get();
 
         return view('pages.account', compact('user', 'discountTypes'));
     }

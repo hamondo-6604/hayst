@@ -40,88 +40,102 @@
       @endforeach
 
       @auth
-        @foreach($authLinks as $l)
-          <a href="{{ route($l['route']) }}"
-             class="flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium transition-all
-                    {{ $route === $l['route'] ? 'bg-primary-50 text-primary-700 font-semibold' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100' }}">
-            @if($route === $l['route'])
-              <i data-lucide="{{ $l['icon'] }}" style="width:14px;height:14px"></i>
-            @endif
-            {{ $l['label'] }}
-          </a>
-        @endforeach
+        @if(!auth()->user()->isAdmin())
+          @foreach($authLinks as $l)
+            <a href="{{ route($l['route']) }}"
+               class="flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium transition-all
+                      {{ $route === $l['route'] ? 'bg-primary-50 text-primary-700 font-semibold' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100' }}">
+              @if($route === $l['route'])
+                <i data-lucide="{{ $l['icon'] }}" style="width:14px;height:14px"></i>
+              @endif
+              {{ $l['label'] }}
+            </a>
+          @endforeach
+        @endif
       @endauth
     </div>
 
     {{-- Right side --}}
     <div class="hidden md:flex items-center gap-2">
       @auth
-        {{-- Notification bell --}}
-        @php $unread = auth()->user()->notifications()->where('is_read', false)->count(); @endphp
-        <a href="{{ route('manage.bookings') }}" class="relative p-2 rounded-xl text-slate-500 hover:bg-slate-100 transition-colors">
-          <i data-lucide="bell" style="width:18px;height:18px"></i>
-          @if($unread > 0)
-            <span class="absolute top-1 right-1 w-4 h-4 bg-red-500 text-white text-[9px] font-bold rounded-full flex items-center justify-center">
-              {{ $unread > 9 ? '9+' : $unread }}
-            </span>
-          @endif
-        </a>
-
-        {{-- User dropdown --}}
-        <div class="relative" data-dd>
-          <button onclick="document.getElementById('user-dd').classList.toggle('hidden')"
-                  class="flex items-center gap-2 pl-2 pr-3 py-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-tertiary transition-colors border border-transparent hover:border-slate-200 dark:hover:border-primary">
-            <div class="w-7 h-7 rounded-full bg-primary-100 dark:bg-tertiary text-primary-700 dark:text-primary text-xs font-bold flex items-center justify-center">
-              {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
-            </div>
-            <span class="text-sm font-medium text-slate-700 dark:text-secondary max-w-[110px] truncate">{{ auth()->user()->name }}</span>
-            <i data-lucide="chevron-down" style="width:13px;height:13px;color:#94a3b8"></i>
-          </button>
-
-          <div id="user-dd"
-               class="hidden absolute right-0 top-full mt-2 w-56 bg-white dark:bg-secondary rounded-2xl shadow-xl border border-slate-100 dark:border-primary py-1.5 z-50 animate-slide-up">
-
-            {{-- User info --}}
-            <div class="px-4 py-3 border-b border-slate-100 dark:border-primary">
-              <p class="text-xs text-slate-400 dark:text-tertiary mb-0.5">Signed in as</p>
-              <p class="text-sm font-semibold text-slate-800 dark:text-primary truncate">{{ auth()->user()->name }}</p>
-              @if(auth()->user()->discountType)
-                <span class="inline-flex items-center gap-1 mt-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-900 text-amber-700 dark:text-amber-300">
-                  <i data-lucide="badge-percent" style="width:9px;height:9px"></i>
-                  {{ auth()->user()->discountType->display_name }}
-                </span>
-              @endif
-            </div>
-
-            <a href="{{ route('manage.bookings') }}" class="flex items-center gap-2.5 px-4 py-2.5 text-sm text-slate-700 dark:text-secondary hover:bg-slate-50 dark:hover:bg-tertiary transition-colors">
-              <i data-lucide="ticket" style="width:14px;height:14px;color:#ea580c"></i> My Bookings
-            </a>
-            <a href="{{ route('landing.account') }}" class="flex items-center gap-2.5 px-4 py-2.5 text-sm text-slate-700 dark:text-secondary hover:bg-slate-50 dark:hover:bg-tertiary transition-colors">
-              <i data-lucide="user" style="width:14px;height:14px;color:#ea580c"></i> My Account
-            </a>
-            <a href="{{ route('landing.account') }}#support" class="flex items-center gap-2.5 px-4 py-2.5 text-sm text-slate-700 dark:text-secondary hover:bg-slate-50 dark:hover:bg-tertiary transition-colors">
-              <i data-lucide="life-buoy" style="width:14px;height:14px;color:#ea580c"></i> Support
-            </a>
-            
-            {{-- Theme Toggle --}}
-            <button onclick="toggleTheme(); document.getElementById('user-dd').classList.add('hidden')" 
-                    class="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-slate-700 dark:text-secondary hover:bg-slate-50 dark:hover:bg-tertiary transition-colors text-left">
-              <div id="nav-theme-icon" class="flex items-center justify-center w-5 h-5">
-                <!-- Icons will be set by JavaScript -->
-              </div>
-              <span id="nav-theme-text">Switch to Dark Mode</span>
+        @if(auth()->user()->isAdmin())
+          <a href="{{ route('admin.dashboard') }}" class="px-4 py-2 text-sm font-semibold bg-primary-600 hover:bg-primary-700 text-white rounded-xl transition-colors shadow-sm flex items-center gap-2">
+            <i data-lucide="layout-dashboard" style="width:16px;height:16px"></i> Dashboard
+          </a>
+          <form method="POST" action="{{ route('logout') }}" class="m-0 flex">
+            @csrf
+            <button type="submit" class="p-2 ml-1 rounded-xl text-red-500 hover:bg-red-50 hover:text-red-600 transition-colors" title="Sign Out">
+              <i data-lucide="log-out" style="width:18px;height:18px"></i>
             </button>
-            
-            <div class="border-t border-slate-100 mt-1.5 pt-1">
-              <form method="POST" action="{{ route('logout') }}">
-                @csrf
-                <button type="submit" class="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors">
-                  <i data-lucide="log-out" style="width:14px;height:14px"></i> Sign Out
-                </button>
-              </form>
+          </form>
+        @else
+          {{-- Notification bell --}}
+          @php $unread = auth()->user()->notifications()->where('is_read', false)->count(); @endphp
+          <a href="{{ route('manage.bookings') }}" class="relative p-2 rounded-xl text-slate-500 hover:bg-slate-100 transition-colors">
+            <i data-lucide="bell" style="width:18px;height:18px"></i>
+            @if($unread > 0)
+              <span class="absolute top-1 right-1 w-4 h-4 bg-red-500 text-white text-[9px] font-bold rounded-full flex items-center justify-center">
+                {{ $unread > 9 ? '9+' : $unread }}
+              </span>
+            @endif
+          </a>
+
+          {{-- User dropdown --}}
+          <div class="relative" data-dd>
+            <button onclick="document.getElementById('user-dd').classList.toggle('hidden')"
+                    class="flex items-center gap-2 pl-2 pr-3 py-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-tertiary transition-colors border border-transparent hover:border-slate-200 dark:hover:border-primary">
+              <div class="w-7 h-7 rounded-full bg-primary-100 dark:bg-tertiary text-primary-700 dark:text-primary text-xs font-bold flex items-center justify-center">
+                {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+              </div>
+              <span class="text-sm font-medium text-slate-700 dark:text-secondary max-w-[110px] truncate">{{ auth()->user()->name }}</span>
+              <i data-lucide="chevron-down" style="width:13px;height:13px;color:#94a3b8"></i>
+            </button>
+
+            <div id="user-dd"
+                 class="hidden absolute right-0 top-full mt-2 w-56 bg-white dark:bg-secondary rounded-2xl shadow-xl border border-slate-100 dark:border-primary py-1.5 z-50 animate-slide-up">
+
+              {{-- User info --}}
+              <div class="px-4 py-3 border-b border-slate-100 dark:border-primary">
+                <p class="text-xs text-slate-400 dark:text-tertiary mb-0.5">Signed in as</p>
+                <p class="text-sm font-semibold text-slate-800 dark:text-primary truncate">{{ auth()->user()->name }}</p>
+                @if(auth()->user()->discountType)
+                  <span class="inline-flex items-center gap-1 mt-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-900 text-amber-700 dark:text-amber-300">
+                    <i data-lucide="badge-percent" style="width:9px;height:9px"></i>
+                    {{ auth()->user()->discountType->display_name }}
+                  </span>
+                @endif
+              </div>
+
+              <a href="{{ route('manage.bookings') }}" class="flex items-center gap-2.5 px-4 py-2.5 text-sm text-slate-700 dark:text-secondary hover:bg-slate-50 dark:hover:bg-tertiary transition-colors">
+                <i data-lucide="ticket" style="width:14px;height:14px;color:#ea580c"></i> My Bookings
+              </a>
+              <a href="{{ route('landing.account') }}" class="flex items-center gap-2.5 px-4 py-2.5 text-sm text-slate-700 dark:text-secondary hover:bg-slate-50 dark:hover:bg-tertiary transition-colors">
+                <i data-lucide="user" style="width:14px;height:14px;color:#ea580c"></i> My Account
+              </a>
+              <a href="{{ route('landing.account') }}#support" class="flex items-center gap-2.5 px-4 py-2.5 text-sm text-slate-700 dark:text-secondary hover:bg-slate-50 dark:hover:bg-tertiary transition-colors">
+                <i data-lucide="life-buoy" style="width:14px;height:14px;color:#ea580c"></i> Support
+              </a>
+              
+              {{-- Theme Toggle --}}
+              <button onclick="toggleTheme(); document.getElementById('user-dd').classList.add('hidden')" 
+                      class="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-slate-700 dark:text-secondary hover:bg-slate-50 dark:hover:bg-tertiary transition-colors text-left">
+                <div id="nav-theme-icon" class="flex items-center justify-center w-5 h-5">
+                  <!-- Icons will be set by JavaScript -->
+                </div>
+                <span id="nav-theme-text">Switch to Dark Mode</span>
+              </button>
+              
+              <div class="border-t border-slate-100 mt-1.5 pt-1">
+                <form method="POST" action="{{ route('logout') }}">
+                  @csrf
+                  <button type="submit" class="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors">
+                    <i data-lucide="log-out" style="width:14px;height:14px"></i> Sign Out
+                  </button>
+                </form>
+              </div>
             </div>
           </div>
-        </div>
+        @endif
 
       @else
         <button onclick="openModal('auth-modal'); authTab('login')"
@@ -156,24 +170,38 @@
       @endforeach
 
       @auth
-        @foreach($authLinks as $l)
-          <a href="{{ route($l['route']) }}"
-             class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium
-                    {{ $route === $l['route'] ? 'bg-primary-50 text-primary-700' : 'text-slate-700 hover:bg-slate-50' }}">
-            @if($route === $l['route'])
-              <i data-lucide="{{ $l['icon'] }}" style="width:16px;height:16px"></i>
-            @endif
-            {{ $l['label'] }}
+        @if(auth()->user()->isAdmin())
+          <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-slate-700 hover:bg-slate-50">
+            <i data-lucide="layout-dashboard" style="width:16px;height:16px"></i> Dashboard
           </a>
-        @endforeach
-        <div class="pt-2 mt-1 border-t border-slate-100">
-          <form method="POST" action="{{ route('logout') }}">
-            @csrf
-            <button type="submit" class="w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-red-600 hover:bg-red-50 rounded-xl">
-              <i data-lucide="log-out" style="width:16px;height:16px"></i> Sign Out
-            </button>
-          </form>
-        </div>
+          <div class="pt-2 mt-1 border-t border-slate-100">
+            <form method="POST" action="{{ route('logout') }}">
+              @csrf
+              <button type="submit" class="w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-red-600 hover:bg-red-50 rounded-xl">
+                <i data-lucide="log-out" style="width:16px;height:16px"></i> Sign Out
+              </button>
+            </form>
+          </div>
+        @else
+          @foreach($authLinks as $l)
+            <a href="{{ route($l['route']) }}"
+               class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium
+                      {{ $route === $l['route'] ? 'bg-primary-50 text-primary-700' : 'text-slate-700 hover:bg-slate-50' }}">
+              @if($route === $l['route'])
+                <i data-lucide="{{ $l['icon'] }}" style="width:16px;height:16px"></i>
+              @endif
+              {{ $l['label'] }}
+            </a>
+          @endforeach
+          <div class="pt-2 mt-1 border-t border-slate-100">
+            <form method="POST" action="{{ route('logout') }}">
+              @csrf
+              <button type="submit" class="w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-red-600 hover:bg-red-50 rounded-xl">
+                <i data-lucide="log-out" style="width:16px;height:16px"></i> Sign Out
+              </button>
+            </form>
+          </div>
+        @endif
       @else
         <div class="pt-2 mt-1 border-t border-slate-100 grid grid-cols-2 gap-2">
           <button onclick="document.getElementById('mob-menu').classList.add('hidden'); openModal('auth-modal'); authTab('login')"

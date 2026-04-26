@@ -103,6 +103,17 @@ async function doLogin(e) {
   const orig = btn.innerHTML;
   btn.disabled = true;
   btn.innerHTML = _spin + ' Signing in…';
+
+  // Clear previous errors
+  document.querySelectorAll('#f-login .error-msg').forEach(el => {
+      el.textContent = '';
+      el.classList.add('hidden');
+  });
+  document.querySelectorAll('#f-login .log-input').forEach(el => {
+      el.classList.remove('border-red-500', 'focus:ring-red-500');
+      el.classList.add('border-slate-200', 'focus:ring-primary-500');
+  });
+
   try {
     const r = await fetch('{{ route("login_post") }}', {
       method: 'POST',
@@ -115,7 +126,22 @@ async function doLogin(e) {
       closeModal('auth-modal');
       setTimeout(() => location.href = j.redirect || '/', 400);
     } else {
-      toast(j.message, 'error');
+      if (j.errors) {
+        for (const [field, messages] of Object.entries(j.errors)) {
+            const input = document.getElementById('input-login-' + field);
+            const errP = document.getElementById('err-login-' + field);
+            if (input) {
+                input.classList.remove('border-slate-200', 'focus:ring-primary-500');
+                input.classList.add('border-red-500', 'focus:ring-red-500');
+            }
+            if (errP) {
+                errP.textContent = messages[0];
+                errP.classList.remove('hidden');
+            }
+        }
+      } else {
+        toast(j.message, 'error');
+      }
     }
   } catch { toast('Something went wrong. Please try again.', 'error'); }
   finally  { btn.disabled = false; btn.innerHTML = orig; lucide.createIcons(); }
@@ -128,6 +154,17 @@ async function doRegister(e) {
   const orig = btn.innerHTML;
   btn.disabled = true;
   btn.innerHTML = _spin + ' Creating account…';
+
+  // Clear previous errors
+  document.querySelectorAll('.error-msg').forEach(el => {
+      el.textContent = '';
+      el.classList.add('hidden');
+  });
+  document.querySelectorAll('.reg-input').forEach(el => {
+      el.classList.remove('border-red-500', 'focus:ring-red-500');
+      el.classList.add('border-slate-200', 'focus:ring-primary-500');
+  });
+
   try {
     const r = await fetch('{{ route("register_post") }}', {
       method: 'POST',
@@ -143,8 +180,22 @@ async function doRegister(e) {
       document.getElementById('ptype-notice')?.classList.add('hidden');
       authTab('login');
     } else {
-      const msg = j.errors ? Object.values(j.errors).flat().join(' ') : j.message;
-      toast(msg, 'error');
+      if (j.errors) {
+        for (const [field, messages] of Object.entries(j.errors)) {
+            const input = document.getElementById('input-reg-' + field);
+            const errP = document.getElementById('err-reg-' + field);
+            if (input) {
+                input.classList.remove('border-slate-200', 'focus:ring-primary-500');
+                input.classList.add('border-red-500', 'focus:ring-red-500');
+            }
+            if (errP) {
+                errP.textContent = messages[0];
+                errP.classList.remove('hidden');
+            }
+        }
+      } else {
+        toast(j.message, 'error');
+      }
     }
   } catch { toast('Something went wrong. Please try again.', 'error'); }
   finally  { btn.disabled = false; btn.innerHTML = orig; lucide.createIcons(); }

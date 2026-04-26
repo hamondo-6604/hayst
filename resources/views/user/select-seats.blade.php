@@ -1,402 +1,391 @@
 @extends('layouts.app')
-@section('title', 'Select Seats — Mindanao Express')
+@section('title', 'Select Your Seat — Mindanao Express')
 
 @push('head')
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  :root {
-    --ink:#0e1117; --ink-mid:#1a2235; --ink-soft:#2e3a52;
-    --gold:#b8912a; --gold-lt:#d4a843;
-    --gold-bg:rgba(184,145,42,.08); --gold-line:rgba(184,145,42,.2);
-    --red:#c0392b; --red-bg:rgba(192,57,43,.07);
-    --bg:#f9f7f4; --bg-2:#f2ede6; --bg-3:#ffffff;
-    --border:#e4ddd3; --border-dk:#ccc4b8;
-    --muted:#7a7468; --muted-lt:#a09890; --text:#1a1612;
-    --green:#059669; --green-bg:rgba(5,150,105,.08);
-    --blue:#2563eb; --blue-bg:rgba(37,99,235,.07);
-    --orange:#ea580c; --orange-bg:rgba(234,88,12,.08);
-    --nav-h:70px; --radius:14px;
-    --shadow-sm:0 2px 12px rgba(14,17,23,.06);
-    --shadow-md:0 8px 32px rgba(14,17,23,.10);
-    --shadow-lg:0 20px 60px rgba(14,17,23,.14);
-  }
-  html { scroll-behavior:smooth; }
-  body { font-family:'Outfit',sans-serif; background:var(--bg); color:var(--text); overflow-x:hidden; }
+    .bus-container {
+        border: 4px solid #cbd5e1;
+        border-radius: 40px;
+        padding: 40px 20px;
+        background: #f8fafc;
+        position: relative;
+        max-width: max-content;
+        margin: 0 auto;
+        box-shadow: inset 0 0 20px rgba(0,0,0,0.05);
+    }
+    
+    .bus-front {
+        position: absolute;
+        top: -20px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 120px;
+        height: 40px;
+        background: #cbd5e1;
+        border-radius: 50px 50px 0 0;
+    }
+    
+    .bus-steering {
+        position: absolute;
+        top: 20px;
+        left: 30px;
+        width: 40px;
+        height: 40px;
+        border: 4px solid #64748b;
+        border-radius: 50%;
+    }
 
-  /* ══ NAVBAR ══ */
-  #nav {
-    position:fixed; top:0; left:0; right:0; height:var(--nav-h); z-index:900;
-    background:rgba(249,247,244,.95); backdrop-filter:blur(18px) saturate(1.4);
-    border-bottom:1px solid var(--border); box-shadow:var(--shadow-sm);
-  }
-  .nav-wrap { max-width:1260px; margin:0 auto; height:100%; display:flex; align-items:center; padding:0 32px; }
-  .logo { display:flex; align-items:center; gap:10px; text-decoration:none; flex-shrink:0; margin-right:44px; cursor:pointer; }
-  .logo-mark { width:38px; height:38px; border-radius:9px; background:var(--ink); display:flex; align-items:center; justify-content:center; }
-  .logo-mark svg { width:20px; height:20px; fill:none; stroke:var(--gold-lt); stroke-width:1.8; stroke-linecap:round; }
-  .logo-mark i { font-size:1.05rem; color:var(--gold-lt); }
-  .logo-wordmark { font-family:'Playfair Display',serif; font-size:1.2rem; font-weight:800; color:var(--ink); letter-spacing:-.3px; }
-  .logo-wordmark span { color:var(--gold); }
+    .seat {
+        width: 48px;
+        height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 12px;
+        font-weight: bold;
+        font-size: 13px;
+        cursor: pointer;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        user-select: none;
+    }
 
-  /* ══ PAGE HEADER ══ */
-  .page-header {
-    padding-top:calc(var(--nav-h) + 52px); padding-bottom:48px; padding-left:32px; padding-right:32px;
-    background:linear-gradient(160deg,#fff 0%,var(--bg) 100%); position:relative; overflow:hidden;
-  }
-  .page-header::before { content:''; position:absolute; top:0; right:0; width:55%; height:100%; background:radial-gradient(ellipse 70% 70% at 80% 40%,rgba(184,145,42,.07) 0%,transparent 65%); pointer-events:none; }
-  .ph-inner { max-width:1260px; margin:0 auto; position:relative; z-index:1; display:flex; align-items:flex-end; justify-content:space-between; gap:24px; flex-wrap:wrap; }
-  .breadcrumb { display:flex; align-items:center; gap:8px; font-size:.75rem; color:var(--muted-lt); margin-bottom:20px; }
-  .breadcrumb a { color:var(--muted); text-decoration:none; font-weight:500; cursor:pointer; }
-  .breadcrumb a:hover { color:var(--gold); }
-  .breadcrumb .sep { color:var(--border-dk); }
-  .breadcrumb .cur { color:var(--gold); font-weight:600; }
-  .ph-eyebrow { display:inline-flex; align-items:center; gap:8px; font-size:.72rem; font-weight:700; letter-spacing:2.5px; text-transform:uppercase; color:var(--gold); margin-bottom:12px; }
-  .ph-eyebrow::before { content:''; width:28px; height:1.5px; background:var(--gold); }
-  .ph-heading { font-family:'Playfair Display',serif; font-size:clamp(2rem,3.5vw,2.8rem); font-weight:800; line-height:1.1; letter-spacing:-.3px; color:var(--ink); }
-  .ph-heading em { font-style:italic; color:var(--gold); }
-  .ph-sub { color:var(--muted); font-size:.95rem; line-height:1.7; margin-top:10px; max-width:480px; }
+    .seat::before {
+        content: '';
+        position: absolute;
+        top: -4px;
+        width: 32px;
+        height: 8px;
+        border-radius: 4px;
+        background: inherit;
+        filter: brightness(0.9);
+    }
 
-  /* ══ MAIN LAYOUT ══ */
-  .page-body { max-width:1260px; margin:0 auto; padding:40px 32px 80px; display:grid; grid-template-columns:320px 1fr; gap:32px; align-items:start; }
+    .seat.available {
+        background: #ffffff;
+        border: 2px solid #e2e8f0;
+        color: #64748b;
+    }
 
-  /* ══ SIDEBAR ══ */
-  .sidebar { position:sticky; top:calc(var(--nav-h) + 20px); display:flex; flex-direction:column; gap:16px; }
+    .seat.available:hover {
+        border-color: #f97316;
+        color: #f97316;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 6px -1px rgba(249, 115, 22, 0.1);
+    }
 
-  .trip-summary-card { background:var(--bg-3); border:1px solid var(--border); border-radius:18px; overflow:hidden; box-shadow:var(--shadow-sm); }
-  .trip-card-head { background:var(--ink); padding:24px 20px; text-align:center; position:relative; }
-  .trip-card-head::before { content:''; position:absolute; top:-30px; left:50%; transform:translateX(-50%); width:200px; height:200px; border-radius:50%; background:radial-gradient(circle,rgba(184,145,42,.18) 0%,transparent 65%); }
-  .trip-avatar { width:64px; height:64px; border-radius:50%; background:var(--gold-bg); border:3px solid rgba(255,255,255,.15); display:flex; align-items:center; justify-content:center; font-family:'Playfair Display',serif; font-size:1.4rem; font-weight:800; color:var(--gold-lt); margin:0 auto 12px; position:relative; z-index:1; }
-  .trip-name { font-family:'Playfair Display',serif; font-size:1rem; font-weight:800; color:#fff; margin-bottom:4px; }
-  .trip-route { font-size:.75rem; color:rgba(255,255,255,.45); }
-  .trip-verified { display:inline-flex; align-items:center; gap:5px; background:rgba(5,150,105,.18); border:1px solid rgba(5,150,105,.3); padding:3px 10px; border-radius:50px; font-size:.68rem; font-weight:700; color:#34d399; margin-top:8px; }
-  .trip-card-body { padding:16px; }
-  .trip-stat-row { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:12px; }
-  .trip-stat { text-align:center; padding:10px 6px; background:var(--bg); border-radius:10px; border:1px solid var(--border); }
-  .trip-stat-num { font-family:'Playfair Display',serif; font-size:1.1rem; font-weight:800; color:var(--ink); }
-  .trip-stat-label { font-size:.62rem; color:var(--muted); margin-top:2px; text-transform:uppercase; letter-spacing:.5px; }
+    .seat.selected {
+        background: #f97316;
+        border: 2px solid #ea580c;
+        color: #ffffff;
+        transform: scale(1.05);
+        box-shadow: 0 10px 15px -3px rgba(249, 115, 22, 0.3);
+    }
+    .seat.selected::before { filter: brightness(1.1); }
 
-  .selected-seats-card { background:var(--ink); border-radius:14px; padding:20px; }
-  .selected-seats-card h4 { font-family:'Playfair Display',serif; font-size:.95rem; font-weight:800; color:#fff; margin-bottom:6px; }
-  .selected-seats-card p { font-size:.78rem; color:rgba(255,255,255,.45); margin-bottom:14px; line-height:1.5; }
-  .selected-seats-list { background:var(--gold-bg); border:1px solid var(--gold-line); border-radius:10px; padding:14px; margin-bottom:16px; min-height:60px; }
-  .selected-seats-list.empty { display:flex; align-items:center; justify-content:center; color:var(--muted); font-size:.82rem; font-style:italic; }
-  .selected-seats-list.has-seats { color:var(--gold); font-weight:600; font-family:'Playfair Display',serif; font-size:.95rem; text-align:center; }
-  .total-fare { text-align:center; margin-bottom:16px; }
-  .total-fare .amount { font-family:'Playfair Display',serif; font-size:1.8rem; font-weight:800; color:var(--gold-lt); }
-  .total-fare .label { font-size:.68rem; color:rgba(255,255,255,.45); text-transform:uppercase; letter-spacing:1px; }
-  .quick-btn { width:100%; background:var(--gold); border:none; color:var(--ink); padding:10px; border-radius:8px; font-weight:700; font-size:.82rem; cursor:pointer; font-family:'Outfit',sans-serif; transition:all .18s; }
-  .quick-btn:hover { background:var(--gold-lt); transform:translateY(-1px); }
-  .quick-btn:disabled { background:var(--muted); cursor:not-allowed; transform:none; }
+    .seat.occupied {
+        background: #e2e8f0;
+        border: 2px solid #cbd5e1;
+        color: #94a3b8;
+        cursor: not-allowed;
+    }
 
-  /* ══ MAIN CONTENT ══ */
-  .main-col { display:flex; flex-direction:column; gap:24px; }
+    .seat.occupied::after {
+        content: '×';
+        position: absolute;
+        font-size: 24px;
+        font-weight: 300;
+        color: #94a3b8;
+    }
 
-  /* ── Seat Map Container ── */
-  .seat-map-container { background:var(--bg-3); border:1px solid var(--border); border-radius:18px; overflow:hidden; box-shadow:var(--shadow-sm); }
-  .seat-map-header { padding:22px 28px; border-bottom:1px solid var(--border); background:var(--bg); }
-  .seat-map-header h3 { font-family:'Playfair Display',serif; font-size:1.2rem; font-weight:800; color:var(--ink); margin-bottom:4px; }
-  .seat-map-header p { font-size:.8rem; color:var(--muted); }
-  .seat-map-body { padding:28px; }
-  
-  .driver-area { background:linear-gradient(135deg, var(--ink) 0%, var(--ink-mid) 100%); color: white; padding:15px; border-radius:12px; text-align:center; margin-bottom:20px; font-weight:600; display:flex; align-items:center; justify-content:center; gap:8px; }
-  
-  .seat-legend { display:flex; gap:20px; justify-content:center; margin-bottom:20px; flex-wrap:wrap; }
-  .legend-item { display:flex; align-items:center; gap:8px; font-size:14px; padding:8px 16px; background:var(--bg); border:1px solid var(--border); border-radius:8px; }
-  .legend-seat { width:24px; height:24px; border-radius:4px; border:2px solid; }
-  .legend-seat.available { background:#f0fdf4; border-color:#22c55e; }
-  .legend-seat.selected { background:var(--orange); border-color:var(--orange); }
-  .legend-seat.booked { background:#f8fafc; border-color:#94a3b8; }
-  
-  .seat-grid { background:var(--bg); border:1px solid var(--border); border-radius:14px; padding:20px; margin-bottom:20px; }
-  .seat-row { display:flex; align-items:center; justify-content:center; margin-bottom:4px; gap:2px; }
-  .seat { width:40px; height:40px; border:2px solid var(--border); border-radius:8px; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:600; transition:all 0.2s; background:white; }
-  .seat:hover:not(.booked):not(.selected) { border-color:var(--orange); transform:scale(1.05); }
-  .seat.available { background:#f0fdf4; border-color:#22c55e; color:#16a34a; }
-  .seat.selected { background:var(--orange); border-color:var(--orange); color:white; transform:scale(1.05); }
-  .seat.booked { background:#f8fafc; border-color:#94a3b8; color:#64748b; cursor:not-allowed; }
-  .aisle { width:40px; height:40px; margin:2px; background:var(--bg-2); border-radius:4px; }
-  .row-number { width:24px; text-align:center; font-size:11px; color:var(--muted); font-weight:600; }
-  
-  .action-bar { padding:20px 28px; border-top:1px solid var(--border); background:var(--bg); display:flex; gap:12px; justify-content:space-between; align-items:center; }
-  .action-buttons { display:flex; gap:12px; }
-  .btn { padding:10px 22px; border-radius:9px; font-size:.88rem; font-weight:700; cursor:pointer; font-family:'Outfit',sans-serif; transition:all .18s; border:none; display:inline-flex; align-items:center; gap:8px; text-decoration:none; }
-  .btn-ghost { background:none; border:1.5px solid var(--border-dk); color:var(--ink); }
-  .btn-ghost:hover { border-color:var(--ink); background:var(--bg-2); }
-  .btn-primary { background:var(--ink); color:#fff; }
-  .btn-primary:hover { background:var(--ink-mid); transform:translateY(-1px); box-shadow:0 6px 18px rgba(14,17,23,.18); }
-  .btn-gold { background:var(--gold); color:var(--ink); }
-  .btn-gold:hover { background:var(--gold-lt); transform:translateY(-1px); }
-  .btn:disabled { background:var(--muted); cursor:not-allowed; transform:none; }
+    .cell-empty { width: 48px; height: 48px; }
+    
+    .cell-door {
+        width: 48px;
+        height: 48px;
+        border: 2px dashed #94a3b8;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #94a3b8;
+        font-size: 10px;
+        text-transform: uppercase;
+        font-weight: bold;
+    }
+    
+    .cell-driver {
+        width: 48px;
+        height: 48px;
+        background: #475569;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+    }
 
-  /* ══ MODALS ══ */
-  .modal-overlay { position:fixed; inset:0; background:rgba(14,17,23,.55); backdrop-filter:blur(6px); z-index:1000; display:flex; align-items:center; justify-content:center; opacity:0; pointer-events:none; transition:opacity .25s; padding:16px; }
-  .modal-overlay.open { opacity:1; pointer-events:all; }
-  .modal-box { background:var(--bg-3); border-radius:20px; width:100%; max-width:520px; box-shadow:var(--shadow-lg); transform:scale(.95) translateY(12px); transition:transform .28s cubic-bezier(.34,1.56,.64,1); position:relative; overflow:hidden; }
-  .modal-overlay.open .modal-box { transform:scale(1) translateY(0); }
-  .modal-head { padding:22px 28px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; gap:12px; }
-  .modal-head h3 { font-family:'Playfair Display',serif; font-size:1.2rem; font-weight:800; color:var(--ink); }
-  .modal-head p { font-size:.8rem; color:var(--muted); margin-top:3px; }
-  .modal-close { background:none; border:none; font-size:1.1rem; cursor:pointer; color:var(--muted); width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; transition:background .15s; flex-shrink:0; }
-  .modal-close:hover { background:var(--bg-2); }
-  .modal-body { padding:24px 28px; }
-  .modal-foot { padding:18px 28px; border-top:1px solid var(--border); display:flex; gap:10px; justify-content:flex-end; }
+    .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 13px;
+        color: #64748b;
+        font-weight: 500;
+    }
 
-  /* ══ TOAST ══ */
-  .toast { position:fixed; bottom:32px; right:32px; z-index:9999; background:var(--ink); color:#fff; padding:14px 22px; border-radius:12px; font-size:.88rem; font-weight:600; box-shadow:var(--shadow-lg); display:flex; align-items:center; gap:10px; transform:translateY(80px); opacity:0; transition:all .3s cubic-bezier(.34,1.56,.64,1); pointer-events:none; }
-  .toast.show { transform:translateY(0); opacity:1; }
-
-  /* ══ RESPONSIVE ══ */
-  @media (max-width:900px) { .page-body { grid-template-columns:1fr; } .sidebar { position:static; } }
-  @media (max-width:640px) {
-    .page-body { padding:24px 16px 60px; }
-    .seat { width:32px; height:32px; font-size:9px; }
-    .aisle { width:32px; height:32px; }
-    .action-bar { flex-direction:column; gap:16px; }
-    .action-buttons { width:100%; justify-content:stretch; }
-    .btn { flex:1; justify-content:center; }
-  }
+    .legend-box {
+        width: 24px;
+        height: 24px;
+        border-radius: 6px;
+    }
 </style>
 @endpush
 
 @section('content')
-<!-- ══ PAGE HEADER ══ -->
-<div class="page-header">
-  <div class="ph-inner">
-    <div>
-      <nav class="breadcrumb">
-        <a href="{{ route('landing.home') }}">Home</a>
-        <span class="sep">/</span>
-        <a href="{{ route('landing.ticket_booking') }}">Search Trips</a>
-        <span class="sep">/</span>
-        <span class="cur">Select Seats</span>
-      </nav>
-      <div class="ph-eyebrow">Seat Selection</div>
-      <h1 class="ph-heading">Choose Your <em>Seats</em></h1>
-      <p class="ph-sub">Select your preferred seats for a comfortable journey. Click on available seats to reserve them.</p>
-    </div>
-  </div>
-</div>
 
-<!-- ══ BODY ══ -->
-<div class="page-body">
-
-  <!-- ── SIDEBAR ── -->
-  <aside class="sidebar">
-
-    <!-- Trip Summary Card -->
-    <div class="trip-summary-card">
-      <div class="trip-card-head">
-        <div class="trip-avatar">🚌</div>
-        <div class="trip-name">{{ $trip->route->originCity->name }} → {{ $trip->route->destinationCity->name }}</div>
-        <div class="trip-route">{{ $trip->trip_date->format('D, M j, Y') }} • {{ $trip->departure_time->format('H:i') }}</div>
-        <div class="trip-verified">✓ Available Trip</div>
-      </div>
-      <div class="trip-card-body">
-        <div class="trip-stat-row">
-          <div class="trip-stat">
-            <div class="trip-stat-num">₱{{ number_format($trip->fare, 0) }}</div>
-            <div class="trip-stat-label">Per Seat</div>
-          </div>
-          <div class="trip-stat">
-            <div class="trip-stat-num">{{ $trip->available_seats }}</div>
-            <div class="trip-stat-label">Available</div>
-          </div>
-        </div>
-        <div class="trip-stat-row">
-          <div class="trip-stat" style="grid-column: 1 / -1;">
-            <div class="trip-stat-num">{{ $trip->bus?->bus_name ?? 'Mindanao Express Bus' }}</div>
-            <div class="trip-stat-label">{{ $trip->bus?->type?->type_name ?? 'Standard' }}</div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Selected Seats Card -->
-    <div class="selected-seats-card">
-      <h4>Selected Seats</h4>
-      <p>Your chosen seats will appear here</p>
-      <div class="selected-seats-list empty" id="selected-seats-display">
-        No seats selected
-      </div>
-      <div class="total-fare">
-        <div class="amount" id="total-fare">₱0</div>
-        <div class="label">Total Fare</div>
-      </div>
-      <form id="seat-selection-form" action="{{ route('user.book.seats', $trip->id) }}" method="POST">
-        @csrf
-        <input type="hidden" name="selected_seats" id="selected-seats-input" value="">
-        <button type="submit" id="book-button" disabled class="quick-btn">
-          Continue to Payment
-        </button>
-      </form>
-    </div>
-
-  </aside>
-
-  <!-- ── MAIN CONTENT ── -->
-  <div class="main-col">
-
-    <!-- Seat Map Container -->
-    <div class="seat-map-container">
-      <div class="seat-map-header">
-        <h3>Seat Selection</h3>
-        <p>Click on available seats to select them for your journey</p>
-      </div>
-      <div class="seat-map-body">
-        
-        <!-- Driver Area -->
-        <div class="driver-area">
-          <i data-lucide="steering-wheel" style="width:24px;height:24px"></i>
-          DRIVER AREA
-        </div>
-        
-        <!-- Seat Legend -->
-        <div class="seat-legend">
-          <div class="legend-item">
-            <div class="legend-seat available"></div>
-            <span>Available</span>
-          </div>
-          <div class="legend-item">
-            <div class="legend-seat selected"></div>
-            <span>Selected</span>
-          </div>
-          <div class="legend-item">
-            <div class="legend-seat booked"></div>
-            <span>Booked</span>
-          </div>
-        </div>
-        
-        <!-- Seat Grid -->
-        <div class="seat-grid">
-          @if(!empty($seatMap))
-            @foreach($seatMap as $rowIndex => $row)
-              <div class="seat-row">
-                <div class="row-number">{{ $rowIndex + 1 }}</div>
-                @foreach($row as $colIndex => $seat)
-                  @if($seat['type'] === 'aisle')
-                    <div class="aisle"></div>
-                  @else
-                    <div class="seat {{ $seat['status'] }}" 
-                         data-seat="{{ $seat['seat_number'] }}"
-                         data-status="{{ $seat['status'] }}"
-                         onclick="toggleSeat(this)">
-                      {{ $seat['seat_number'] }}
-                    </div>
-                  @endif
-                @endforeach
-                <div class="row-number">{{ $rowIndex + 1 }}</div>
-              </div>
-            @endforeach
-          @else
-            <div style="text-align:center; padding:40px; color:var(--muted);">
-              <div style="font-size:3rem; margin-bottom:16px; opacity:.6;">🪑</div>
-              <div style="font-family:'Playfair Display',serif; font-size:1.4rem; font-weight:800; color:var(--ink); margin-bottom:8px;">Seat Layout Unavailable</div>
-              <div style="font-size:.9rem; color:var(--muted); max-width:340px; margin:0 auto; line-height:1.7;">The seat layout for this trip is not currently available. Please contact support for assistance.</div>
-            </div>
-          @endif
-        </div>
-      </div>
-      
-      <!-- Action Bar -->
-      <div class="action-bar">
-        <a href="{{ route('landing.ticket_booking') }}" class="btn btn-ghost">
-          ← Back to Trips
+{{-- ── PAGE HEADER ─────────────────────────────────────────────── --}}
+<div class="bg-slate-900 py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <a href="{{ url()->previous() !== url()->current() ? url()->previous() : route('landing.ticket_booking') }}" class="inline-flex items-center gap-2 text-slate-400 hover:text-white transition-colors text-sm mb-4">
+            <i data-lucide="arrow-left" style="width:16px;height:16px"></i> Back to search results
         </a>
-        <div class="action-buttons">
-          <button type="button" onclick="clearSelection()" class="btn btn-ghost">
-            Clear Selection
-          </button>
-          <button type="submit" form="seat-selection-form" id="action-book-button" disabled class="btn btn-primary">
-            Continue to Payment →
-          </button>
-        </div>
-      </div>
+        <h1 class="text-3xl font-extrabold text-white">
+            Select Your <span class="text-primary-400">Seat</span>
+        </h1>
     </div>
-
-  </div>
 </div>
 
-<!-- Toast -->
-<div class="toast" id="toast"><span id="ti">✓</span>&nbsp;<span id="tm">Done!</span></div>
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    
+    @if(session('success'))
+        <div class="mb-8 p-4 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-xl flex items-center gap-3">
+            <i data-lucide="check-circle" style="width:20px;height:20px;color:#059669"></i>
+            <span class="font-medium">{{ session('success') }}</span>
+        </div>
+    @endif
+
+    @if($errors->has('error'))
+        <div class="mb-8 p-4 bg-red-50 border border-red-200 text-red-800 rounded-xl flex items-center gap-3">
+            <i data-lucide="alert-circle" style="width:20px;height:20px;color:#dc2626"></i>
+            <span class="font-medium">{{ $errors->first('error') }}</span>
+        </div>
+    @endif
+
+    <div class="flex flex-col lg:flex-row gap-10">
+        
+        {{-- ── LEFT PANEL: SEAT MAP ──────────────────────────────── --}}
+        <div class="flex-1">
+            <div class="bg-white border border-slate-200 rounded-2xl p-8 shadow-sm">
+                
+                {{-- Legend --}}
+                <div class="flex flex-wrap justify-center gap-6 mb-10">
+                    <div class="legend-item">
+                        <div class="legend-box border-2 border-slate-200 bg-white"></div> Available
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-box border-2 border-primary-600 bg-primary-500"></div> Selected
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-box border-2 border-slate-300 bg-slate-200 flex items-center justify-center text-slate-400 text-xs font-bold">×</div> Occupied
+                    </div>
+                </div>
+
+                {{-- Bus Layout --}}
+                <div class="overflow-x-auto pb-4">
+                    <div class="bus-container">
+                        <div class="bus-front"></div>
+                        <div class="bus-steering"></div>
+                        
+                        <div class="flex flex-col gap-4 mt-8">
+                            @foreach($seatMap as $row)
+                                <div class="flex gap-4 justify-center">
+                                    @foreach($row as $cell)
+                                        @php
+                                            $type = $cell['cell_type'] ?? 'empty';
+                                            $isBookable = $cell['is_bookable'] ?? false;
+                                            $isAvailable = $cell['is_available'] ?? false;
+                                            $label = $cell['seat_label'] ?? '';
+                                            $fare = $cell['fare'] ?? 0;
+                                        @endphp
+
+                                        @if($type === 'seat' && $isBookable)
+                                            <div 
+                                                class="seat {{ $isAvailable ? 'available' : 'occupied' }}"
+                                                data-seat="{{ $label }}"
+                                                data-fare="{{ $fare }}"
+                                                onclick="{{ $isAvailable ? 'toggleSeat(this)' : '' }}"
+                                                title="{{ $isAvailable ? 'Seat ' . $label . ' - ₱' . number_format($fare, 0) : 'Occupied' }}"
+                                            >
+                                                {{ $label }}
+                                            </div>
+                                        @elseif($type === 'driver')
+                                            <div class="cell-driver" title="Driver">
+                                                <i data-lucide="steering-wheel" style="width:24px;height:24px"></i>
+                                            </div>
+                                        @elseif($type === 'door')
+                                            <div class="cell-door" title="Door">Door</div>
+                                        @elseif($type === 'stairs')
+                                            <div class="cell-door" title="Stairs">Stairs</div>
+                                        @else
+                                            <div class="cell-empty"></div>
+                                        @endif
+                                    @endforeach
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{-- ── RIGHT PANEL: SUMMARY & CHECKOUT ───────────────────── --}}
+        <div class="w-full lg:w-[400px] shrink-0">
+            <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden sticky top-24">
+                
+                {{-- Trip Summary Header --}}
+                <div class="p-6 bg-slate-50 border-b border-slate-200">
+                    <div class="flex items-center gap-2 text-sm text-slate-500 mb-2">
+                        <i data-lucide="calendar" style="width:14px;height:14px"></i>
+                        {{ \Carbon\Carbon::parse($trip->trip_date)->format('D, M j, Y') }}
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <div class="text-xl font-extrabold text-slate-900">{{ \Carbon\Carbon::parse($trip->departure_time)->format('h:i A') }}</div>
+                            <div class="text-xs text-slate-500 mt-1">{{ $trip->route?->originCity?->name }}</div>
+                        </div>
+                        <div class="flex-1 px-4 flex items-center">
+                            <div class="h-px bg-slate-300 flex-1"></div>
+                            <i data-lucide="bus" style="width:16px;height:16px;color:#ea580c;margin:0 8px"></i>
+                            <div class="h-px bg-slate-300 flex-1"></div>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-xl font-extrabold text-slate-900">{{ $trip->arrival_time ? \Carbon\Carbon::parse($trip->arrival_time)->format('h:i A') : '—' }}</div>
+                            <div class="text-xs text-slate-500 mt-1">{{ $trip->route?->destinationCity?->name }}</div>
+                        </div>
+                    </div>
+                    <div class="mt-4 pt-4 border-t border-slate-200/60 flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-full bg-primary-100 flex items-center justify-center">
+                            <i data-lucide="info" style="width:14px;height:14px;color:#ea580c"></i>
+                        </div>
+                        <div>
+                            <div class="text-sm font-bold text-slate-800">{{ $trip->bus?->bus_name ?? 'Standard Bus' }}</div>
+                            <div class="text-xs text-slate-500">{{ $trip->bus?->type?->type_name ?? 'Economy' }}</div>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Selection Summary --}}
+                <div class="p-6">
+                    <h3 class="text-sm font-bold text-slate-800 mb-4 uppercase tracking-wider">Your Selection</h3>
+                    
+                    <div id="empty-state" class="text-center py-6 text-slate-400 text-sm">
+                        Please select one or more seats from the map.
+                    </div>
+
+                    <div id="selected-seats-list" class="space-y-3 hidden">
+                        <!-- Filled via JS -->
+                    </div>
+
+                    <div class="mt-6 pt-4 border-t border-slate-200">
+                        <div class="flex justify-between items-end">
+                            <div class="text-sm text-slate-500">Total Fare</div>
+                            <div class="text-3xl font-extrabold text-primary-600">₱<span id="total-fare">0</span></div>
+                        </div>
+                    </div>
+
+                    <form action="{{ route('user.book.seats', $trip->id) }}" method="POST" id="booking-form" class="mt-6">
+                        @csrf
+                        <div id="hidden-inputs"></div>
+                        <button type="submit" id="checkout-btn" disabled
+                                class="w-full py-4 rounded-xl font-bold text-white transition-all
+                                       bg-slate-300 cursor-not-allowed
+                                       hover:bg-primary-700 disabled:opacity-50">
+                            Continue to Details →
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
 
 @endsection
 
 @push('scripts')
 <script>
-let selectedSeats = [];
-const farePerSeat = {{ $trip->fare }};
+    const selectedSeats = new Map(); // seat_label -> fare
 
-function toggleSeat(element) {
-  const seatNumber = element.dataset.seat;
-  const status = element.dataset.status;
-  
-  // Don't allow selecting booked seats
-  if (status === 'booked') {
-    showToast('⚠', 'This seat is already booked');
-    return;
-  }
-  
-  if (element.classList.contains('selected')) {
-    // Deselect seat
-    element.classList.remove('selected');
-    element.classList.add('available');
-    selectedSeats = selectedSeats.filter(seat => seat !== seatNumber);
-  } else {
-    // Select seat
-    element.classList.remove('available');
-    element.classList.add('selected');
-    selectedSeats.push(seatNumber);
-  }
-  
-  updateSelectedSeatsInfo();
-}
+    function toggleSeat(element) {
+        const seatLabel = element.dataset.seat;
+        const fare = parseFloat(element.dataset.fare);
 
-function updateSelectedSeatsInfo() {
-  const displayDiv = document.getElementById('selected-seats-display');
-  const totalFare = document.getElementById('total-fare');
-  const bookButton = document.getElementById('book-button');
-  const actionBookButton = document.getElementById('action-book-button');
-  const seatsInput = document.getElementById('selected-seats-input');
-  
-  if (selectedSeats.length > 0) {
-    displayDiv.classList.remove('empty');
-    displayDiv.classList.add('has-seats');
-    displayDiv.textContent = selectedSeats.sort().join(', ');
-    totalFare.textContent = '₱' + (farePerSeat * selectedSeats.length).toLocaleString();
-    bookButton.disabled = false;
-    actionBookButton.disabled = false;
-    seatsInput.value = JSON.stringify(selectedSeats);
-  } else {
-    displayDiv.classList.add('empty');
-    displayDiv.classList.remove('has-seats');
-    displayDiv.textContent = 'No seats selected';
-    totalFare.textContent = '₱0';
-    bookButton.disabled = true;
-    actionBookButton.disabled = true;
-    seatsInput.value = '';
-  }
-}
+        if (element.classList.contains('selected')) {
+            // Deselect
+            element.classList.remove('selected');
+            selectedSeats.delete(seatLabel);
+        } else {
+            // Select
+            element.classList.add('selected');
+            selectedSeats.set(seatLabel, fare);
+        }
 
-function clearSelection() {
-  selectedSeats = [];
-  document.querySelectorAll('.seat.selected').forEach(seat => {
-    seat.classList.remove('selected');
-    seat.classList.add('available');
-  });
-  updateSelectedSeatsInfo();
-  showToast('🔄', 'Selection cleared');
-}
+        updateSummary();
+    }
 
-function showToast(icon, msg) {
-  document.getElementById('ti').textContent = icon;
-  document.getElementById('tm').textContent = msg;
-  const t = document.getElementById('toast');
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 3400);
-}
+    function updateSummary() {
+        const listContainer = document.getElementById('selected-seats-list');
+        const emptyState = document.getElementById('empty-state');
+        const totalSpan = document.getElementById('total-fare');
+        const hiddenInputs = document.getElementById('hidden-inputs');
+        const checkoutBtn = document.getElementById('checkout-btn');
 
-// Initialize Lucide icons
-document.addEventListener('DOMContentLoaded', function() {
-  lucide.createIcons();
-});
+        // Clear current list and inputs
+        listContainer.innerHTML = '';
+        hiddenInputs.innerHTML = '';
+        let total = 0;
+
+        if (selectedSeats.size === 0) {
+            emptyState.classList.remove('hidden');
+            listContainer.classList.add('hidden');
+            checkoutBtn.disabled = true;
+            checkoutBtn.classList.remove('bg-primary-600', 'shadow-lg', 'shadow-primary-500/30');
+            checkoutBtn.classList.add('bg-slate-300', 'cursor-not-allowed');
+        } else {
+            emptyState.classList.add('hidden');
+            listContainer.classList.remove('hidden');
+            checkoutBtn.disabled = false;
+            checkoutBtn.classList.remove('bg-slate-300', 'cursor-not-allowed');
+            checkoutBtn.classList.add('bg-primary-600', 'shadow-lg', 'shadow-primary-500/30');
+
+            selectedSeats.forEach((fare, seat) => {
+                total += fare;
+                
+                // Add to visible list
+                const item = document.createElement('div');
+                item.className = 'flex justify-between items-center p-3 bg-slate-50 rounded-lg border border-slate-100';
+                item.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded bg-white border border-slate-200 flex items-center justify-center text-xs font-bold text-slate-700">
+                            ${seat}
+                        </div>
+                        <div class="text-sm font-semibold text-slate-700">Seat</div>
+                    </div>
+                    <div class="text-sm font-bold text-slate-900">₱${fare.toLocaleString()}</div>
+                `;
+                listContainer.appendChild(item);
+
+                // Add to form inputs
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'selected_seats[]';
+                input.value = seat;
+                hiddenInputs.appendChild(input);
+            });
+        }
+
+        totalSpan.textContent = total.toLocaleString();
+    }
 </script>
 @endpush

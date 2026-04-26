@@ -221,7 +221,7 @@ class TicketBookingController extends Controller
     }
 
     // ------------------------------------------------------------------
-    // POST /select-seats/{trip_id} - Process seat booking
+    // POST /select-seats/{trip_id} - Handle seat selection and proceed
     // ------------------------------------------------------------------
     public function bookSeats(Request $request, $trip_id)
     {
@@ -231,115 +231,249 @@ class TicketBookingController extends Controller
         ]);
 
         $trip = Trip::findOrFail($trip_id);
-        $selectedSeats = json_decode($request->selected_seats, true);
 
-        // Validate seats are available
-        $this->validateSeatAvailability($trip, $selectedSeats);
+        // Check if any of the selected seats are already booked
+        $alreadyBooked = \App\Models\BookingSeat::whereHas('booking', function ($q) use ($trip) {
+            $q->where('trip_id', $trip->id)
+              ->whereIn('status', ['confirmed', 'pending']);
+        })->whereIn('seat_number', $request->selected_seats)->exists();
 
-        // Here you would typically:
-        // 1. Create booking record
-        // 2. Mark seats as booked
-        // 3. Process payment
-        // 4. Send confirmation
+        if ($alreadyBooked) {
+            return redirect()->back()->withErrors(['error' => 'One or more of your selected seats are no longer available. Please try again.']);
+        }
 
-        return redirect()->route('manage.bookings')
-            ->with('success', 'Seats booked successfully! Booking reference: MEX-' . str_pad($trip_id, 6, '0', STR_PAD_LEFT));
+        // Retrieve fare details from the seat map generator
+        $grid = $this->generateSeatMap($trip);
+        $seatFares = [];
+        foreach ($grid as $row) {
+            foreach ($row as $cell) {
+                if (($cell['cell_type'] ?? '') === 'seat') {
+                    $seatFares[$cell['seat_label']] = $cell['fare'] ?? $trip->fare;
+                }
+            }
+        }
+
+        $totalFare = 0;
+        $bookingSeatsData = [];
+        
+        // Fetch the actual Seat models to get their IDs
+        $seats = \App\Models\Seat::where('bus_id', $trip->bus_id ?? $trip->bus->id)
+            ->whereIn('seat_number', $request->selected_seats)
+            ->get()
+            ->keyBy('seat_number');
+
+        foreach ($request->selected_seats as $seatLabel) {
+            $fare = $seatFares[$seatLabel] ?? $trip->fare;
+            $totalFare += $fare;
+            
+            $seatModel = $seats->get($seatLabel);
+            
+            $bookingSeatsData[] = [
+                'seat_id'      => $seatModel ? $seatModel->id : 0, // Fallback to 0 if not found, though it should exist
+                'seat_type_id' => $seatModel ? $seatModel->seat_type_id : null,
+                'seat_number'  => $seatLabel,
+                'fare'         => $fare,
+                'status'       => 'reserved', // Block the seat
+            ];
+        }
+
+        // Create the pending Booking
+        $booking = \App\Models\Booking::create([
+            'user_id'        => auth()->id(),
+            'trip_id'        => $trip->id,
+            'seat_id'        => $bookingSeatsData[0]['seat_id'] ?? null, // Primary seat for BC
+            'status'         => 'pending',
+            'base_fare'      => $totalFare,
+            'amount_paid'    => 0,
+            'payment_status' => 'unpaid',
+        ]);
+
+        // Create the BookingSeats
+        foreach ($bookingSeatsData as $data) {
+            $data['booking_id'] = $booking->id;
+            \App\Models\BookingSeat::create($data);
+        }
+
+        return redirect()->route('user.booking.details', $booking->id)
+                         ->with('success', 'Seats successfully reserved. Please enter passenger details.');
     }
 
     // ------------------------------------------------------------------
-    // Generate seat map for the trip
+    // GET /booking/{booking_id}/details
     // ------------------------------------------------------------------
-    private function generateSeatMap($trip)
+    public function passengerDetails($booking_id)
     {
-        $bus = $trip->bus;
-        $seatLayout = $bus?->seatLayout;
+        $booking = \App\Models\Booking::with(['bookingSeats', 'trip.route.originCity', 'trip.route.destinationCity', 'trip.bus'])
+            ->where('user_id', auth()->id())
+            ->where('status', 'pending')
+            ->findOrFail($booking_id);
 
-        if (!$seatLayout) {
+        $discountTypes = \App\Models\DiscountType::active()->get();
+
+        return view('user.passenger-details', compact('booking', 'discountTypes'));
+    }
+
+    // ------------------------------------------------------------------
+    // POST /booking/{booking_id}/details
+    // ------------------------------------------------------------------
+    public function storePassengerDetails(Request $request, $booking_id)
+    {
+        $booking = \App\Models\Booking::with('bookingSeats')
+            ->where('user_id', auth()->id())
+            ->where('status', 'pending')
+            ->findOrFail($booking_id);
+
+        $request->validate([
+            'passengers' => 'required|array',
+            'passengers.*.name' => 'required|string|max:255',
+            'passengers.*.discount_type_id' => 'nullable|exists:discount_types,id',
+        ]);
+
+        $totalDiscount = 0;
+
+        foreach ($booking->bookingSeats as $seat) {
+            $data = $request->passengers[$seat->id] ?? null;
+            if (!$data) continue;
+
+            $seat->passenger_name = $data['name'];
+            
+            if (!empty($data['discount_type_id'])) {
+                $discount = \App\Models\DiscountType::find($data['discount_type_id']);
+                if ($discount) {
+                    $seat->passenger_type = $discount->name;
+                    $discountAmt = $discount->discountAmount((float)$seat->fare);
+                    $totalDiscount += $discountAmt;
+                }
+            } else {
+                $seat->passenger_type = 'regular';
+            }
+            
+            $seat->save();
+        }
+
+        $booking->discount_amount = $totalDiscount;
+        $booking->save();
+
+        return redirect()->route('user.booking.checkout', $booking->id)
+                         ->with('success', 'Passenger details saved. Please proceed to checkout.');
+    }
+
+    // ------------------------------------------------------------------
+    // GET /booking/{booking_id}/checkout
+    // ------------------------------------------------------------------
+    public function checkout($booking_id)
+    {
+        $booking = \App\Models\Booking::with(['bookingSeats', 'trip.route.originCity', 'trip.route.destinationCity', 'trip.bus'])
+            ->where('user_id', auth()->id())
+            ->where('status', 'pending')
+            ->findOrFail($booking_id);
+
+        return view('user.checkout', compact('booking'));
+    }
+
+    // ------------------------------------------------------------------
+    // POST /booking/{booking_id}/pay
+    // ------------------------------------------------------------------
+    public function processPayment(Request $request, $booking_id)
+    {
+        $booking = \App\Models\Booking::where('user_id', auth()->id())
+            ->where('status', 'pending')
+            ->findOrFail($booking_id);
+
+        $request->validate([
+            'payment_method' => 'required|in:credit_card,gcash,paymaya,otc',
+        ]);
+
+        $finalAmount = (float) $booking->base_fare - (float) $booking->discount_amount;
+
+        // Simulate creating a payment
+        $payment = \App\Models\Payment::create([
+            'booking_id' => $booking->id,
+            'amount' => $finalAmount,
+            'payment_method' => $request->payment_method,
+            'status' => 'paid',
+            'transaction_id' => 'SIM-' . strtoupper(uniqid()),
+            'currency' => 'PHP',
+            'paid_at' => now(),
+            'gateway_response' => ['simulated' => true],
+        ]);
+
+        // Update Booking
+        $booking->update([
+            'status' => 'confirmed',
+            'payment_status' => 'paid',
+            'amount_paid' => $finalAmount,
+        ]);
+
+        // Update BookingSeats
+        \App\Models\BookingSeat::where('booking_id', $booking->id)->update([
+            'status' => 'confirmed',
+        ]);
+
+        return redirect()->route('user.booking.success', $booking->id);
+    }
+
+    // ------------------------------------------------------------------
+    // GET /booking/{booking_id}/success
+    // ------------------------------------------------------------------
+    public function bookingSuccess($booking_id)
+    {
+        $booking = \App\Models\Booking::with(['bookingSeats', 'trip.route.originCity', 'trip.route.destinationCity', 'trip.bus'])
+            ->where('user_id', auth()->id())
+            ->where('status', 'confirmed')
+            ->findOrFail($booking_id);
+
+        return view('user.booking-success', compact('booking'));
+    }
+
+    /**
+     * Generate the seat map array with availability status for the given trip.
+     */
+    private function generateSeatMap(Trip $trip): array
+    {
+        if (!$trip->bus || !$trip->bus->seatLayout) {
             return [];
         }
 
-        $seatMap = [];
-        $layout = json_decode($seatLayout->layout, true) ?? [];
-        $bookedSeats = $this->getBookedSeats($trip->id);
+        // Get all booked or pending seats for this specific trip
+        $bookedSeats = \App\Models\BookingSeat::whereHas('booking', function ($q) use ($trip) {
+            $q->where('trip_id', $trip->id)
+              ->whereIn('status', ['confirmed', 'pending']);
+        })->pluck('seat_number')->toArray();
 
-        // Generate seat grid based on layout
-        for ($row = 1; $row <= $seatLayout->rows; $row++) {
-            $seatRow = [];
-            
-            for ($col = 1; $col <= $seatLayout->columns; $col++) {
-                $seatNumber = $this->generateSeatNumber($row, $col, $seatLayout->columns);
-                
-                // Check if this position is an aisle
-                if ($this->isAislePosition($col, $seatLayout->columns, $seatLayout->aisle_positions ?? [])) {
-                    $seatRow[] = ['type' => 'aisle', 'seat_number' => '', 'status' => 'aisle'];
-                } else {
-                    $status = in_array($seatNumber, $bookedSeats) ? 'booked' : 'available';
-                    $seatRow[] = [
-                        'type' => 'seat',
-                        'seat_number' => $seatNumber,
-                        'status' => $status
-                    ];
+        // Get the structural grid
+        $layoutGrid = $trip->bus->seatLayout->buildGrid();
+        $baseFare = (float) $trip->fare;
+
+        // Enhance grid with dynamic data (availability, exact fare)
+        $enhancedGrid = [];
+        foreach ($layoutGrid as $rowIdx => $row) {
+            $enhancedRow = [];
+            foreach ($row as $cell) {
+                // If the cell is stored as a model/object, array-cast it if necessary.
+                // Depending on buildGrid(), it might be arrays or LayoutMap models.
+                $cellData = is_array($cell) ? $cell : $cell->toArray();
+
+                if (($cellData['cell_type'] ?? '') === 'seat' && ($cellData['is_bookable'] ?? false)) {
+                    $seatLabel = $cellData['seat_label'] ?? '';
+                    $cellData['is_available'] = !in_array($seatLabel, $bookedSeats);
+                    
+                    // Optional: calculate dynamic fare if a seat_type_id is provided
+                    $fare = $baseFare;
+                    if (!empty($cellData['seat_type_id'])) {
+                        $seatType = \App\Models\SeatType::find($cellData['seat_type_id']);
+                        if ($seatType) {
+                            $fare = $seatType->calculateFare($baseFare);
+                        }
+                    }
+                    $cellData['fare'] = $fare;
                 }
+
+                $enhancedRow[] = $cellData;
             }
-            
-            $seatMap[] = $seatRow;
+            $enhancedGrid[] = $enhancedRow;
         }
 
-        return $seatMap;
-    }
-
-    // ------------------------------------------------------------------
-    // Generate seat number based on row and column
-    // ------------------------------------------------------------------
-    private function generateSeatNumber($row, $col, $totalCols)
-    {
-        // Simple seat numbering: A1, A2, B1, B2, etc.
-        $letter = chr(64 + $row); // A, B, C, etc.
-        return $letter . $col;
-    }
-
-    // ------------------------------------------------------------------
-    // Check if position is an aisle
-    // ------------------------------------------------------------------
-    private function isAislePosition($col, $totalCols, $aislePositions = [])
-    {
-        // Default aisle position in the middle for even number of columns
-        if (empty($aislePositions) && $totalCols % 2 === 0) {
-            return $col === ($totalCols / 2) || $col === ($totalCols / 2 + 1);
-        }
-        
-        return in_array($col, $aislePositions);
-    }
-
-    // ------------------------------------------------------------------
-    // Get already booked seats for a trip
-    // ------------------------------------------------------------------
-    private function getBookedSeats($tripId)
-    {
-        // This would typically query your bookings table
-        // For now, return empty array (all seats available)
-        return [];
-    }
-
-    // ------------------------------------------------------------------
-    // Validate that selected seats are available
-    // ------------------------------------------------------------------
-    private function validateSeatAvailability($trip, $selectedSeats)
-    {
-        $bookedSeats = $this->getBookedSeats($trip->id);
-        $unavailableSeats = array_intersect($selectedSeats, $bookedSeats);
-        
-        if (!empty($unavailableSeats)) {
-            throw \Illuminate\Validation\ValidationException::withMessages([
-                'selected_seats' => 'The following seats are already booked: ' . implode(', ', $unavailableSeats)
-            ]);
-        }
-
-        // Check if enough seats are available
-        if (count($selectedSeats) > $trip->available_seats) {
-            throw \Illuminate\Validation\ValidationException::withMessages([
-                'selected_seats' => 'Only ' . $trip->available_seats . ' seats are available for this trip.'
-            ]);
-        }
+        return $enhancedGrid;
     }
 }
