@@ -51,6 +51,10 @@ Route::middleware('auth')->group(function () {
     // Profile update (from AccountController)
     Route::post('/account/profile',  [AccountController::class, 'updateProfile'])->name('settings.updateProfile');
     Route::post('/account/password', [AccountController::class, 'updatePassword'])->name('settings.updatePassword');
+
+    // Seat Selection
+    Route::get('/select-seats/{trip_id}', [TicketBookingController::class, 'selectSeats'])->name('user.select.seats');
+    Route::post('/select-seats/{trip_id}', [TicketBookingController::class, 'bookSeats'])->name('user.book.seats');
 });
 
 /*

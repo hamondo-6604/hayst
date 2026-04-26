@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'Search Trips — VoyagePH')
+@section('title', 'Search Trips — Mindanao Express')
 
 @push('head')
 <style>
@@ -183,7 +183,7 @@
                 </div>
                 <div class="min-w-0">
                   <div class="text-sm font-bold text-slate-900 truncate">
-                    {{ $trip->bus?->bus_name ?? 'VoyagePH Bus' }}
+                    {{ $trip->bus?->bus_name ?? 'Mindanao Express Bus' }}
                   </div>
                   <div class="flex flex-wrap items-center gap-2 mt-0.5">
                     <span class="text-xs px-2 py-0.5 rounded-full font-semibold {{ $typeBadge }}">
@@ -287,38 +287,152 @@
 
   @elseif(!empty($prefill['from']) && !empty($prefill['to']))
 
-    {{-- ══ NO RESULTS — smart state with alternative dates ══ --}}
-    <div class="max-w-lg mx-auto text-center py-16">
-      <div class="w-16 h-16 bg-slate-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-        <i data-lucide="calendar-x" style="width:28px;height:28px;color:#94a3b8"></i>
-      </div>
-
-      <h3 class="text-lg font-extrabold text-slate-800 mb-1">No trips on this date</h3>
-      <p class="text-sm text-slate-500 mb-2">
-        <span class="font-semibold text-slate-700">
-          {{ $prefill['from'] }} → {{ $prefill['to'] }}
-        </span>
-        has no available trips on
-        <span class="font-semibold text-slate-700">
-          {{ \Carbon\Carbon::parse($prefill['date'])->format('D, M j Y') }}
-        </span>.
-      </p>
-
-      {{-- Alternative date suggestions --}}
-      @if($alternativeDates->isNotEmpty())
-        <p class="text-sm text-slate-500 mb-4">Here are the nearest available dates for this route:</p>
-        <div class="flex flex-wrap gap-2 justify-center mb-6">
-          @foreach($alternativeDates as $altDate)
-            <a href="{{ route('landing.ticket_booking') }}?from={{ urlencode($prefill['from']) }}&to={{ urlencode($prefill['to']) }}&date={{ $altDate->toDateString() }}"
-               class="inline-flex items-center gap-1.5 px-4 py-2 bg-white border border-slate-200
-                      rounded-xl text-sm font-semibold text-slate-700 hover:border-primary-400
-                      hover:text-primary-700 hover:bg-primary-50 transition-all shadow-sm">
-              <i data-lucide="calendar" style="width:13px;height:13px;color:#ea580c"></i>
-              {{ $altDate->format('D, M j') }}
-            </a>
-          @endforeach
+    {{-- ══ NO RESULTS — show upcoming trips for this route ══ --}}
+    <div class="max-w-4xl mx-auto">
+      <div class="text-center py-8 mb-8">
+        <div class="w-16 h-16 bg-slate-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+          <i data-lucide="calendar-x" style="width:28px;height:28px;color:#94a3b8"></i>
         </div>
 
+        <h3 class="text-lg font-extrabold text-slate-800 mb-1">No trips on this date</h3>
+        <p class="text-sm text-slate-500 mb-2">
+          <span class="font-semibold text-slate-700">
+            {{ $prefill['from'] }} → {{ $prefill['to'] }}
+          </span>
+          has no available trips on
+          <span class="font-semibold text-slate-700">
+            {{ \Carbon\Carbon::parse($prefill['date'])->format('D, M j Y') }}
+          </span>.
+        </p>
+
+        {{-- Alternative date suggestions --}}
+        @if($alternativeDates->isNotEmpty())
+          <p class="text-sm text-slate-500 mb-4">Here are the nearest available dates for this route:</p>
+          <div class="flex flex-wrap gap-2 justify-center mb-6">
+            @foreach($alternativeDates as $altDate)
+              <a href="{{ route('landing.ticket_booking') }}?from={{ urlencode($prefill['from']) }}&to={{ urlencode($prefill['to']) }}&date={{ $altDate->toDateString() }}"
+                 class="inline-flex items-center gap-1.5 px-4 py-2 bg-white border border-slate-200
+                        rounded-xl text-sm font-semibold text-slate-700 hover:border-primary-400
+                        hover:text-primary-700 hover:bg-primary-50 transition-all shadow-sm">
+                <i data-lucide="calendar" style="width:13px;height:13px;color:#ea580c"></i>
+                {{ $altDate->format('D, M j') }}
+              </a>
+            @endforeach
+          </div>
+        @endif
+      </div>
+
+      {{-- ══ UPCOMING TRIPS SECTION ══ --}}
+      @if($upcomingTrips->isNotEmpty())
+        <div class="bg-gradient-to-r from-primary-50 to-emerald-50 border border-primary-200 rounded-2xl p-6 mb-8">
+          <div class="flex items-center gap-3 mb-6">
+            <div class="w-10 h-10 bg-primary-600 rounded-xl flex items-center justify-center">
+              <i data-lucide="calendar-check" style="width:20px;height:20px;color:white"></i>
+            </div>
+            <div>
+              <h3 class="text-lg font-bold text-slate-800">Upcoming Scheduled Trips</h3>
+              <p class="text-sm text-slate-600">
+                Book your seat in advance for {{ $prefill['from'] }} → {{ $prefill['to'] }}
+              </p>
+            </div>
+          </div>
+
+          {{-- Group trips by date --}}
+          @foreach($upcomingTrips as $date => $tripsForDate)
+            <div class="mb-6 last:mb-0">
+              {{-- Date header --}}
+              <div class="flex items-center gap-2 mb-3">
+                <div class="w-8 h-8 bg-white rounded-lg flex items-center justify-center shadow-sm">
+                  <i data-lucide="calendar" style="width:14px;height:14px;color:#ea580c"></i>
+                </div>
+                <h4 class="font-bold text-slate-800">
+                  {{ \Carbon\Carbon::parse($date)->format('l, F j, Y') }}
+                </h4>
+                <span class="text-xs text-slate-500 bg-white px-2 py-1 rounded-full">
+                  {{ $tripsForDate->count() }} trip{{ $tripsForDate->count() !== 1 ? 's' : '' }}
+                </span>
+              </div>
+
+              {{-- Trips for this date --}}
+              <div class="space-y-3">
+                @foreach($tripsForDate as $trip)
+                  @php
+                    $dep     = $trip->departure_time;
+                    $arr     = $trip->arrival_time;
+                    $dur     = $trip->route?->estimated_duration_minutes;
+                    $durStr  = $dur ? floor($dur/60).'h '.str_pad($dur%60,2,'0',STR_PAD_LEFT).'m' : '—';
+                    $type    = strtolower($trip->bus?->default_seat_type ?? 'economy');
+                    $typeBadge = match($type) {
+                      'business' => 'bg-amber-100 text-amber-700',
+                      'sleeper'  => 'bg-violet-100 text-violet-700',
+                      default    => 'bg-emerald-100 text-emerald-700',
+                    };
+                  @endphp
+                  
+                  <div class="bg-white border border-slate-200 rounded-xl p-4 hover:shadow-md transition-shadow">
+                    <div class="flex items-center gap-4">
+                      {{-- Time info --}}
+                      <div class="flex items-center gap-3 shrink-0">
+                        <div class="text-center">
+                          <div class="text-lg font-bold text-slate-900">{{ $dep->format('H:i') }}</div>
+                          <div class="text-[10px] text-slate-400">Departure</div>
+                        </div>
+                        <div class="flex items-center gap-1">
+                          <i data-lucide="arrow-right" style="width:12px;height:12px;color:#94a3b8"></i>
+                          <span class="text-xs text-slate-500">{{ $durStr }}</span>
+                        </div>
+                        <div class="text-center">
+                          <div class="text-lg font-bold text-slate-900">
+                            {{ $arr?->format('H:i') ?? '—' }}
+                          </div>
+                          <div class="text-[10px] text-slate-400">Arrival</div>
+                        </div>
+                      </div>
+
+                      {{-- Bus info --}}
+                      <div class="flex-1 min-w-0">
+                        <div class="flex items-center gap-2 mb-1">
+                          <span class="text-xs px-2 py-0.5 rounded-full font-semibold {{ $typeBadge }}">
+                            {{ ucfirst($type) }}
+                          </span>
+                          <span class="text-xs text-slate-400">
+                            {{ $trip->bus?->type?->type_name }}
+                          </span>
+                        </div>
+                        <div class="text-sm font-semibold text-slate-900 truncate">
+                          {{ $trip->bus?->bus_name ?? 'Mindanao Express Bus' }}
+                        </div>
+                        @if($trip->departureTerminal)
+                          <div class="text-xs text-slate-500 flex items-center gap-1 mt-0.5">
+                            <i data-lucide="building-2" style="width:10px;height:10px"></i>
+                            {{ $trip->departureTerminal->name }}
+                          </div>
+                        @endif
+                      </div>
+
+                      {{-- Fare + seats + CTA --}}
+                      <div class="text-right shrink-0">
+                        <div class="text-xs text-slate-400">per person</div>
+                        <div class="text-lg font-bold text-primary-600">
+                          ₱{{ number_format($trip->fare, 0) }}
+                        </div>
+                        <div class="text-xs text-emerald-600 font-semibold mb-2">
+                          {{ $trip->available_seats }} seats available
+                        </div>
+                        <a href="{{ route('landing.ticket_booking') }}?from={{ urlencode($prefill['from']) }}&to={{ urlencode($prefill['to']) }}&date={{ $date }}"
+                           class="inline-flex items-center gap-1 px-3 py-1.5 bg-primary-600 hover:bg-primary-700
+                                  text-white text-xs font-bold rounded-lg transition-colors">
+                          <i data-lucide="calendar-plus" style="width:12px;height:12px"></i>
+                          Book This Date
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                @endforeach
+              </div>
+            </div>
+          @endforeach
+        </div>
       @else
         {{-- No trips at all for this route in the near future --}}
         <div class="flex items-start gap-2.5 bg-amber-50 border border-amber-200 rounded-xl
@@ -415,7 +529,7 @@
 
   // ── Book trip (auth guard) ───────────────────────────────────────
   function bookTrip(tripId) {
-    requireAuth('/user/bookings/select-seats/' + tripId);
+    requireAuth('/select-seats/' + tripId);
   }
 </script>
 @endpush

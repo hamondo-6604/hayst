@@ -15,6 +15,9 @@ class HomeController extends Controller
 {
     public function index()
     {
+        // Live trip statistics
+        $liveStats = $this->getLiveTripStats();
+
         // Hero: next departing scheduled trip
         $heroTrip = Trip::with(['route.originCity', 'route.destinationCity', 'bus.type'])
             ->where('status', 'scheduled')
@@ -70,13 +73,45 @@ class HomeController extends Controller
         return view('pages.home', compact(
             'heroTrip',
             'featuredRoutes',
-            'originCities',
-            'destinationCities',
             'promotions',
-            'reviews',
             'discountTypes',
-            'stats'
+            'stats',
+            'liveStats',
+            'reviews'
         ));
+    }
+
+    public function getLiveTripStats()
+    {
+        $today = today();
+        
+        return [
+            'trips_today' => Trip::whereDate('trip_date', $today)
+                ->where('status', 'scheduled')
+                ->where('is_active', true)
+                ->count(),
+            'trips_departing_now' => Trip::whereDate('trip_date', $today)
+                ->where('status', 'scheduled')
+                ->where('is_active', true)
+                ->where('departure_time', '>=', now()->subMinutes(30))
+                ->where('departure_time', '<=', now()->addMinutes(30))
+                ->count(),
+            'seats_available_today' => Trip::whereDate('trip_date', $today)
+                ->where('status', 'scheduled')
+                ->where('is_active', true)
+                ->sum('available_seats'),
+            'popular_routes_today' => Trip::with(['route.originCity', 'route.destinationCity'])
+                ->whereDate('trip_date', $today)
+                ->where('status', 'scheduled')
+                ->where('is_active', true)
+                ->limit(3)
+                ->get()
+                ->map(fn($trip) => [
+                    'route' => $trip->route->originCity->name . ' → ' . $trip->route->destinationCity->name,
+                    'time' => $trip->departure_time->format('H:i'),
+                    'available_seats' => $trip->available_seats
+                ])
+        ];
     }
 
     public function promos()

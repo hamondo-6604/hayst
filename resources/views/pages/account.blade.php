@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'Account & Support — VoyagePH')
+@section('title', 'Account & Support — Mindanao Express')
 
 @section('content')
 
@@ -406,7 +406,7 @@
               ['Oversized or fragile items must be declared at booking and may be subject to additional handling fees.'],
               ['Live animals, hazardous materials, and illegal substances are strictly prohibited.'],
               ['Excess baggage is charged at ₱50 per kg at the terminal.'],
-              ['VoyagePH is not liable for valuables left in checked baggage. Keep them in your carry-on.'],
+              ['Mindanao Express is not liable for valuables left in checked baggage. Keep them in your carry-on.'],
             ] as [$note])
               <div class="flex items-start gap-2 text-xs text-slate-600">
                 <i data-lucide="dot" style="width:12px;height:12px;color:#ea580c;flex-shrink:0;margin-top:1px"></i>

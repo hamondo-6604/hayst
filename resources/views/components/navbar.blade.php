@@ -15,7 +15,7 @@
   }
 @endphp
 
-<header class="glass sticky top-0 z-50 border-b border-slate-200 shadow-sm">
+<header class="glass sticky top-0 z-50 border-b border-primary shadow-sm">
   <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
 
     {{-- Logo --}}
@@ -23,7 +23,7 @@
       <div class="w-8 h-8 bg-primary-600 rounded-xl flex items-center justify-center shadow group-hover:bg-primary-700 transition-colors">
         <i data-lucide="bus" style="width:16px;height:16px;color:#fff"></i>
       </div>
-      <span class="text-base font-extrabold tracking-tight text-slate-900">Voyage<span class="text-primary-600">PH</span></span>
+      <span class="text-base font-extrabold tracking-tight text-primary">Mindanao<span class="accent-primary">Express</span></span>
     </a>
 
     {{-- Desktop links --}}
@@ -31,8 +31,10 @@
       @foreach($navLinks as $l)
         <a href="{{ route($l['route']) }}"
            class="flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium transition-all
-                  {{ $route === $l['route'] ? 'bg-primary-50 text-primary-700 font-semibold' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100' }}">
-          <i data-lucide="{{ $l['icon'] }}" style="width:14px;height:14px"></i>
+                  {{ $route === $l['route'] ? 'bg-secondary accent-primary font-semibold' : 'text-secondary hover:text-primary hover:bg-secondary' }}">
+          @if($route === $l['route'])
+            <i data-lucide="{{ $l['icon'] }}" style="width:14px;height:14px"></i>
+          @endif
           {{ $l['label'] }}
         </a>
       @endforeach
@@ -42,7 +44,9 @@
           <a href="{{ route($l['route']) }}"
              class="flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium transition-all
                     {{ $route === $l['route'] ? 'bg-primary-50 text-primary-700 font-semibold' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100' }}">
-            <i data-lucide="{{ $l['icon'] }}" style="width:14px;height:14px"></i>
+            @if($route === $l['route'])
+              <i data-lucide="{{ $l['icon'] }}" style="width:14px;height:14px"></i>
+            @endif
             {{ $l['label'] }}
           </a>
         @endforeach
@@ -66,38 +70,48 @@
         {{-- User dropdown --}}
         <div class="relative" data-dd>
           <button onclick="document.getElementById('user-dd').classList.toggle('hidden')"
-                  class="flex items-center gap-2 pl-2 pr-3 py-1.5 rounded-xl hover:bg-slate-100 transition-colors border border-transparent hover:border-slate-200">
-            <div class="w-7 h-7 rounded-full bg-primary-100 text-primary-700 text-xs font-bold flex items-center justify-center">
+                  class="flex items-center gap-2 pl-2 pr-3 py-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-tertiary transition-colors border border-transparent hover:border-slate-200 dark:hover:border-primary">
+            <div class="w-7 h-7 rounded-full bg-primary-100 dark:bg-tertiary text-primary-700 dark:text-primary text-xs font-bold flex items-center justify-center">
               {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
             </div>
-            <span class="text-sm font-medium text-slate-700 max-w-[110px] truncate">{{ auth()->user()->name }}</span>
+            <span class="text-sm font-medium text-slate-700 dark:text-secondary max-w-[110px] truncate">{{ auth()->user()->name }}</span>
             <i data-lucide="chevron-down" style="width:13px;height:13px;color:#94a3b8"></i>
           </button>
 
           <div id="user-dd"
-               class="hidden absolute right-0 top-full mt-2 w-56 bg-white rounded-2xl shadow-xl border border-slate-100 py-1.5 z-50 animate-slide-up">
+               class="hidden absolute right-0 top-full mt-2 w-56 bg-white dark:bg-secondary rounded-2xl shadow-xl border border-slate-100 dark:border-primary py-1.5 z-50 animate-slide-up">
 
             {{-- User info --}}
-            <div class="px-4 py-3 border-b border-slate-100">
-              <p class="text-xs text-slate-400 mb-0.5">Signed in as</p>
-              <p class="text-sm font-semibold text-slate-800 truncate">{{ auth()->user()->name }}</p>
+            <div class="px-4 py-3 border-b border-slate-100 dark:border-primary">
+              <p class="text-xs text-slate-400 dark:text-tertiary mb-0.5">Signed in as</p>
+              <p class="text-sm font-semibold text-slate-800 dark:text-primary truncate">{{ auth()->user()->name }}</p>
               @if(auth()->user()->discountType)
-                <span class="inline-flex items-center gap-1 mt-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-700">
+                <span class="inline-flex items-center gap-1 mt-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-900 text-amber-700 dark:text-amber-300">
                   <i data-lucide="badge-percent" style="width:9px;height:9px"></i>
                   {{ auth()->user()->discountType->display_name }}
                 </span>
               @endif
             </div>
 
-            <a href="{{ route('manage.bookings') }}" class="flex items-center gap-2.5 px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 transition-colors">
+            <a href="{{ route('manage.bookings') }}" class="flex items-center gap-2.5 px-4 py-2.5 text-sm text-slate-700 dark:text-secondary hover:bg-slate-50 dark:hover:bg-tertiary transition-colors">
               <i data-lucide="ticket" style="width:14px;height:14px;color:#ea580c"></i> My Bookings
             </a>
-            <a href="{{ route('landing.account') }}" class="flex items-center gap-2.5 px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 transition-colors">
+            <a href="{{ route('landing.account') }}" class="flex items-center gap-2.5 px-4 py-2.5 text-sm text-slate-700 dark:text-secondary hover:bg-slate-50 dark:hover:bg-tertiary transition-colors">
               <i data-lucide="user" style="width:14px;height:14px;color:#ea580c"></i> My Account
             </a>
-            <a href="{{ route('landing.account') }}#support" class="flex items-center gap-2.5 px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 transition-colors">
+            <a href="{{ route('landing.account') }}#support" class="flex items-center gap-2.5 px-4 py-2.5 text-sm text-slate-700 dark:text-secondary hover:bg-slate-50 dark:hover:bg-tertiary transition-colors">
               <i data-lucide="life-buoy" style="width:14px;height:14px;color:#ea580c"></i> Support
             </a>
+            
+            {{-- Theme Toggle --}}
+            <button onclick="toggleTheme(); document.getElementById('user-dd').classList.add('hidden')" 
+                    class="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-slate-700 dark:text-secondary hover:bg-slate-50 dark:hover:bg-tertiary transition-colors text-left">
+              <div id="nav-theme-icon" class="flex items-center justify-center w-5 h-5">
+                <!-- Icons will be set by JavaScript -->
+              </div>
+              <span id="nav-theme-text">Switch to Dark Mode</span>
+            </button>
+            
             <div class="border-t border-slate-100 mt-1.5 pt-1">
               <form method="POST" action="{{ route('logout') }}">
                 @csrf
@@ -134,7 +148,10 @@
         <a href="{{ route($l['route']) }}"
            class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium
                   {{ $route === $l['route'] ? 'bg-primary-50 text-primary-700' : 'text-slate-700 hover:bg-slate-50' }}">
-          <i data-lucide="{{ $l['icon'] }}" style="width:16px;height:16px"></i> {{ $l['label'] }}
+          @if($route === $l['route'])
+            <i data-lucide="{{ $l['icon'] }}" style="width:16px;height:16px"></i>
+          @endif
+          {{ $l['label'] }}
         </a>
       @endforeach
 
@@ -143,7 +160,10 @@
           <a href="{{ route($l['route']) }}"
              class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium
                     {{ $route === $l['route'] ? 'bg-primary-50 text-primary-700' : 'text-slate-700 hover:bg-slate-50' }}">
-            <i data-lucide="{{ $l['icon'] }}" style="width:16px;height:16px"></i> {{ $l['label'] }}
+            @if($route === $l['route'])
+              <i data-lucide="{{ $l['icon'] }}" style="width:16px;height:16px"></i>
+            @endif
+            {{ $l['label'] }}
           </a>
         @endforeach
         <div class="pt-2 mt-1 border-t border-slate-100">

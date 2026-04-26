@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'VoyagePH — Book Your Bus Trip')
+@section('title', 'Mindanao Express — Book Your Bus Trip')
 
 @section('content')
 
@@ -24,8 +24,27 @@
           Instant e-ticket confirmation
         </span>
 
+        {{-- Live Trip Counter --}}
+        <div class="inline-flex items-center gap-4 bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl px-6 py-4 mb-6">
+          <div class="flex items-center gap-2">
+            <div class="w-3 h-3 bg-emerald-400 rounded-full animate-pulse"></div>
+            <span class="text-white font-semibold">
+              <span class="text-2xl font-bold text-emerald-300">{{ $liveStats['trips_today'] }}</span>
+              <span class="text-sm text-slate-300"> trips today</span>
+            </span>
+          </div>
+          <div class="w-px h-8 bg-white/20"></div>
+          <div class="flex items-center gap-2">
+            <i data-lucide="users" style="width:16px;height:16px;color:#fbbf24"></i>
+            <span class="text-white font-semibold">
+              <span class="text-lg font-bold text-amber-300">{{ $liveStats['seats_available_today'] }}</span>
+              <span class="text-sm text-slate-300"> seats available</span>
+            </span>
+          </div>
+        </div>
+
         <h1 class="text-5xl sm:text-6xl font-extrabold text-white leading-[1.08] mb-5 tracking-tight">
-          Travel the<br>Philippines<br>
+          Travel<br>Mindanao<br>
           <span class="text-primary-400">Your Way</span>
         </h1>
 
@@ -208,6 +227,18 @@
             ['bg-emerald-100 text-emerald-700',   'trending-up', 'Trending'],
           ];
           [$bcls,$bicon,$blabel] = $badges[$i % 3];
+          
+          // Get live stats for this route
+          $tripsToday = \App\Models\Trip::where('route_id', $route->id)
+            ->whereDate('trip_date', today())
+            ->where('status', 'scheduled')
+            ->where('is_active', true)
+            ->count();
+          $seatsToday = \App\Models\Trip::where('route_id', $route->id)
+            ->whereDate('trip_date', today())
+            ->where('status', 'scheduled')
+            ->where('is_active', true)
+            ->sum('available_seats');
         @endphp
         <div class="group bg-white rounded-2xl p-5 border border-slate-200 cursor-pointer
                     hover:shadow-lg hover:-translate-y-1 transition-all duration-200"
@@ -242,15 +273,26 @@
           </div>
 
           <div class="flex items-center justify-between pt-3.5 border-t border-slate-100">
-            <div class="flex items-center gap-1 text-xs text-slate-500">
-              <i data-lucide="calendar" style="width:11px;height:11px"></i>
-              {{ $route->upcoming_trips_count ?? 0 }} upcoming
+            <div class="flex items-center gap-3">
+              <div class="flex items-center gap-1 text-xs text-slate-500">
+                <i data-lucide="calendar" style="width:11px;height:11px"></i>
+                {{ $route->upcoming_trips_count ?? 0 }} upcoming
+              </div>
+              @if($tripsToday > 0)
+                <div class="flex items-center gap-1 text-xs text-emerald-600 font-semibold">
+                  <div class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
+                  {{ $tripsToday }} today
+                </div>
+              @endif
             </div>
             <div class="text-right">
               <div class="text-[10px] text-slate-400">from</div>
               <div class="text-base font-extrabold text-primary-600">
                 {{ $route->min_fare ? '₱'.number_format($route->min_fare, 0) : '—' }}
               </div>
+              @if($seatsToday > 0)
+                <div class="text-[10px] text-emerald-600 font-semibold">{{ $seatsToday }} seats</div>
+              @endif
             </div>
           </div>
         </div>
@@ -321,6 +363,108 @@
 </section>
 @endif
 
+{{-- ══════════════════════════════ TRUST BADGES ══════════════════════════════ --}}
+<section class="py-16 bg-white border-y border-slate-100">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    
+    {{-- Section Header --}}
+    <div class="text-center mb-12">
+      <h2 class="text-2xl font-extrabold text-slate-900 mb-4">
+        Travel with <span class="text-primary-600">Confidence</span>
+      </h2>
+      <p class="text-slate-600 max-w-2xl mx-auto">
+        We're accredited, insured, and committed to your safety and satisfaction.
+      </p>
+    </div>
+
+    {{-- Trust Badges Grid --}}
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+      
+      {{-- LTO Accredited --}}
+      <div class="text-center group">
+        <div class="w-16 h-16 bg-emerald-100 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:bg-emerald-200 transition-colors">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:#059669">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+            <path d="M9 12l2 2 4-4"></path>
+          </svg>
+        </div>
+        <h3 class="font-bold text-slate-900 mb-2">LTO Accredited</h3>
+        <p class="text-sm text-slate-600">Officially licensed by Land Transportation Office</p>
+      </div>
+
+      {{-- LTFRB Certified --}}
+      <div class="text-center group">
+        <div class="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:bg-blue-200 transition-colors">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:#2563eb">
+            <path d="M9 12l2 2 4-4"></path>
+            <path d="M21 12c.552 0 1-.448 1-1V5c0-.552-.448-1-1-1H3c-.552 0-1 .448-1 1v6c0 .552.448 1 1 1h18z"></path>
+            <path d="M3 5v18h18"></path>
+          </svg>
+        </div>
+        <h3 class="font-bold text-slate-900 mb-2">LTFRB Certified</h3>
+        <p class="text-sm text-slate-600">Regulated by Land Transportation Franchising Board</p>
+      </div>
+
+      {{-- Secure Payments --}}
+      <div class="text-center group">
+        <div class="w-16 h-16 bg-amber-100 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:bg-amber-200 transition-colors">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:#d97706">
+            <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
+            <line x1="1" y1="10" x2="23" y2="10"></line>
+          </svg>
+        </div>
+        <h3 class="font-bold text-slate-900 mb-2">Secure Payments</h3>
+        <p class="text-sm text-slate-600">Encrypted transactions with multiple payment options</p>
+      </div>
+
+      {{-- 24/7 Support --}}
+      <div class="text-center group">
+        <div class="w-16 h-16 bg-primary-100 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:bg-primary-200 transition-colors">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:#ea580c">
+            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+          </svg>
+        </div>
+        <h3 class="font-bold text-slate-900 mb-2">24/7 Support</h3>
+        <p class="text-sm text-slate-600">Round-the-clock customer assistance</p>
+      </div>
+
+    </div>
+
+    {{-- Additional Trust Indicators --}}
+    <div class="mt-12 pt-8 border-t border-slate-200">
+      <div class="flex flex-wrap items-center justify-center gap-8">
+        
+        {{-- Insurance Coverage --}}
+        <div class="flex items-center gap-2 text-sm text-slate-600">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+          </svg>
+          <span>Passenger Insurance Coverage</span>
+        </div>
+
+        {{-- COVID-19 Safety --}}
+        <div class="flex items-center gap-2 text-sm text-slate-600">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+          </svg>
+          <span>Health & Safety Protocols</span>
+        </div>
+
+        {{-- On-Time Guarantee --}}
+        <div class="flex items-center gap-2 text-sm text-slate-600">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="12 6 12 12 16 14"></polyline>
+          </svg>
+          <span>95% On-Time Performance</span>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</section>
+
 {{-- ══════════════════════════════ PROMOS ══════════════════════════════ --}}
 @if(isset($promotions) && $promotions->isNotEmpty())
 <section class="py-20 bg-slate-900">
@@ -372,46 +516,126 @@
 </section>
 @endif
 
-{{-- ══════════════════════════════ REVIEWS ══════════════════════════════ --}}
+{{-- ══════════════════════════════ TESTIMONIALS CAROUSEL ══════════════════════════════ --}}
 @if(isset($reviews) && $reviews->isNotEmpty())
-<section class="py-20 bg-white">
+<section class="py-20 bg-gradient-to-br from-slate-50 to-white">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    
+    {{-- Section Header --}}
     <div class="text-center max-w-lg mx-auto mb-12">
-      <p class="text-xs font-bold text-primary-600 uppercase tracking-widest mb-1">Passenger Reviews</p>
+      <p class="text-xs font-bold text-primary-600 uppercase tracking-widest mb-1">Passenger Stories</p>
       <h2 class="text-3xl font-extrabold text-slate-900">Loved by <span class="text-primary-600">Travelers</span></h2>
       @if(isset($stats['avgRating']) && $stats['avgRating'])
         <p class="text-slate-500 text-sm mt-1.5">
-          <span class="text-amber-500 font-bold">{{ number_format($stats['avgRating'], 1) }} ★</span> average from verified passengers
+          <span class="text-amber-500 font-bold">{{ number_format($stats['avgRating'], 1) }} ★</span> average from {{ $reviews->count() }}+ verified passengers
         </p>
       @endif
     </div>
-    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-      @foreach($reviews as $i => $review)
-        @php
-          $avCols = ['bg-primary-100 text-primary-700','bg-emerald-100 text-emerald-700','bg-violet-100 text-violet-700','bg-sky-100 text-sky-700','bg-pink-100 text-pink-700','bg-amber-100 text-amber-700'];
-          $av = $avCols[$i % count($avCols)];
-        @endphp
-        <div class="{{ $i === 0 ? 'bg-slate-900 text-white' : 'bg-slate-50 border border-slate-200' }} rounded-2xl p-5
-                    hover:-translate-y-0.5 transition-transform duration-200">
-          <div class="flex gap-0.5 mb-3">
-            @for($s = 1; $s <= 5; $s++)
-              <i data-lucide="star" style="width:12px;height:12px;{{ $s <= $review->rating ? 'color:#f59e0b;fill:#f59e0b' : 'color:#d1d5db' }}"></i>
-            @endfor
-          </div>
-          <p class="{{ $i === 0 ? 'text-slate-300' : 'text-slate-600' }} text-sm leading-relaxed mb-4 clamp-3">
-            "{{ $review->comment }}"
-          </p>
-          <div class="flex items-center gap-3 border-t {{ $i === 0 ? 'border-white/10' : 'border-slate-200' }} pt-3.5">
-            <div class="w-8 h-8 rounded-full {{ $av }} flex items-center justify-center text-xs font-bold shrink-0">
-              {{ strtoupper(substr($review->user?->name ?? 'P', 0, 1)) }}
+
+    {{-- Carousel Container --}}
+    <div class="relative">
+      
+      <!-- Featured Review (Large) -->
+      <div id="featured-review" class="bg-gradient-to-br from-primary-600 to-primary-700 text-white rounded-3xl p-8 shadow-2xl mb-8 transition-all duration-500">
+        @if($reviews->isNotEmpty())
+          @php
+            $featured = $reviews->first();
+            $featuredName = $featured->user?->name ?? 'Happy Passenger';
+            $featuredRating = $featured->rating ?? 5;
+            $featuredComment = $featured->comment ?? 'Great experience!';
+            $featuredType = ucfirst($featured->type ?? 'General');
+            $featuredDate = $featured->created_at->format('M Y');
+          @endphp
+          <div class="flex items-start gap-4 mb-6">
+            <div class="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center">
+              <i data-lucide="user" style="width:20px;height:20px"></i>
             </div>
-            <div class="min-w-0">
-              <div class="{{ $i === 0 ? 'text-white' : 'text-slate-800' }} text-sm font-semibold truncate">{{ $review->user?->name ?? 'Passenger' }}</div>
-              <div class="{{ $i === 0 ? 'text-slate-500' : 'text-slate-400' }} text-xs">Verified · {{ ucfirst($review->type ?? 'general') }}</div>
+            <div class="flex-1">
+              <h3 class="font-bold text-lg mb-1">{{ $featuredName }}</h3>
+              <div class="flex items-center gap-2 text-sm text-primary-200">
+                <span class="flex gap-0.5">
+                  @for($s = 1; $s <= 5; $s++)
+                    <i data-lucide="star" style="width:14px;height:14px;{{ $s <= $featuredRating ? 'color:#fbbf24;fill:#fbbf24' : 'color:#64748b' }}"></i>
+                  @endfor
+                </span>
+                <span>·</span>
+                <span>Verified Traveler</span>
+              </div>
             </div>
           </div>
-        </div>
-      @endforeach
+          <blockquote class="text-xl leading-relaxed mb-6 italic">
+            "{{ $featuredComment }}"
+          </blockquote>
+          <div class="flex items-center justify-between">
+            <div class="text-sm text-primary-200">
+              {{ $featuredType }} · {{ $featuredDate }}
+            </div>
+            <div class="flex gap-2">
+              @for($i = 0; $i < min(3, $reviews->count()); $i++)
+                <button onclick="showReview({{ $i }})" 
+                        class="w-2 h-2 rounded-full transition-all {{ $i === 0 ? 'bg-white w-8' : 'bg-white/40 hover:bg-white/60' }}"
+                        data-review="{{ $i }}"></button>
+              @endfor
+            </div>
+          </div>
+        @else
+          <div class="text-center py-8">
+            <i data-lucide="message-circle" style="width:48px;height:48px;margin:0 auto 16px;opacity:0.5"></i>
+            <h3 class="text-xl font-semibold mb-2">No reviews yet</h3>
+            <p class="text-primary-200">Be the first to share your travel experience!</p>
+          </div>
+        @endif
+      </div>
+
+      <!-- Review Cards Grid -->
+      <div class="grid md:grid-cols-3 gap-6">
+        @foreach($reviews->take(6) as $i => $review)
+          @php
+            $avCols = ['bg-blue-100 text-blue-700','bg-emerald-100 text-emerald-700','bg-violet-100 text-violet-700','bg-sky-100 text-sky-700','bg-pink-100 text-pink-700','bg-amber-100 text-amber-700'];
+            $av = $avCols[$i % count($avCols)];
+          @endphp
+          <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm hover:shadow-lg transition-all duration-300 cursor-pointer group"
+               onclick="showReview({{ $i }})"
+               data-review-card="{{ $i }}">
+            
+            <!-- Rating Stars -->
+            <div class="flex gap-0.5 mb-3">
+              @for($s = 1; $s <= 5; $s++)
+                <i data-lucide="star" style="width:12px;height:12px;{{ $s <= $review->rating ? 'color:#f59e0b;fill:#f59e0b' : 'color:#d1d5db' }}"></i>
+              @endfor
+            </div>
+
+            <!-- Review Text -->
+            <p class="text-slate-600 text-sm leading-relaxed mb-4 line-clamp-3">
+              "{{ $review->comment }}"
+            </p>
+
+            <!-- Reviewer Info -->
+            <div class="flex items-center gap-3 pt-3 border-t border-slate-100">
+              <div class="w-10 h-10 rounded-full {{ $av }} flex items-center justify-center text-sm font-bold shrink-0">
+                {{ strtoupper(substr($review->user?->name ?? 'P', 0, 1)) }}
+              </div>
+              <div class="min-w-0 flex-1">
+                <div class="text-slate-800 text-sm font-semibold truncate">{{ $review->user?->name ?? 'Passenger' }}</div>
+                <div class="text-slate-400 text-xs flex items-center gap-1">
+                  <i data-lucide="check-circle" style="width:10px;height:10px;color:#10b981"></i>
+                  Verified · {{ ucfirst($review->type ?? 'general') }}
+                </div>
+              </div>
+            </div>
+          </div>
+        @endforeach
+      </div>
+
+      <!-- Navigation Arrows -->
+      <button onclick="previousReview()" 
+              class="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 w-10 h-10 bg-white rounded-full shadow-lg flex items-center justify-center hover:bg-primary-50 transition-colors">
+        <i data-lucide="chevron-left" style="width:20px;height:20px;color:#ea580c"></i>
+      </button>
+      <button onclick="nextReview()" 
+              class="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 w-10 h-10 bg-white rounded-full shadow-lg flex items-center justify-center hover:bg-primary-50 transition-colors">
+        <i data-lucide="chevron-right" style="width:20px;height:20px;color:#ea580c"></i>
+      </button>
     </div>
   </div>
 </section>
@@ -440,6 +664,119 @@
     navigator.clipboard.writeText(code)
       .then(() => toast('Code "' + code + '" copied to clipboard!', 'success'))
       .catch(() => toast('Could not copy code.', 'error'));
+  }
+
+  // Testimonials Carousel
+  const reviews = @json($reviews->take(6));
+  let currentReview = 0;
+
+  // Only initialize carousel if there are reviews
+  if (reviews.length === 0) {
+    // Don't initialize carousel functionality when no reviews
+    console.log('No reviews available for carousel');
+  } else {
+
+  function showReview(index) {
+    currentReview = index;
+    const review = reviews[index];
+    const featuredDiv = document.getElementById('featured-review');
+    
+    // Update featured review content
+    featuredDiv.innerHTML = `
+      <div class="flex items-start gap-4 mb-6">
+        <div class="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center">
+          <i data-lucide="user" style="width:20px;height:20px"></i>
+        </div>
+        <div class="flex-1">
+          <h3 class="font-bold text-lg mb-1">${review.user?.name || 'Happy Passenger'}</h3>
+          <div class="flex items-center gap-2 text-sm text-primary-200">
+            <span class="flex gap-0.5">
+              ${generateStars(review.rating)}
+            </span>
+            <span>·</span>
+            <span>Verified Traveler</span>
+          </div>
+        </div>
+      </div>
+      <blockquote class="text-xl leading-relaxed mb-6 italic">
+        "${review.comment}"
+      </blockquote>
+      <div class="flex items-center justify-between">
+        <div class="text-sm text-primary-200">
+          ${review.type ? review.type.charAt(0).toUpperCase() + review.type.slice(1) : 'General'} · ${new Date(review.created_at).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
+        </div>
+        <div class="flex gap-2">
+          ${generateDots(index)}
+        </div>
+      </div>
+    `;
+    
+    // Reinitialize icons
+    lucide.createIcons();
+    
+    // Update dots
+    updateDots(index);
+    
+    // Update card highlights
+    updateCardHighlights(index);
+  }
+
+  function generateStars(rating) {
+    let stars = '';
+    for (let i = 1; i <= 5; i++) {
+      const filled = i <= rating ? 'color:#fbbf24;fill:#fbbf24' : 'color:#64748b';
+      stars += `<i data-lucide="star" style="width:14px;height:14px;${filled}"></i>`;
+    }
+    return stars;
+  }
+
+  function generateDots(activeIndex) {
+    let dots = '';
+    for (let i = 0; i < Math.min(3, reviews.length); i++) {
+      const active = i === activeIndex;
+      const width = active ? 'w-8' : 'w-2';
+      const bg = active ? 'bg-white' : 'bg-white/40 hover:bg-white/60';
+      dots += `<button onclick="showReview(${i})" 
+                      class="w-2 h-2 rounded-full transition-all ${bg} ${width}"
+                      data-review="${i}"></button>`;
+    }
+    return dots;
+  }
+
+  function updateDots(activeIndex) {
+    document.querySelectorAll('[data-review]').forEach((dot, index) => {
+      if (index === activeIndex) {
+        dot.classList.add('bg-white', 'w-8');
+        dot.classList.remove('bg-white/40', 'hover:bg-white/60', 'w-2');
+      } else {
+        dot.classList.remove('bg-white', 'w-8');
+        dot.classList.add('bg-white/40', 'hover:bg-white/60', 'w-2');
+      }
+    });
+  }
+
+  function updateCardHighlights(activeIndex) {
+    document.querySelectorAll('[data-review-card]').forEach((card, index) => {
+      if (index === activeIndex) {
+        card.classList.add('ring-2', 'ring-primary-600', 'transform', 'scale-105');
+      } else {
+        card.classList.remove('ring-2', 'ring-primary-600', 'transform', 'scale-105');
+      }
+    });
+  }
+
+  function nextReview() {
+    currentReview = (currentReview + 1) % reviews.length;
+    showReview(currentReview);
+  }
+
+  function previousReview() {
+    currentReview = (currentReview - 1 + reviews.length) % reviews.length;
+    showReview(currentReview);
+  }
+
+  // Auto-rotate carousel
+  setInterval(nextReview, 5000);
   }
 </script>
 @endpush

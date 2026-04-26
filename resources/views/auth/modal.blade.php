@@ -20,7 +20,7 @@
         <div class="w-7 h-7 bg-primary-600 rounded-lg flex items-center justify-center">
           <i data-lucide="bus" style="width:13px;height:13px;color:#fff"></i>
         </div>
-        <span class="font-extrabold text-slate-900 text-sm">VoyagePH</span>
+        <span class="font-extrabold text-slate-900 text-sm">Mindanao Express</span>
       </div>
       <button onclick="closeModal('auth-modal')"
               class="p-1.5 rounded-xl text-slate-400 hover:bg-slate-100 transition-colors">

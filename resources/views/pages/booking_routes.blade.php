@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'Routes & Terminals — VoyagePH')
+@section('title', 'Routes & Terminals — Mindanao Express')
 
 @section('content')
 
@@ -8,7 +8,7 @@
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <p class="text-xs font-bold text-primary-400 uppercase tracking-widest mb-1">Coverage</p>
     <h1 class="text-3xl font-extrabold text-white">Routes &amp; <span class="text-primary-400">Terminals</span></h1>
-    <p class="text-slate-400 text-sm mt-1">Explore all active routes and terminal locations across the Philippines.</p>
+    <p class="text-slate-400 text-sm mt-1">Explore all active routes and terminal locations across Mindanao.</p>
   </div>
 </div>
 

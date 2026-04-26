@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="csrf-token" content="{{ csrf_token() }}" />
-  <title>@yield('title', 'VoyagePH') — Bus Booking</title>
+  <title>@yield('title', 'Mindanao Express') — Bus Booking</title>
 
   {{-- Tailwind CDN --}}
   <script src="https://cdn.tailwindcss.com"></script>
@@ -45,31 +45,219 @@
   <style>
     *, *::before, *::after { font-family: 'Inter', sans-serif; box-sizing: border-box; }
 
-    /* thin scrollbar */
+    /* CSS Variables for Theme System */
+    :root {
+      /* Light Mode Colors */
+      --bg-primary: #ffffff;
+      --bg-secondary: #f8fafc;
+      --bg-tertiary: #f1f5f9;
+      --text-primary: #0f172a;
+      --text-secondary: #475569;
+      --text-tertiary: #64748b;
+      --text-inverse: #ffffff;
+      --border-primary: #e2e8f0;
+      --border-secondary: #cbd5e1;
+      --accent-primary: #ea580c;
+      --accent-secondary: #0ea5e9;
+      --accent-success: #10b981;
+      --accent-warning: #f59e0b;
+      --accent-error: #ef4444;
+      --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+      --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+      --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+    }
+
+    [data-theme="dark"] {
+      /* Dark Mode Colors */
+      --bg-primary: #0f172a;
+      --bg-secondary: #1e293b;
+      --bg-tertiary: #334155;
+      --text-primary: #f1f5f9;
+      --text-secondary: #e2e8f0;
+      --text-tertiary: #94a3b8;
+      --text-inverse: #0f172a;
+      --border-primary: #334155;
+      --border-secondary: #475569;
+      --accent-primary: #f97316;
+      --accent-secondary: #38bdf8;
+      --accent-success: #10b981;
+      --accent-warning: #f59e0b;
+      --accent-error: #ef4444;
+      --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.4);
+      --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.5);
+      --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.6);
+    }
+
+    /* Apply CSS Variables */
+    body {
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    /* Dark Mode Utilities */
+    .bg-primary { background-color: var(--bg-primary); }
+    .bg-secondary { background-color: var(--bg-secondary); }
+    .bg-tertiary { background-color: var(--bg-tertiary); }
+    .text-primary { color: var(--text-primary); }
+    .text-secondary { color: var(--text-secondary); }
+    .text-tertiary { color: var(--text-tertiary); }
+    .text-inverse { color: var(--text-inverse); }
+    .border-primary { border-color: var(--border-primary); }
+    .border-secondary { border-color: var(--border-secondary); }
+    .accent-primary { color: var(--accent-primary); }
+    .accent-secondary { color: var(--accent-secondary); }
+    .accent-success { color: var(--accent-success); }
+    .accent-warning { color: var(--accent-warning); }
+    .accent-error { color: var(--accent-error); }
+
+    /* Specific Dark Mode Overrides for Common Classes */
+    [data-theme="dark"] .bg-white { background-color: var(--bg-secondary); }
+    [data-theme="dark"] .bg-slate-50 { background-color: var(--bg-secondary); }
+    [data-theme="dark"] .bg-slate-100 { background-color: var(--bg-tertiary); }
+    [data-theme="dark"] .bg-slate-900 { background-color: var(--bg-primary); }
+    [data-theme="dark"] .bg-slate-800 { background-color: var(--bg-secondary); }
+    
+    /* Hover states in dark mode */
+    [data-theme="dark"] .hover\:bg-slate-50:hover { background-color: var(--bg-tertiary); }
+    [data-theme="dark"] .hover\:bg-slate-100:hover { background-color: var(--bg-tertiary); }
+    [data-theme="dark"] .hover\:bg-white:hover { background-color: var(--bg-tertiary); }
+    
+    /* Profile dropdown specific fixes */
+    [data-theme="dark"] .bg-primary-100 { background-color: var(--bg-tertiary); }
+    [data-theme="dark"] .text-primary-700 { color: var(--text-primary); }
+    
+    /* Force dropdown text colors in dark mode */
+    [data-theme="dark"] #user-dd .text-slate-700 { color: var(--text-secondary) !important; }
+    [data-theme="dark"] #user-dd .text-slate-800 { color: var(--text-primary) !important; }
+    [data-theme="dark"] #user-dd .text-slate-400 { color: var(--text-tertiary) !important; }
+    
+    /* Force dropdown hover states in dark mode */
+    [data-theme="dark"] #user-dd .hover\:bg-slate-50:hover { 
+      background-color: var(--bg-tertiary) !important; 
+    }
+    
+    /* Form inputs dark mode fixes */
+    [data-theme="dark"] input {
+      background-color: var(--bg-secondary) !important;
+      color: var(--text-primary) !important;
+      border-color: var(--border-primary) !important;
+    }
+    
+    [data-theme="dark"] input:focus {
+      background-color: var(--bg-secondary) !important;
+      border-color: var(--accent-primary) !important;
+    }
+    
+    [data-theme="dark"] input::placeholder {
+      color: var(--text-tertiary) !important;
+    }
+    
+    [data-theme="dark"] select {
+      background-color: var(--bg-secondary) !important;
+      color: var(--text-primary) !important;
+      border-color: var(--border-primary) !important;
+    }
+    
+    [data-theme="dark"] select:focus {
+      background-color: var(--bg-secondary) !important;
+      border-color: var(--accent-primary) !important;
+    }
+    
+    [data-theme="dark"] textarea {
+      background-color: var(--bg-secondary) !important;
+      color: var(--text-primary) !important;
+      border-color: var(--border-primary) !important;
+    }
+    
+    [data-theme="dark"] textarea:focus {
+      background-color: var(--bg-secondary) !important;
+      border-color: var(--accent-primary) !important;
+    }
+    
+    [data-theme="dark"] textarea::placeholder {
+      color: var(--text-tertiary) !important;
+    }
+    
+    /* Specific input styling overrides */
+    [data-theme="dark"] .bg-white input,
+    [data-theme="dark"] .bg-slate-50 input {
+      background-color: var(--bg-tertiary) !important;
+    }
+    
+    [data-theme="dark"] .text-slate-900 input,
+    [data-theme="dark"] .text-slate-800 input {
+      color: var(--text-primary) !important;
+    }
+    
+    [data-theme="dark"] .border-slate-200 input,
+    [data-theme="dark"] .border-slate-300 input {
+      border-color: var(--border-primary) !important;
+    }
+    
+    [data-theme="dark"] .text-slate-900 { color: var(--text-primary); }
+    [data-theme="dark"] .text-slate-800 { color: var(--text-primary); }
+    [data-theme="dark"] .text-slate-700 { color: var(--text-secondary); }
+    [data-theme="dark"] .text-slate-600 { color: var(--text-secondary); }
+    [data-theme="dark"] .text-slate-500 { color: var(--text-tertiary); }
+    [data-theme="dark"] .text-slate-400 { color: var(--text-tertiary); }
+    [data-theme="dark"] .text-slate-300 { color: var(--text-tertiary); }
+    [data-theme="dark"] .text-white { color: var(--text-primary); }
+    
+    [data-theme="dark"] .border-slate-200 { border-color: var(--border-primary); }
+    [data-theme="dark"] .border-slate-100 { border-color: var(--border-primary); }
+    [data-theme="dark"] .border-white { border-color: var(--border-primary); }
+    
+    [data-theme="dark"] .text-primary-600 { color: var(--accent-primary); }
+    [data-theme="dark"] .text-primary-700 { color: var(--accent-primary); }
+    [data-theme="dark"] .text-emerald-600 { color: var(--accent-success); }
+    [data-theme="dark"] .text-amber-300 { color: var(--accent-warning); }
+    
+    [data-theme="dark"] .bg-primary-50 { background-color: var(--bg-tertiary); }
+    [data-theme="dark"] .bg-primary-600 { background-color: var(--accent-primary); }
+    [data-theme="dark"] .bg-primary-700 { background-color: var(--accent-primary); }
+    
+    /* Dark mode for specific components */
+    [data-theme="dark"] .glass { 
+      background: rgba(30, 41, 59, 0.8);
+      border: 1px solid var(--border-primary);
+    }
+
+    /* Dark Mode Scrollbar */
     ::-webkit-scrollbar { width: 5px; height: 5px; }
-    ::-webkit-scrollbar-track { background: #f8fafc; }
-    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 99px; }
+    ::-webkit-scrollbar-track { background: var(--bg-secondary); }
+    ::-webkit-scrollbar-thumb { background: var(--border-secondary); border-radius: 99px; }
 
-    /* glassmorphism nav */
-    .glass { background: rgba(255,255,255,.92); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); }
+    /* Dark Mode Glass Effect */
+    .glass { 
+      background: var(--bg-primary);
+      backdrop-filter: blur(14px); 
+      -webkit-backdrop-filter: blur(14px); 
+      border: 1px solid var(--border-primary);
+    }
 
-    /* modal backdrop */
-    .modal-bg { background: rgba(15,23,42,.65); backdrop-filter: blur(3px); }
+    /* Modal Backdrop */
+    .modal-bg { background: rgba(15,23,42,.75); backdrop-filter: blur(3px); }
 
-    /* toast slide-in */
+    /* Toast Animations */
     @keyframes toastIn  { from { transform: translateX(110%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
     @keyframes toastOut { from { opacity: 1; } to { opacity: 0; } }
     .toast-enter { animation: toastIn .3s ease forwards; }
     .toast-leave { animation: toastOut .25s ease forwards; }
 
-    /* line-clamp utility */
+    /* Line Clamp Utility */
     .clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
     .clamp-3 { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+
+    /* Theme Transition */
+    * {
+      transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+    }
   </style>
 
   @stack('head')
 </head>
-<body class="bg-slate-50 text-slate-900 antialiased">
+<body class="bg-primary text-primary antialiased">
 
   {{-- NAV --}}
   @include('components.navbar')
@@ -85,13 +273,84 @@
   {{-- FOOTER --}}
   @include('components.footer')
 
+  {{-- BACK TO TOP --}}
+  @include('components.back-to-top')
+
   {{-- AUTH MODAL --}}
   @include('auth.modal')
 
   {{-- GLOBAL JS --}}
   <script>
+    // ── Theme System ─────────────────────────────────────────────────
+    // Theme Management
+    function getStoredTheme() {
+      const stored = localStorage.getItem('theme');
+      if (stored) {
+        return stored;
+      }
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    }
+
+    function setStoredTheme(theme) {
+      localStorage.setItem('theme', theme);
+    }
+
+    function getTheme() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+
+    function setTheme(theme) {
+      document.documentElement.setAttribute('data-theme', theme);
+      setStoredTheme(theme);
+      updateThemeToggle(theme);
+      updateThemeTooltip(theme);
+    }
+
+    function toggleTheme() {
+      const currentTheme = getTheme();
+      const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+      setTheme(newTheme);
+    }
+
+    function updateThemeToggle(theme) {
+      // Update navbar theme toggle
+      const navIcon = document.getElementById('nav-theme-icon');
+      const navText = document.getElementById('nav-theme-text');
+      
+      if (navIcon && navText) {
+        if (theme === 'dark') {
+          navIcon.innerHTML = '<i data-lucide="sun" style="width:16px;height:16px;color:#f59e0b"></i>';
+          navText.textContent = 'Switch to Light Mode';
+        } else {
+          navIcon.innerHTML = '<i data-lucide="moon" style="width:16px;height:16px;color:#64748b"></i>';
+          navText.textContent = 'Switch to Dark Mode';
+        }
+        // Reinitialize Lucide icons
+        lucide.createIcons();
+      }
+    }
+
+    function updateThemeTooltip(theme) {
+      // No longer needed since we removed the floating button
+    }
+
+    // Initialize theme on page load
+    document.addEventListener('DOMContentLoaded', function() {
+      const theme = getStoredTheme();
+      setTheme(theme);
+      
+      // Listen for system theme changes
+      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+        if (!localStorage.getItem('theme')) {
+          setTheme(e.matches ? 'dark' : 'light');
+        }
+      });
+    });
+
     // ── icons ─────────────────────────────────────────────────
-    lucide.createIcons();
+    document.addEventListener('DOMContentLoaded', function() {
+      lucide.createIcons();
+    });
 
     // ── csrf helper ───────────────────────────────────────────
     const csrf = () => document.querySelector('meta[name="csrf-token"]')?.content ?? '';
