@@ -19,7 +19,7 @@ class DashboardController extends Controller
             'total_users'     => User::where('role', 'customer')->count(),
             'today_bookings'  => Booking::whereDate('created_at', $today)->count(),
             'active_trips'    => Trip::where('status', 'scheduled')->whereDate('trip_date', '>=', $today)->count(),
-            'today_revenue'   => Payment::where('status', 'completed')->whereDate('created_at', $today)->sum('amount'),
+            'today_revenue'   => Payment::whereIn('status', ['paid', 'completed'])->whereDate('created_at', $today)->sum('amount'),
         ];
 
         return view('admin.dashboard', compact('stats'));

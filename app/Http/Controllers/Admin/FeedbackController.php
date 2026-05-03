@@ -10,6 +10,14 @@ class FeedbackController extends Controller
 {
     public function index(Request $request)
     {
+        // Mark new feedback notifications as read
+        if (auth()->check()) {
+            auth()->user()->appNotifications()
+                ->unread()
+                ->where('type', 'new_feedback')
+                ->update(['is_read' => true, 'read_at' => now()]);
+        }
+
         $query = Feedback::with(['user', 'trip']);
         
         if ($request->has('status') && $request->status != '') {

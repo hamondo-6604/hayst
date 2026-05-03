@@ -203,6 +203,10 @@
                     ->unread()
                     ->where('type', 'booking_confirmed')
                     ->count();
+                $pendingFeedbackCount = auth()->user()->appNotifications()
+                    ->unread()
+                    ->where('type', 'new_feedback')
+                    ->count();
             @endphp
             <div class="nav-group-label">Operations</div>
             <a href="{{ route('admin.bookings.index') }}" class="nav-item {{ request()->routeIs('admin.bookings.*') ? 'active' : '' }}">
@@ -220,7 +224,6 @@
             </a>
             <a href="{{ route('admin.promotions.index') }}" class="nav-item {{ request()->routeIs('admin.promotions.*') ? 'active' : '' }}">
                 <span class="nav-icon"><i class="fa-solid fa-tag"></i></span> Promotions
-                <span class="nav-badge gold">3</span>
             </a>
 
             {{-- Fleet --}}
@@ -236,7 +239,6 @@
             </a>
             <a href="{{ route('admin.maintenance.index') }}" class="nav-item {{ request()->routeIs('admin.maintenance.*') ? 'active' : '' }}">
                 <span class="nav-icon"><i class="fa-solid fa-wrench"></i></span> Maintenance
-                <span class="nav-badge">2</span>
             </a>
 
             {{-- People --}}
@@ -249,7 +251,7 @@
             </a>
             <a href="{{ route('admin.feedback.index') }}" class="nav-item {{ request()->routeIs('admin.feedback.*') ? 'active' : '' }}">
                 <span class="nav-icon"><i class="fa-solid fa-comments"></i></span> Feedback
-                <span class="nav-badge">5</span>
+                <span id="sidebar-feedback-badge" class="nav-badge {{ $pendingFeedbackCount > 0 ? '' : 'hidden' }}">{{ $pendingFeedbackCount }}</span>
             </a>
 
             {{-- System --}}
@@ -487,6 +489,7 @@
           const badge = document.getElementById('notif-badge');
           const markRead = document.getElementById('notif-mark-read');
           const bookingsBadge = document.getElementById('sidebar-bookings-badge');
+          const feedbackBadge = document.getElementById('sidebar-feedback-badge');
           
           if (list && parseInt(list.dataset.count) !== data.count) {
             list.dataset.count = data.count;
@@ -508,6 +511,16 @@
               bookingsBadge.classList.remove('hidden');
             } else {
               bookingsBadge.classList.add('hidden');
+            }
+          }
+
+          // Update sidebar feedback badge
+          if (feedbackBadge) {
+            if (data.pending_feedback_count > 0) {
+              feedbackBadge.textContent = data.pending_feedback_count;
+              feedbackBadge.classList.remove('hidden');
+            } else {
+              feedbackBadge.classList.add('hidden');
             }
           }
         })

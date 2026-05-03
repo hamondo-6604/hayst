@@ -98,6 +98,25 @@
         color: #94a3b8;
     }
 
+    .seat.own-booking {
+        background: #bae6fd;
+        border: 2px solid #0ea5e9;
+        color: #0284c7;
+        cursor: not-allowed;
+    }
+
+    .seat.own-booking::after {
+        content: '✓';
+        position: absolute;
+        font-size: 20px;
+        font-weight: 400;
+        color: #0284c7;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        opacity: 0.2;
+    }
+
     .cell-empty { width: 48px; height: 48px; }
     
     .cell-door {
@@ -172,6 +191,22 @@
         </div>
     @endif
 
+    @if(($remainingAllowed ?? 5) < 5)
+        <div class="mb-8 p-4 bg-amber-50 border border-amber-200 text-amber-800 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+                <i data-lucide="alert-circle" style="width:20px;height:20px;color:#d97706;flex-shrink:0"></i>
+                <span class="font-medium text-sm sm:text-base">
+                    You have already booked {{ 5 - ($remainingAllowed ?? 5) }} seat(s) on this trip. 
+                    You can select up to {{ max(0, $remainingAllowed ?? 0) }} more.
+                </span>
+            </div>
+            <a href="{{ route('manage.bookings') }}" class="inline-flex items-center justify-center gap-2 px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white text-sm font-bold rounded-lg transition-colors whitespace-nowrap shadow-sm">
+                <i data-lucide="ticket" style="width:16px;height:16px"></i>
+                View My Tickets
+            </a>
+        </div>
+    @endif
+
     <div class="flex flex-col lg:flex-row gap-10">
         
         {{-- ── LEFT PANEL: SEAT MAP ──────────────────────────────── --}}
@@ -189,6 +224,9 @@
                     <div class="legend-item">
                         <div class="legend-box border-2 border-slate-300 bg-slate-200 flex items-center justify-center text-slate-400 text-xs font-bold">×</div> Occupied
                     </div>
+                    <div class="legend-item">
+                        <div class="legend-box border-2 border-sky-500 bg-sky-200 flex items-center justify-center text-sky-600 text-xs font-bold">✓</div> Your Seat
+                    </div>
                 </div>
 
                 {{-- Bus Layout --}}
@@ -205,17 +243,25 @@
                                             $type = $cell['cell_type'] ?? 'empty';
                                             $isBookable = $cell['is_bookable'] ?? false;
                                             $isAvailable = $cell['is_available'] ?? false;
+                                            $isOwnBooking = $cell['is_own_booking'] ?? false;
                                             $label = $cell['seat_label'] ?? '';
                                             $fare = $cell['fare'] ?? 0;
+                                            
+                                            $seatClass = 'occupied';
+                                            if ($isAvailable) {
+                                                $seatClass = 'available';
+                                            } elseif ($isOwnBooking) {
+                                                $seatClass = 'own-booking';
+                                            }
                                         @endphp
 
                                         @if($type === 'seat' && $isBookable)
                                             <div 
-                                                class="seat {{ $isAvailable ? 'available' : 'occupied' }}"
+                                                class="seat {{ $seatClass }}"
                                                 data-seat="{{ $label }}"
                                                 data-fare="{{ $fare }}"
                                                 onclick="{{ $isAvailable ? 'toggleSeat(this)' : '' }}"
-                                                title="{{ $isAvailable ? 'Seat ' . $label . ' - ₱' . number_format($fare, 0) : 'Occupied' }}"
+                                                title="{{ $isAvailable ? 'Seat ' . $label . ' - ₱' . number_format($fare, 0) : ($isOwnBooking ? 'Your Booked Seat' : 'Occupied') }}"
                                             >
                                                 {{ $label }}
                                             </div>
@@ -316,6 +362,7 @@
 @push('scripts')
 <script>
     const selectedSeats = new Map(); // seat_label -> fare
+    const remainingAllowed = {{ $remainingAllowed ?? 5 }};
 
     function toggleSeat(element) {
         const seatLabel = element.dataset.seat;
@@ -327,6 +374,10 @@
             selectedSeats.delete(seatLabel);
         } else {
             // Select
+            if (selectedSeats.size >= remainingAllowed) {
+                alert(`You can only select up to ${remainingAllowed} seat(s) for this trip.`);
+                return;
+            }
             element.classList.add('selected');
             selectedSeats.set(seatLabel, fare);
         }

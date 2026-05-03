@@ -107,6 +107,32 @@ class Trip extends Model
         return $this->available_seats > 0;
     }
 
+    public function getAvailableSeatsAttribute($value): int
+    {
+        if ($this->relationLoaded('bookings')) {
+            $booked = 0;
+            foreach ($this->bookings as $booking) {
+                if (in_array($booking->status, ['pending', 'confirmed'])) {
+                    if ($booking->relationLoaded('bookingSeats')) {
+                        $booked += $booking->bookingSeats->whereIn('status', ['reserved', 'confirmed'])->count();
+                    } else {
+                        $booked += $booking->bookingSeats()->whereIn('status', ['reserved', 'confirmed'])->count();
+                    }
+                }
+            }
+            $total = $this->bus ? $this->bus->total_seats : (int) $value;
+            return max(0, $total - $booked);
+        }
+
+        $booked = \App\Models\BookingSeat::whereHas('booking', function ($q) {
+            $q->where('trip_id', $this->id)
+              ->whereIn('status', ['pending', 'confirmed']);
+        })->whereIn('status', ['reserved', 'confirmed'])->count();
+        
+        $total = $this->bus ? $this->bus->total_seats : (int) $value;
+        return max(0, $total - $booked);
+    }
+
     // ------------------------------------------------------------------
     // SCOPES
     // ------------------------------------------------------------------

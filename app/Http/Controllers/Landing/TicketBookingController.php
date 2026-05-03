@@ -102,6 +102,7 @@ class TicketBookingController extends Controller
             'bus.type',
             'bus.amenities',
             'departureTerminal',
+            'bookings.bookingSeats',
         ])
         ->whereHas('route', fn ($q) =>
             $q->whereHas('originCity',      fn ($c) => $c->whereRaw('LOWER(name) = ?', [strtolower($from)]))
@@ -112,7 +113,9 @@ class TicketBookingController extends Controller
         ->where('is_active', true)
         ->where('available_seats', '>', 0)
         ->orderBy('departure_time')
-        ->get();
+        ->get()
+        ->filter(fn($trip) => $trip->available_seats > 0)
+        ->values();
     }
 
     /**
@@ -170,6 +173,7 @@ class TicketBookingController extends Controller
             'bus.type',
             'bus.amenities',
             'departureTerminal',
+            'bookings.bookingSeats',
         ])
         ->whereHas('route', fn ($q) =>
             $q->whereHas('originCity',      fn ($c) => $c->whereRaw('LOWER(name) = ?', [strtolower($from)]))
@@ -184,6 +188,7 @@ class TicketBookingController extends Controller
         ->orderBy('departure_time')
         ->limit(20) // Show up to 20 upcoming trips
         ->get()
+        ->filter(fn($trip) => $trip->available_seats > 0)
         ->groupBy('trip_date'); // Group trips by date for better organization
     }
 
@@ -214,10 +219,20 @@ class TicketBookingController extends Controller
             'departureTerminal',
         ])->findOrFail($trip_id);
 
+        // Calculate how many seats the user has already booked for this trip
+        $existingSeatsCount = \App\Models\BookingSeat::whereHas('booking', function ($q) use ($trip) {
+            $q->where('trip_id', $trip->id)
+              ->where('user_id', auth()->id())
+              ->whereIn('status', ['pending', 'confirmed']);
+        })->whereIn('status', ['reserved', 'confirmed'])->count();
+
+        $maxAllowed = 5;
+        $remainingAllowed = max(0, $maxAllowed - $existingSeatsCount);
+
         // Generate seat map based on bus seat layout
         $seatMap = $this->generateSeatMap($trip);
 
-        return view('user.select-seats', compact('trip', 'seatMap'));
+        return view('user.select-seats', compact('trip', 'seatMap', 'remainingAllowed'));
     }
 
     // ------------------------------------------------------------------
@@ -226,11 +241,28 @@ class TicketBookingController extends Controller
     public function bookSeats(Request $request, $trip_id)
     {
         $request->validate([
-            'selected_seats' => 'required|array|min:1',
+            'selected_seats' => 'required|array|min:1|max:5',
             'selected_seats.*' => 'string',
         ]);
 
         $trip = Trip::findOrFail($trip_id);
+
+        // Prevent booking if they exceed the 5-seat per trip limit
+        $existingSeatsCount = \App\Models\BookingSeat::whereHas('booking', function ($q) use ($trip) {
+            $q->where('trip_id', $trip->id)
+              ->where('user_id', auth()->id())
+              ->whereIn('status', ['pending', 'confirmed']);
+        })->whereIn('status', ['reserved', 'confirmed'])->count();
+
+        $maxAllowed = 5;
+        $remainingAllowed = max(0, $maxAllowed - $existingSeatsCount);
+
+        if (count($request->selected_seats) > $remainingAllowed) {
+            $msg = $existingSeatsCount > 0 
+                ? "You can only book a maximum of {$maxAllowed} seats per trip. You already have {$existingSeatsCount} seats booked."
+                : "You can only book a maximum of {$maxAllowed} seats per transaction.";
+            return redirect()->back()->withErrors(['error' => $msg]);
+        }
 
         // Check if any of the selected seats are already booked
         $alreadyBooked = \App\Models\BookingSeat::whereHas('booking', function ($q) use ($trip) {
@@ -452,11 +484,22 @@ class TicketBookingController extends Controller
             return [];
         }
 
+        $userId = auth()->id();
+
         // Get all booked or pending seats for this specific trip
-        $bookedSeats = \App\Models\BookingSeat::whereHas('booking', function ($q) use ($trip) {
+        $bookedSeatsData = \App\Models\BookingSeat::whereHas('booking', function ($q) use ($trip) {
             $q->where('trip_id', $trip->id)
               ->whereIn('status', ['confirmed', 'pending']);
-        })->pluck('seat_number')->toArray();
+        })->with('booking')->get();
+
+        $bookedSeats = $bookedSeatsData->pluck('seat_number')->toArray();
+        
+        $ownBookedSeats = [];
+        if ($userId) {
+            $ownBookedSeats = $bookedSeatsData->filter(function ($seat) use ($userId) {
+                return $seat->booking->user_id === $userId;
+            })->pluck('seat_number')->toArray();
+        }
 
         // Get the structural grid
         $layoutGrid = $trip->bus->seatLayout->buildGrid();
@@ -474,6 +517,7 @@ class TicketBookingController extends Controller
                 if (($cellData['cell_type'] ?? '') === 'seat' && ($cellData['is_bookable'] ?? false)) {
                     $seatLabel = $cellData['seat_label'] ?? '';
                     $cellData['is_available'] = !in_array($seatLabel, $bookedSeats);
+                    $cellData['is_own_booking'] = in_array($seatLabel, $ownBookedSeats);
                     
                     // Optional: calculate dynamic fare if a seat_type_id is provided
                     $fare = $baseFare;

@@ -3,205 +3,220 @@
 
 @section('content')
 
-{{-- ══════════════════════════════════ HERO ══════════════════════════════════ --}}
-<section class="relative bg-slate-900 overflow-hidden min-h-[88vh] flex items-center">
+@push('head')
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+<style>
+  .hero-swiper { width: 100%; height: calc(100vh - calc(64px * 2)); min-height: 500px; position: relative; }
+  .swiper-slide { position: relative; background-color: #0f172a; overflow: hidden; }
+  .swiper-slide img { width: 100%; height: 100%; object-fit: cover; object-position: center; opacity: 0.6; }
+  .hero-overlay { position: absolute; inset: 0; background: linear-gradient(to right, rgba(15,23,42,0.9) 0%, rgba(15,23,42,0.4) 100%); }
+  
+  .search-widget-container {
+      margin-top: -64px; /* Symmetrical overlap matching the 64px navbar height */
+      position: relative;
+      z-index: 20;
+  }
+</style>
+@endpush
 
-  {{-- decorative blobs --}}
-  <div class="absolute inset-0 pointer-events-none overflow-hidden">
-    <div class="absolute -top-20 -right-20 w-[500px] h-[500px] bg-primary-500/10 rounded-full blur-3xl"></div>
-    <div class="absolute bottom-0 left-0 w-[400px] h-[400px] bg-blue-500/5 rounded-full blur-3xl"></div>
-    <div class="absolute inset-0 opacity-[.04]"
-         style="background-image:url(\"data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M 40 0 L 0 0 0 40' fill='none' stroke='white' stroke-width='1'/%3E%3C/svg%3E\")"></div>
-  </div>
-
-  <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full py-20">
-    <div class="grid lg:grid-cols-2 gap-14 items-center">
-
-      {{-- Copy --}}
-      <div>
-        <span class="inline-flex items-center gap-2 bg-primary-500/20 text-primary-300 text-xs font-bold px-3 py-1.5 rounded-full mb-6">
-          <i data-lucide="zap" style="width:11px;height:11px"></i>
-          Instant e-ticket confirmation
-        </span>
-
-        {{-- Live Trip Counter --}}
-        <div class="inline-flex items-center gap-4 bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl px-6 py-4 mb-6">
-          <div class="flex items-center gap-2">
-            <div class="w-3 h-3 bg-emerald-400 rounded-full animate-pulse"></div>
-            <span class="text-white font-semibold">
-              <span class="text-2xl font-bold text-emerald-300">{{ $liveStats['trips_today'] }}</span>
-              <span class="text-sm text-slate-300"> trips today</span>
-            </span>
-          </div>
-          <div class="w-px h-8 bg-white/20"></div>
-          <div class="flex items-center gap-2">
-            <i data-lucide="users" style="width:16px;height:16px;color:#fbbf24"></i>
-            <span class="text-white font-semibold">
-              <span class="text-lg font-bold text-amber-300">{{ $liveStats['seats_available_today'] }}</span>
-              <span class="text-sm text-slate-300"> seats available</span>
-            </span>
-          </div>
-        </div>
-
-        <h1 class="text-5xl sm:text-6xl font-extrabold text-white leading-[1.08] mb-5 tracking-tight">
-          Travel<br>Mindanao<br>
-          <span class="text-primary-400">Your Way</span>
-        </h1>
-
-        <p class="text-slate-400 text-lg leading-relaxed mb-8 max-w-md">
-          Book intercity bus trips in seconds. Pick your seat, pay securely, and receive your QR e-ticket instantly via SMS and email.
-        </p>
-
-        <div class="flex flex-wrap gap-3 mb-8">
-          <a href="{{ route('landing.ticket_booking') }}"
-             class="inline-flex items-center gap-2 px-6 py-3 bg-primary-600 hover:bg-primary-700 text-white font-bold text-sm rounded-xl transition-colors shadow-lg shadow-primary-900/40">
-            <i data-lucide="search" style="width:15px;height:15px"></i> Search Trips
-          </a>
-          <a href="{{ route('landing.booking_routes') }}"
-             class="inline-flex items-center gap-2 px-6 py-3 bg-white/10 hover:bg-white/20 border border-white/20 text-white font-semibold text-sm rounded-xl transition-colors">
-            <i data-lucide="map" style="width:15px;height:15px"></i> Browse Routes
-          </a>
-        </div>
-
-        <div class="flex flex-wrap gap-5">
-          @foreach([
-            ['shield-check', 'LTO Accredited'],
-            ['clock',        'On-Time Guarantee'],
-            ['credit-card',  'Secure Payment'],
-            ['smartphone',   'QR E-Ticket'],
-          ] as [$icon,$label])
-            <div class="flex items-center gap-1.5 text-slate-500 text-xs">
-              <i data-lucide="{{ $icon }}" style="width:12px;height:12px;color:#f97316"></i>
-              {{ $label }}
+{{-- ══════════════════════════════════ HERO SLIDER ══════════════════════════════════ --}}
+<section class="relative bg-slate-900">
+  <div class="swiper hero-swiper">
+    <div class="swiper-wrapper">
+      
+      <!-- Slide 1 -->
+      <div class="swiper-slide">
+        <!-- User will replace src -->
+        <img src="https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&q=80&w=2000" alt="Bus">
+        <div class="hero-overlay"></div>
+        <div class="absolute inset-0 flex items-center">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full pt-10">
+                <span class="inline-flex items-center gap-2 bg-primary-500/20 text-primary-300 text-xs font-bold px-3 py-1.5 rounded-full mb-6 backdrop-blur-md">
+                  <i data-lucide="zap" style="width:11px;height:11px"></i> Instant e-ticket confirmation
+                </span>
+                <h1 class="text-5xl sm:text-7xl font-extrabold text-white leading-[1.1] mb-5 tracking-tight">
+                  Travel Mindanao<br><span class="text-primary-400">Your Way</span>
+                </h1>
+                <p class="text-slate-300 text-lg leading-relaxed mb-8 max-w-lg">
+                  Book intercity bus trips in seconds. Pick your seat, pay securely, and receive your QR e-ticket instantly.
+                </p>
+                <div class="flex flex-wrap gap-5">
+                  @foreach([
+                    ['shield-check', 'LTO Accredited'],
+                    ['clock',        'On-Time Guarantee'],
+                    ['credit-card',  'Secure Payment'],
+                  ] as [$icon,$label])
+                    <div class="flex items-center gap-1.5 text-white/80 text-sm font-semibold backdrop-blur-sm bg-white/10 px-3 py-1.5 rounded-lg border border-white/10">
+                      <i data-lucide="{{ $icon }}" style="width:14px;height:14px;color:#f97316"></i> {{ $label }}
+                    </div>
+                  @endforeach
+                </div>
             </div>
-          @endforeach
         </div>
       </div>
 
-      {{-- Right: next trip card + quick search --}}
-      <div class="space-y-4">
-
-        {{-- Next departure card --}}
-        @if(isset($heroTrip) && $heroTrip)
-          <div class="bg-white/10 border border-white/20 backdrop-blur-sm rounded-2xl p-5">
-            <div class="flex items-center gap-2 mb-4">
-              <span class="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></span>
-              <span class="text-emerald-400 text-xs font-bold tracking-wide">NEXT DEPARTURE</span>
-            </div>
-            <div class="flex items-center gap-4 mb-4">
-              <div class="text-center min-w-0">
-                <div class="text-2xl font-extrabold text-white">{{ $heroTrip->departure_time->format('H:i') }}</div>
-                <div class="text-xs text-slate-400 truncate">{{ $heroTrip->route?->originCity?->name }}</div>
-              </div>
-              <div class="flex-1 flex flex-col items-center gap-1">
-                @php
-                  $m = $heroTrip->route?->estimated_duration_minutes;
-                  $dur = $m ? floor($m/60).'h '.str_pad($m%60,2,'0',STR_PAD_LEFT).'m' : '—';
-                @endphp
-                <span class="text-xs text-slate-500">{{ $dur }}</span>
-                <div class="w-full flex items-center gap-1">
-                  <div class="w-2 h-2 rounded-full border-2 border-primary-400"></div>
-                  <div class="flex-1 h-px bg-gradient-to-r from-primary-400/60 to-slate-600"></div>
-                  <i data-lucide="bus" style="width:14px;height:14px;color:#fb923c"></i>
-                  <div class="flex-1 h-px bg-gradient-to-r from-slate-600 to-emerald-400/60"></div>
-                  <div class="w-2 h-2 rounded-full border-2 border-emerald-400"></div>
+      <!-- Slide 2 -->
+      <div class="swiper-slide">
+        <img src="https://images.unsplash.com/photo-1570125909232-eb263c188f7e?auto=format&fit=crop&q=80&w=2000" alt="Comfort">
+        <div class="hero-overlay"></div>
+        <div class="absolute inset-0 flex items-center">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full pt-10">
+                <span class="inline-flex items-center gap-2 bg-primary-500/20 text-primary-300 text-xs font-bold px-3 py-1.5 rounded-full mb-6 backdrop-blur-md">
+                  <i data-lucide="star" style="width:11px;height:11px"></i> Premium Comfort
+                </span>
+                <h1 class="text-5xl sm:text-7xl font-extrabold text-white leading-[1.1] mb-5 tracking-tight">
+                  First Class<br><span class="text-primary-400">Experience</span>
+                </h1>
+                <p class="text-slate-300 text-lg leading-relaxed mb-8 max-w-lg">
+                  Enjoy spacious seating, full air-conditioning, and smooth rides across the beautiful landscapes of Mindanao.
+                </p>
+                <div class="flex flex-wrap gap-3">
+                  <a href="{{ route('landing.booking_routes') }}" class="inline-flex items-center gap-2 px-6 py-3 bg-white text-slate-900 font-bold text-sm rounded-xl hover:bg-slate-100 transition-colors">
+                    Browse Routes
+                  </a>
                 </div>
-                <span class="text-xs text-slate-500">Direct</span>
-              </div>
-              <div class="text-center min-w-0">
-                <div class="text-2xl font-extrabold text-white">{{ $heroTrip->arrival_time?->format('H:i') ?? '—' }}</div>
-                <div class="text-xs text-slate-400 truncate">{{ $heroTrip->route?->destinationCity?->name }}</div>
-              </div>
             </div>
-            <div class="flex items-center justify-between border-t border-white/10 pt-3">
-              <div class="flex items-center gap-3 text-xs text-slate-400">
-                <span class="flex items-center gap-1"><i data-lucide="users" style="width:12px;height:12px"></i>{{ $heroTrip->available_seats }} seats</span>
-                <span class="flex items-center gap-1"><i data-lucide="tag" style="width:12px;height:12px"></i>{{ $heroTrip->bus?->type?->type_name }}</span>
-              </div>
-              <span class="text-primary-400 font-extrabold">₱{{ number_format($heroTrip->fare, 0) }}</span>
-            </div>
-          </div>
-        @endif
+        </div>
+      </div>
 
-        {{-- Tabs for Search & Track --}}
-        <div class="bg-white rounded-2xl p-5 shadow-2xl">
-          <div class="flex gap-4 border-b border-slate-100 mb-4">
-            <button onclick="switchHeroTab('search')" id="tab-btn-search" class="pb-2 text-sm font-bold border-b-2 border-primary-600 text-primary-700 transition-colors">
-              <i data-lucide="search" style="width:14px;height:14px;display:inline;margin-right:4px"></i>Quick Search
-            </button>
-            <button onclick="switchHeroTab('track')" id="tab-btn-track" class="pb-2 text-sm font-bold border-b-2 border-transparent text-slate-400 hover:text-slate-600 transition-colors">
-              <i data-lucide="map" style="width:14px;height:14px;display:inline;margin-right:4px"></i>Track Trip
-            </button>
-          </div>
-
-          {{-- Quick Search Form --}}
-          <form action="{{ route('landing.ticket_booking.search') }}" method="POST" id="hero-search-form" class="space-y-3">
-            @csrf
-            <div class="grid grid-cols-2 gap-3">
-              <div>
-                <label class="block text-xs font-semibold text-slate-600 mb-1">From</label>
-                <div class="relative">
-                  <i data-lucide="map-pin" style="width:12px;height:12px;position:absolute;left:10px;top:50%;transform:translateY(-50%);color:#94a3b8"></i>
-                  <select name="from" required class="w-full pl-7 pr-2 py-2.5 text-xs border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white appearance-none">
-                    <option value="">Origin city</option>
-                    @foreach($originCities ?? [] as $city)
-                      <option value="{{ $city->name }}">{{ $city->name }}</option>
-                    @endforeach
-                  </select>
+      <!-- Slide 3 -->
+      <div class="swiper-slide">
+        <img src="https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&q=80&w=2000" alt="Journey">
+        <div class="hero-overlay"></div>
+        <div class="absolute inset-0 flex items-center">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full pt-10">
+                <span class="inline-flex items-center gap-2 bg-primary-500/20 text-primary-300 text-xs font-bold px-3 py-1.5 rounded-full mb-6 backdrop-blur-md">
+                  <i data-lucide="map" style="width:11px;height:11px"></i> Discover More
+                </span>
+                <h1 class="text-5xl sm:text-7xl font-extrabold text-white leading-[1.1] mb-5 tracking-tight">
+                  Your Journey<br><span class="text-primary-400">Starts Here</span>
+                </h1>
+                <p class="text-slate-300 text-lg leading-relaxed mb-8 max-w-lg">
+                  Join thousands of daily passengers who trust Mindanao Express for their daily commute and long-distance travel.
+                </p>
+                <div class="inline-flex items-center gap-4 bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl px-6 py-4">
+                  <div class="flex items-center gap-2">
+                    <div class="w-3 h-3 bg-emerald-400 rounded-full animate-pulse"></div>
+                    <span class="text-white font-semibold">
+                      <span class="text-2xl font-bold text-emerald-300">{{ $liveStats['trips_today'] ?? 0 }}</span> <span class="text-sm text-slate-300"> trips today</span>
+                    </span>
+                  </div>
                 </div>
-              </div>
-              <div>
-                <label class="block text-xs font-semibold text-slate-600 mb-1">To</label>
-                <div class="relative">
-                  <i data-lucide="map-pin" style="width:12px;height:12px;position:absolute;left:10px;top:50%;transform:translateY(-50%);color:#94a3b8"></i>
-                  <select name="to" required class="w-full pl-7 pr-2 py-2.5 text-xs border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white appearance-none">
-                    <option value="">Destination</option>
-                    @foreach($destinationCities ?? [] as $city)
-                      <option value="{{ $city->name }}">{{ $city->name }}</option>
-                    @endforeach
-                  </select>
-                </div>
-              </div>
             </div>
-            <div>
-              <label class="block text-xs font-semibold text-slate-600 mb-1">Travel Date</label>
-              <div class="relative">
-                <i data-lucide="calendar" style="width:12px;height:12px;position:absolute;left:10px;top:50%;transform:translateY(-50%);color:#94a3b8"></i>
-                <input type="date" name="date" required
-                       min="{{ today()->toDateString() }}" value="{{ today()->toDateString() }}"
-                       class="w-full pl-7 pr-4 py-2.5 text-xs border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500">
-              </div>
-            </div>
-            <button type="submit"
-                    class="w-full py-2.5 bg-primary-600 hover:bg-primary-700 text-white text-sm font-bold rounded-xl transition-colors flex items-center justify-center gap-2">
-              <i data-lucide="search" style="width:14px;height:14px"></i> Find Trips
-            </button>
-          </form>
+        </div>
+      </div>
 
-          {{-- Track Trip Form --}}
-          <div id="hero-track-form" class="hidden space-y-3">
-            <div>
-              <label class="block text-xs font-semibold text-slate-600 mb-1">Trip Code</label>
-              <div class="relative">
-                <i data-lucide="hash" style="width:12px;height:12px;position:absolute;left:10px;top:50%;transform:translateY(-50%);color:#94a3b8"></i>
-                <input type="text" id="track-trip-code" placeholder="e.g. TR-A1B2C3"
-                       class="w-full pl-7 pr-4 py-2.5 text-xs border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 uppercase">
-              </div>
-            </div>
-            <button onclick="trackTripCode()" id="btn-track-trip"
-                    class="w-full py-2.5 bg-slate-800 hover:bg-slate-900 text-white text-sm font-bold rounded-xl transition-colors flex items-center justify-center gap-2">
-              <i data-lucide="crosshair" style="width:14px;height:14px"></i> Check Status
-            </button>
-            <div id="track-result" class="hidden mt-3 p-3 bg-slate-50 border border-slate-100 rounded-xl text-xs space-y-1.5">
-              <!-- Result goes here -->
-            </div>
+    </div>
+    
+    <!-- Navigation -->
+    <div class="swiper-pagination"></div>
+    <div class="swiper-button-prev !text-white/50 hover:!text-white after:!text-2xl transition-colors"></div>
+    <div class="swiper-button-next !text-white/50 hover:!text-white after:!text-2xl transition-colors"></div>
+  </div>
+</section>
+
+{{-- ══════════════════════════════════ SEARCH WIDGET (OVERLAPPING) ══════════════════════════════════ --}}
+<div class="search-widget-container max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 mb-12">
+  
+  {{-- Next Departure Alert (Moved from right column) --}}
+  @if(isset($heroTrip) && $heroTrip)
+    <div class="bg-slate-900 border border-slate-700 rounded-t-2xl p-3 flex flex-wrap items-center justify-between gap-4 text-white shadow-2xl relative z-10 w-11/12 mx-auto -mb-2">
+      <div class="flex items-center gap-3">
+        <span class="w-2.5 h-2.5 bg-emerald-400 rounded-full animate-pulse shadow-[0_0_8px_rgba(52,211,153,0.8)]"></span>
+        <span class="text-xs font-bold tracking-widest text-emerald-400 uppercase hidden sm:inline">Next Departure:</span>
+        <span class="text-sm font-semibold">{{ $heroTrip->departure_time->format('h:i A') }} • {{ $heroTrip->route?->originCity?->name }} <i data-lucide="arrow-right" class="inline w-3 h-3 text-slate-400 mx-1"></i> {{ $heroTrip->route?->destinationCity?->name }}</span>
+      </div>
+      <div class="flex items-center gap-3 text-sm">
+        <span class="text-slate-400 hidden sm:inline"><i data-lucide="users" class="inline w-3 h-3 mr-1"></i>{{ $heroTrip->available_seats }} seats</span>
+        <span class="font-bold text-primary-400">₱{{ number_format($heroTrip->fare, 0) }}</span>
+        <a href="{{ route('landing.ticket_booking') }}?from={{ urlencode($heroTrip->route?->originCity?->name ?? '') }}&to={{ urlencode($heroTrip->route?->destinationCity?->name ?? '') }}&date={{ today()->toDateString() }}" class="px-3 py-1 text-xs font-bold bg-primary-600 hover:bg-primary-700 rounded-lg transition-colors">Book Now</a>
+      </div>
+    </div>
+  @endif
+
+  <div class="bg-white rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.15)] border border-slate-100 p-2 relative z-20">
+    
+    {{-- Widget Tabs --}}
+    <div class="flex gap-2 p-2 border-b border-slate-100 mb-2 bg-slate-50 rounded-t-xl">
+      <button onclick="switchHeroTab('search')" id="tab-btn-search" class="flex-1 sm:flex-none px-6 py-2.5 text-sm font-bold bg-white text-primary-600 rounded-lg shadow-sm border border-slate-200 transition-all flex items-center justify-center gap-2">
+        <i data-lucide="search" style="width:16px;height:16px"></i> Quick Search
+      </button>
+      <button onclick="switchHeroTab('track')" id="tab-btn-track" class="flex-1 sm:flex-none px-6 py-2.5 text-sm font-bold text-slate-500 hover:text-slate-800 hover:bg-slate-200/50 rounded-lg transition-all flex items-center justify-center gap-2 border border-transparent">
+        <i data-lucide="crosshair" style="width:16px;height:16px"></i> Track Trip
+      </button>
+    </div>
+
+    {{-- Horizontal Search Form --}}
+    <form action="{{ route('landing.ticket_booking.search') }}" method="POST" id="hero-search-form" class="p-4">
+      @csrf
+      <div class="flex flex-col md:flex-row items-end gap-3">
+        <div class="flex-1 w-full relative">
+          <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5 ml-1">Origin</label>
+          <div class="relative">
+            <i data-lucide="map-pin" style="width:16px;height:16px;position:absolute;left:14px;top:50%;transform:translateY(-50%);color:#94a3b8"></i>
+            <select name="from" id="hero-from" required class="w-full pl-10 pr-4 py-3.5 text-sm font-semibold border-2 border-slate-200 rounded-xl focus:border-primary-500 focus:ring-0 bg-white appearance-none hover:border-slate-300 transition-colors">
+              <option value="">Leaving from...</option>
+              @foreach($originCities ?? [] as $city)
+                <option value="{{ $city->name }}">{{ $city->name }}</option>
+              @endforeach
+            </select>
           </div>
         </div>
+        
+        <!-- Swap Button -->
+        <button type="button" class="hidden md:flex shrink-0 w-10 h-10 bg-slate-100 rounded-full items-center justify-center text-slate-500 hover:bg-primary-50 hover:text-primary-600 transition-colors border border-slate-200 self-end mb-1" onclick="swapHeroCities()" title="Swap Cities">
+            <i data-lucide="arrow-left-right" style="width:16px;height:16px"></i>
+        </button>
 
+        <div class="flex-1 w-full relative">
+          <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5 ml-1">Destination</label>
+          <div class="relative">
+            <i data-lucide="map-pin" style="width:16px;height:16px;position:absolute;left:14px;top:50%;transform:translateY(-50%);color:#94a3b8"></i>
+            <select name="to" id="hero-to" required class="w-full pl-10 pr-4 py-3.5 text-sm font-semibold border-2 border-slate-200 rounded-xl focus:border-primary-500 focus:ring-0 bg-white appearance-none hover:border-slate-300 transition-colors">
+              <option value="">Going to...</option>
+              @foreach($destinationCities ?? [] as $city)
+                <option value="{{ $city->name }}">{{ $city->name }}</option>
+              @endforeach
+            </select>
+          </div>
+        </div>
+        
+        <div class="flex-1 w-full relative">
+          <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5 ml-1">Travel Date</label>
+          <div class="relative">
+            <i data-lucide="calendar" style="width:16px;height:16px;position:absolute;left:14px;top:50%;transform:translateY(-50%);color:#94a3b8"></i>
+            <input type="date" name="date" required min="{{ today()->toDateString() }}" value="{{ today()->toDateString() }}"
+                   class="w-full pl-10 pr-4 py-3.5 text-sm font-semibold border-2 border-slate-200 rounded-xl focus:border-primary-500 focus:ring-0 hover:border-slate-300 transition-colors">
+          </div>
+        </div>
+        
+        <button type="submit" class="w-full md:w-auto md:min-w-[140px] py-3.5 px-6 bg-primary-600 hover:bg-primary-700 text-white text-base font-bold rounded-xl transition-all shadow-[0_4px_14px_0_rgba(234,88,12,0.39)] hover:shadow-[0_6px_20px_rgba(234,88,12,0.23)] flex items-center justify-center gap-2 mt-2 md:mt-0">
+          Search
+        </button>
+      </div>
+    </form>
+
+    {{-- Horizontal Track Form --}}
+    <div id="hero-track-form" class="hidden p-4">
+      <div class="flex flex-col md:flex-row items-end gap-3 max-w-2xl mx-auto">
+        <div class="flex-1 w-full relative">
+          <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5 ml-1">Trip Code</label>
+          <div class="relative">
+            <i data-lucide="hash" style="width:16px;height:16px;position:absolute;left:14px;top:50%;transform:translateY(-50%);color:#94a3b8"></i>
+            <input type="text" id="track-trip-code" placeholder="Enter code (e.g. TR-A1B2C3)"
+                   class="w-full pl-10 pr-4 py-3.5 text-sm font-semibold border-2 border-slate-200 rounded-xl focus:border-primary-500 focus:ring-0 uppercase hover:border-slate-300 transition-colors">
+          </div>
+        </div>
+        <button onclick="trackTripCode()" id="btn-track-trip" class="w-full md:w-auto px-8 py-3.5 bg-slate-800 hover:bg-slate-900 text-white text-sm font-bold rounded-xl transition-all shadow-lg flex items-center justify-center gap-2 mt-2 md:mt-0">
+          Track Status
+        </button>
+      </div>
+      <div id="track-result" class="hidden max-w-2xl mx-auto mt-4 p-4 bg-slate-50 border-2 border-slate-100 rounded-xl text-sm">
+        <!-- Result goes here -->
       </div>
     </div>
   </div>
-</section>
+</div>
 
 {{-- ══════════════════════════════════ STATS ══════════════════════════════════ --}}
 <section class="bg-white border-b border-slate-100">
@@ -450,7 +465,7 @@
         <div class="absolute top-6 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-[10px] font-bold px-2 py-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">Butuan</div>
       </div>
       
-      <div class="absolute bottom-6 right-6 bg-white/90 backdrop-blur text-xs font-bold text-slate-500 px-3 py-1.5 rounded-lg shadow-sm border border-slate-100">
+      <div class="absolute bottom-6 right-6 glass text-xs font-bold text-slate-500 px-3 py-1.5 rounded-lg shadow-sm">
         Interactive Map Illustration
       </div>
     </div>
@@ -548,22 +563,22 @@
 
 {{-- ══════════════════════════════ DISCOUNT TYPES STRIP ══════════════════════════════ --}}
 @if(isset($discountTypes) && $discountTypes->isNotEmpty())
-<section class="bg-amber-50 border-y border-amber-100 py-6">
+<section class="bg-slate-50 border-y border-slate-100 py-6">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="flex flex-wrap items-center gap-4 justify-center">
-      <div class="flex items-center gap-2 text-amber-700 mr-2">
+      <div class="flex items-center gap-2 text-primary-600 mr-2">
         <i data-lucide="badge-percent" style="width:18px;height:18px"></i>
         <span class="text-sm font-bold">Government Discounts Available:</span>
       </div>
       @foreach($discountTypes as $dt)
         @if($dt->percentage > 0)
-          <div class="flex items-center gap-2 bg-white border border-amber-200 rounded-xl px-3 py-1.5">
-            <span class="text-xs font-bold text-amber-700">{{ number_format($dt->percentage * 100, 0) }}% OFF</span>
+          <div class="flex items-center gap-2 bg-white border border-slate-200 rounded-xl px-3 py-1.5 shadow-sm">
+            <span class="text-xs font-bold text-primary-600">{{ number_format($dt->percentage * 100, 0) }}% OFF</span>
             <span class="text-xs text-slate-600">· {{ $dt->display_name }}</span>
           </div>
         @endif
       @endforeach
-      <span class="text-xs text-amber-600">Valid ID required at boarding.</span>
+      <span class="text-xs text-slate-500">Valid ID required at boarding.</span>
     </div>
   </div>
 </section>
@@ -710,7 +725,7 @@
               <span class="text-xs font-mono font-bold text-white tracking-widest">{{ $promo->code }}</span>
             </div>
             @if($promo->expires_at)
-              <span class="text-xs text-slate-500 flex items-center gap-1">
+              <span class="text-xs text-primary-200 flex items-center gap-1">
                 <i data-lucide="clock" style="width:11px;height:11px"></i> Until {{ $promo->expires_at->format('M d') }}
               </span>
             @endif
@@ -724,7 +739,7 @@
 
 {{-- ══════════════════════════════ TESTIMONIALS CAROUSEL ══════════════════════════════ --}}
 @if(isset($reviews) && $reviews->isNotEmpty())
-<section class="py-20 bg-gradient-to-br from-slate-50 to-white">
+<section class="py-20 bg-slate-50 overflow-hidden">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     
     {{-- Section Header --}}
@@ -738,110 +753,55 @@
       @endif
     </div>
 
-    {{-- Carousel Container --}}
-    <div class="relative">
-      
-      <!-- Featured Review (Large) -->
-      <div id="featured-review" class="bg-gradient-to-br from-primary-600 to-primary-700 text-white rounded-3xl p-8 shadow-2xl mb-8 transition-all duration-500">
-        @if($reviews->isNotEmpty())
-          @php
-            $featured = $reviews->first();
-            $featuredName = $featured->user?->name ?? 'Happy Passenger';
-            $featuredRating = $featured->rating ?? 5;
-            $featuredComment = $featured->comment ?? 'Great experience!';
-            $featuredType = ucfirst($featured->type ?? 'General');
-            $featuredDate = $featured->created_at->format('M Y');
-          @endphp
-          <div class="flex items-start gap-4 mb-6">
-            <div class="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center">
-              <i data-lucide="user" style="width:20px;height:20px"></i>
-            </div>
-            <div class="flex-1">
-              <h3 class="font-bold text-lg mb-1">{{ $featuredName }}</h3>
-              <div class="flex items-center gap-2 text-sm text-primary-200">
-                <span class="flex gap-0.5">
+    {{-- Swiper Container --}}
+    <div class="relative px-4 sm:px-12">
+      <div class="swiper testimonial-swiper !pb-14">
+        <div class="swiper-wrapper">
+          @foreach($reviews as $i => $review)
+            @php
+              $avCols = ['bg-blue-100 text-blue-700','bg-emerald-100 text-emerald-700','bg-violet-100 text-violet-700','bg-sky-100 text-sky-700','bg-pink-100 text-pink-700','bg-amber-100 text-amber-700'];
+              $av = $avCols[$i % count($avCols)];
+            @endphp
+            <div class="swiper-slide h-auto">
+              <div class="bg-white rounded-2xl p-8 border border-slate-200 shadow-sm hover:shadow-xl transition-shadow duration-300 h-full flex flex-col">
+                
+                <!-- Rating Stars -->
+                <div class="flex gap-1 mb-4">
                   @for($s = 1; $s <= 5; $s++)
-                    <i data-lucide="star" style="width:14px;height:14px;{{ $s <= $featuredRating ? 'color:#fbbf24;fill:#fbbf24' : 'color:#64748b' }}"></i>
+                    <i data-lucide="star" style="width:16px;height:16px;{{ $s <= $review->rating ? 'color:#f59e0b;fill:#f59e0b' : 'color:#e2e8f0;fill:#e2e8f0' }}"></i>
                   @endfor
-                </span>
-                <span>·</span>
-                <span>Verified Traveler</span>
-              </div>
-            </div>
-          </div>
-          <blockquote class="text-xl leading-relaxed mb-6 italic">
-            "{{ $featuredComment }}"
-          </blockquote>
-          <div class="flex items-center justify-between">
-            <div class="text-sm text-primary-200">
-              {{ $featuredType }} · {{ $featuredDate }}
-            </div>
-            <div class="flex gap-2">
-              @for($i = 0; $i < min(3, $reviews->count()); $i++)
-                <button onclick="showReview({{ $i }})" 
-                        class="w-2 h-2 rounded-full transition-all {{ $i === 0 ? 'bg-white w-8' : 'bg-white/40 hover:bg-white/60' }}"
-                        data-review="{{ $i }}"></button>
-              @endfor
-            </div>
-          </div>
-        @else
-          <div class="text-center py-8">
-            <i data-lucide="message-circle" style="width:48px;height:48px;margin:0 auto 16px;opacity:0.5"></i>
-            <h3 class="text-xl font-semibold mb-2">No reviews yet</h3>
-            <p class="text-primary-200">Be the first to share your travel experience!</p>
-          </div>
-        @endif
-      </div>
+                </div>
 
-      <!-- Review Cards Grid -->
-      <div class="grid md:grid-cols-3 gap-6">
-        @foreach($reviews->take(6) as $i => $review)
-          @php
-            $avCols = ['bg-blue-100 text-blue-700','bg-emerald-100 text-emerald-700','bg-violet-100 text-violet-700','bg-sky-100 text-sky-700','bg-pink-100 text-pink-700','bg-amber-100 text-amber-700'];
-            $av = $avCols[$i % count($avCols)];
-          @endphp
-          <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm hover:shadow-lg transition-all duration-300 cursor-pointer group"
-               onclick="showReview({{ $i }})"
-               data-review-card="{{ $i }}">
-            
-            <!-- Rating Stars -->
-            <div class="flex gap-0.5 mb-3">
-              @for($s = 1; $s <= 5; $s++)
-                <i data-lucide="star" style="width:12px;height:12px;{{ $s <= $review->rating ? 'color:#f59e0b;fill:#f59e0b' : 'color:#d1d5db' }}"></i>
-              @endfor
-            </div>
+                <!-- Review Text -->
+                <blockquote class="text-slate-700 text-base leading-relaxed mb-6 flex-1 italic">
+                  "{{ $review->comment }}"
+                </blockquote>
 
-            <!-- Review Text -->
-            <p class="text-slate-600 text-sm leading-relaxed mb-4 line-clamp-3">
-              "{{ $review->comment }}"
-            </p>
-
-            <!-- Reviewer Info -->
-            <div class="flex items-center gap-3 pt-3 border-t border-slate-100">
-              <div class="w-10 h-10 rounded-full {{ $av }} flex items-center justify-center text-sm font-bold shrink-0">
-                {{ strtoupper(substr($review->user?->name ?? 'P', 0, 1)) }}
-              </div>
-              <div class="min-w-0 flex-1">
-                <div class="text-slate-800 text-sm font-semibold truncate">{{ $review->user?->name ?? 'Passenger' }}</div>
-                <div class="text-slate-400 text-xs flex items-center gap-1">
-                  <i data-lucide="check-circle" style="width:10px;height:10px;color:#10b981"></i>
-                  Verified · {{ ucfirst($review->type ?? 'general') }}
+                <!-- Reviewer Info -->
+                <div class="flex items-center gap-4 pt-4 border-t border-slate-100">
+                  <div class="w-12 h-12 rounded-full {{ $av }} flex items-center justify-center text-lg font-bold shrink-0">
+                    {{ strtoupper(substr($review->user?->name ?? 'P', 0, 1)) }}
+                  </div>
+                  <div class="min-w-0 flex-1">
+                    <div class="text-slate-900 font-bold truncate">{{ $review->user?->name ?? 'Passenger' }}</div>
+                    <div class="text-slate-500 text-xs flex items-center gap-1.5 mt-0.5">
+                      <i data-lucide="check-circle" style="width:12px;height:12px;color:#10b981"></i>
+                      Verified · {{ ucfirst($review->type ?? 'general') }}
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        @endforeach
+          @endforeach
+        </div>
+        
+        <!-- Pagination -->
+        <div class="swiper-pagination !bottom-0"></div>
       </div>
-
+      
       <!-- Navigation Arrows -->
-      <button onclick="previousReview()" 
-              class="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 w-10 h-10 bg-white rounded-full shadow-lg flex items-center justify-center hover:bg-primary-50 transition-colors">
-        <i data-lucide="chevron-left" style="width:20px;height:20px;color:#ea580c"></i>
-      </button>
-      <button onclick="nextReview()" 
-              class="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 w-10 h-10 bg-white rounded-full shadow-lg flex items-center justify-center hover:bg-primary-50 transition-colors">
-        <i data-lucide="chevron-right" style="width:20px;height:20px;color:#ea580c"></i>
-      </button>
+      <div class="swiper-button-prev bg-white w-12 h-12 rounded-full shadow-lg border border-slate-100 hidden sm:flex -left-4 transition-transform hover:scale-110" style="--swiper-navigation-color: #ea580c; --swiper-navigation-size: 20px;"></div>
+      <div class="swiper-button-next bg-white w-12 h-12 rounded-full shadow-lg border border-slate-100 hidden sm:flex -right-4 transition-transform hover:scale-110" style="--swiper-navigation-color: #ea580c; --swiper-navigation-size: 20px;"></div>
     </div>
   </div>
 </section>
@@ -865,7 +825,36 @@
 @endsection
 
 @push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 <script>
+  document.addEventListener('DOMContentLoaded', function() {
+    new Swiper('.hero-swiper', {
+      loop: true,
+      effect: 'fade',
+      autoplay: {
+        delay: 5000,
+        disableOnInteraction: false,
+      },
+      pagination: {
+        el: '.swiper-pagination',
+        clickable: true,
+      },
+      navigation: {
+        nextEl: '.swiper-button-next',
+        prevEl: '.swiper-button-prev',
+      },
+    });
+  });
+
+  function swapHeroCities() {
+    const from = document.getElementById('hero-from');
+    const to   = document.getElementById('hero-to');
+    const temp = from.value;
+    from.value = to.value;
+    to.value = temp;
+  }
+
+  // Copy Code
   function copyCode(code) {
     navigator.clipboard.writeText(code)
       .then(() => toast('Code "' + code + '" copied to clipboard!', 'success'))
@@ -874,14 +863,33 @@
 
   // Hero Tabs Logic
   function switchHeroTab(tab) {
-    document.getElementById('hero-search-form').classList.add('hidden');
-    document.getElementById('hero-track-form').classList.add('hidden');
-    
-    document.getElementById('tab-btn-search').className = 'pb-2 text-sm font-bold border-b-2 border-transparent text-slate-400 hover:text-slate-600 transition-colors';
-    document.getElementById('tab-btn-track').className = 'pb-2 text-sm font-bold border-b-2 border-transparent text-slate-400 hover:text-slate-600 transition-colors';
-    
-    document.getElementById(`hero-${tab}-form`).classList.remove('hidden');
-    document.getElementById(`tab-btn-${tab}`).className = 'pb-2 text-sm font-bold border-b-2 border-primary-600 text-primary-700 transition-colors';
+    const searchForm = document.getElementById('hero-search-form');
+    const trackForm  = document.getElementById('hero-track-form');
+    const searchBtn  = document.getElementById('tab-btn-search');
+    const trackBtn   = document.getElementById('tab-btn-track');
+
+    const activeClasses = 'bg-white text-primary-600 shadow-sm border border-slate-200'.split(' ');
+    const inactiveClasses = 'text-slate-500 hover:text-slate-800 hover:bg-slate-200/50 border border-transparent'.split(' ');
+
+    if (tab === 'search') {
+      searchForm.classList.remove('hidden');
+      trackForm.classList.add('hidden');
+      
+      searchBtn.classList.remove(...inactiveClasses);
+      searchBtn.classList.add(...activeClasses);
+      
+      trackBtn.classList.remove(...activeClasses);
+      trackBtn.classList.add(...inactiveClasses);
+    } else {
+      searchForm.classList.add('hidden');
+      trackForm.classList.remove('hidden');
+      
+      trackBtn.classList.remove(...inactiveClasses);
+      trackBtn.classList.add(...activeClasses);
+      
+      searchBtn.classList.remove(...activeClasses);
+      searchBtn.classList.add(...inactiveClasses);
+    }
   }
 
   // Track Trip AJAX
@@ -925,131 +933,29 @@
     }
   }
 
-  // Testimonials Carousel
-  const reviews = @json($reviews->take(6));
-  let currentReview = 0;
-
-  // Only initialize carousel if there are reviews
-  if (reviews.length === 0) {
-    // Don't initialize carousel functionality when no reviews
-    console.log('No reviews available for carousel');
-  } else {
-
-  function showReview(index) {
-    currentReview = index;
-    const review = reviews[index];
-    const featuredDiv = document.getElementById('featured-review');
-    
-    // Update featured review content
-    featuredDiv.innerHTML = `
-      <div class="flex items-start gap-4 mb-6">
-        <div class="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center">
-          <i data-lucide="user" style="width:20px;height:20px"></i>
-        </div>
-        <div class="flex-1">
-          <h3 class="font-bold text-lg mb-1">${review.user?.name || 'Happy Passenger'}</h3>
-          <div class="flex items-center gap-2 text-sm text-primary-200">
-            <span class="flex gap-0.5">
-              ${generateStars(review.rating)}
-            </span>
-            <span>·</span>
-            <span>Verified Traveler</span>
-          </div>
-        </div>
-      </div>
-      <blockquote class="text-xl leading-relaxed mb-6 italic">
-        "${review.comment}"
-      </blockquote>
-      <div class="flex items-center justify-between">
-        <div class="text-sm text-primary-200">
-          ${review.type ? review.type.charAt(0).toUpperCase() + review.type.slice(1) : 'General'} · ${new Date(review.created_at).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
-        </div>
-        <div class="flex gap-2">
-          ${generateDots(index)}
-        </div>
-      </div>
-    `;
-    
-    // Reinitialize icons
-    lucide.createIcons();
-    
-    // Update dots
-    updateDots(index);
-    
-    // Update card highlights
-    updateCardHighlights(index);
-  }
-
-  function generateStars(rating) {
-    let stars = '';
-    for (let i = 1; i <= 5; i++) {
-      const filled = i <= rating ? 'color:#fbbf24;fill:#fbbf24' : 'color:#64748b';
-      stars += `<i data-lucide="star" style="width:14px;height:14px;${filled}"></i>`;
-    }
-    return stars;
-  }
-
-  function generateDots(activeIndex) {
-    let dots = '';
-    for (let i = 0; i < Math.min(3, reviews.length); i++) {
-      const active = i === activeIndex;
-      const width = active ? 'w-8' : 'w-2';
-      const bg = active ? 'bg-white' : 'bg-white/40 hover:bg-white/60';
-      dots += `<button onclick="showReview(${i})" 
-                      class="w-2 h-2 rounded-full transition-all ${bg} ${width}"
-                      data-review="${i}"></button>`;
-    }
-    return dots;
-  }
-
-  function updateDots(activeIndex) {
-    document.querySelectorAll('[data-review]').forEach((dot, index) => {
-      if (index === activeIndex) {
-        dot.classList.add('bg-white', 'w-8');
-        dot.classList.remove('bg-white/40', 'hover:bg-white/60', 'w-2');
-      } else {
-        dot.classList.remove('bg-white', 'w-8');
-        dot.classList.add('bg-white/40', 'hover:bg-white/60', 'w-2');
+  // Testimonial Swiper Initialization
+  if (document.querySelector('.testimonial-swiper')) {
+    new Swiper('.testimonial-swiper', {
+      slidesPerView: 1,
+      spaceBetween: 24,
+      loop: true,
+      autoplay: {
+        delay: 6000,
+        disableOnInteraction: false,
+      },
+      pagination: {
+        el: '.testimonial-swiper .swiper-pagination',
+        clickable: true,
+      },
+      navigation: {
+        nextEl: '.swiper-button-next',
+        prevEl: '.swiper-button-prev',
+      },
+      breakpoints: {
+        768: { slidesPerView: 2 },
+        1024: { slidesPerView: 2 }
       }
     });
-  }
-
-  function updateCardHighlights(activeIndex) {
-    document.querySelectorAll('[data-review-card]').forEach((card, index) => {
-      if (index === activeIndex) {
-        card.classList.add('ring-2', 'ring-primary-600', 'transform', 'scale-105');
-      } else {
-        card.classList.remove('ring-2', 'ring-primary-600', 'transform', 'scale-105');
-      }
-    });
-  }
-
-  function nextReview() {
-    currentReview = (currentReview + 1) % reviews.length;
-    showReview(currentReview);
-  }
-
-  function previousReview() {
-    currentReview = (currentReview - 1 + reviews.length) % reviews.length;
-    showReview(currentReview);
-  }
-
-  // Travel FAQ Logic
-  function toggleFaq(index) {
-    const content = document.getElementById(`faq-content-${index}`);
-    const icon = document.getElementById(`faq-icon-${index}`);
-    
-    if (content.classList.contains('hidden')) {
-      content.classList.remove('hidden');
-      icon.style.transform = 'rotate(180deg)';
-    } else {
-      content.classList.add('hidden');
-      icon.style.transform = 'rotate(0deg)';
-    }
-  }
-
-  // Auto-rotate carousel
-  setInterval(nextReview, 5000);
   }
 
   // Travel FAQ Logic

@@ -154,11 +154,13 @@ class HomeController extends Controller
                 ->where('departure_time', '>=', now()->subMinutes(30))
                 ->where('departure_time', '<=', now()->addMinutes(30))
                 ->count(),
-            'seats_available_today' => Trip::whereDate('trip_date', $today)
+            'seats_available_today' => Trip::with('bookings.bookingSeats')
+                ->whereDate('trip_date', $today)
                 ->where('status', 'scheduled')
                 ->where('is_active', true)
+                ->get()
                 ->sum('available_seats'),
-            'popular_routes_today' => Trip::with(['route.originCity', 'route.destinationCity'])
+            'popular_routes_today' => Trip::with(['route.originCity', 'route.destinationCity', 'bookings.bookingSeats'])
                 ->whereDate('trip_date', $today)
                 ->where('status', 'scheduled')
                 ->where('is_active', true)

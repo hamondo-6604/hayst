@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Notification;
+use App\Models\Feedback;
 use Illuminate\Http\Request;
 
 class NotificationController extends Controller
@@ -40,13 +41,19 @@ class NotificationController extends Controller
             ->unread()
             ->where('type', 'booking_confirmed')
             ->count();
+            
+        $newFeedbackCount = auth()->user()->appNotifications()
+            ->unread()
+            ->where('type', 'new_feedback')
+            ->count();
         
         $html = view('admin.notifications.partials.dropdown-items', compact('unreadNotifs'))->render();
         
         return response()->json([
             'count' => $unreadCount,
             'html' => $html,
-            'new_bookings_count' => $newBookingsCount
+            'new_bookings_count' => $newBookingsCount,
+            'pending_feedback_count' => $newFeedbackCount
         ]);
     }
 }
