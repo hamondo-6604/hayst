@@ -87,29 +87,21 @@
             text-decoration: none;
             transition: all 0.2s;
             position: relative;
+            background: transparent;
         }
 
         .nav-item:hover {
-            background: #f1f5f9;
             color: #0f172a;
+            background: transparent;
         }
 
         .nav-item.active {
-            background: #e0f2fe;
             color: #0284c7;
             font-weight: 600;
+            background: transparent;
         }
 
-        .nav-item.active::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 0;
-            bottom: 0;
-            width: 4px;
-            background: #0ea5e9;
-        }
-
+        
         .nav-icon {
             width: 24px;
             font-size: 1rem;
@@ -169,9 +161,9 @@
         .dark .admin-sidebar { background: #1e293b; border-right-color: #334155; }
         .dark .sidebar-brand { border-bottom-color: #334155; color: #f8fafc; }
         .dark .nav-group-label { color: #64748b; }
-        .dark .nav-item { color: #cbd5e1; }
-        .dark .nav-item:hover { background: #334155; color: #f8fafc; }
-        .dark .nav-item.active { background: rgba(14, 165, 233, 0.15); color: #38bdf8; }
+        .dark .nav-item { color: #cbd5e1; background: transparent; }
+        .dark .nav-item:hover { color: #f8fafc; background: transparent; }
+        .dark .nav-item.active { color: #38bdf8; background: transparent; }
         .dark .nav-icon { color: #64748b; }
         .dark .nav-item:hover .nav-icon { color: #94a3b8; }
         .dark .nav-item.active .nav-icon { color: #38bdf8; }

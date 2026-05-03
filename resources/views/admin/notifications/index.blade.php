@@ -15,7 +15,7 @@
     <form method="GET" action="{{ route('admin.notifications.index') }}" class="flex flex-col sm:flex-row gap-4 items-end">
         <div class="w-full sm:w-48">
             <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">Status</label>
-            <select name="status" class="w-full rounded-xl border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-white text-sm focus:ring-primary-500 focus:border-primary-500">
+            <select name="status" class="w-full px-4 py-2 rounded-xl border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-white text-sm focus:ring-primary-500 focus:border-primary-500">
                 <option value="">All Statuses</option>
                 <option value="read" {{ request('status') === 'read' ? 'selected' : '' }}>Read</option>
                 <option value="unread" {{ request('status') === 'unread' ? 'selected' : '' }}>Unread</option>

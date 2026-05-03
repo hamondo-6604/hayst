@@ -422,56 +422,6 @@
 </section>
 @endif
 
-{{-- ══════════════════════════════ INTERACTIVE ROUTE MAP (VISUAL) ══════════════════════════════ --}}
-<section class="py-20 bg-slate-50 border-t border-slate-200 overflow-hidden relative">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-    <div class="text-center max-w-lg mx-auto mb-12">
-      <p class="text-xs font-bold text-primary-600 uppercase tracking-widest mb-1">Our Network</p>
-      <h2 class="text-3xl font-extrabold text-slate-900">Connecting <span class="text-primary-600">Mindanao</span></h2>
-      <p class="text-slate-500 text-sm mt-1.5">Seamless travel across major cities and terminals.</p>
-    </div>
-    
-    <div class="relative w-full max-w-4xl mx-auto h-[400px] bg-white rounded-3xl border border-slate-200 shadow-xl overflow-hidden flex items-center justify-center">
-      {{-- Stylized SVG Network Map --}}
-      <svg class="absolute inset-0 w-full h-full text-slate-100" fill="none" viewBox="0 0 800 400" preserveAspectRatio="xMidYMid slice">
-        <path d="M100 100 Q 250 50 400 150 T 700 200" stroke="currentColor" stroke-width="4" stroke-dasharray="8 8" />
-        <path d="M400 150 Q 500 300 600 250" stroke="currentColor" stroke-width="4" stroke-dasharray="8 8" />
-        <path d="M150 250 Q 250 350 400 150" stroke="currentColor" stroke-width="4" stroke-dasharray="8 8" />
-      </svg>
-      
-      {{-- Nodes --}}
-      <div class="absolute top-[20%] left-[15%] group">
-        <div class="w-4 h-4 bg-primary-500 rounded-full shadow-[0_0_0_4px_rgba(234,88,12,0.2)] animate-pulse"></div>
-        <div class="absolute top-6 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-[10px] font-bold px-2 py-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">Zamboanga</div>
-      </div>
-      <div class="absolute top-[35%] left-[45%] group">
-        <div class="w-5 h-5 bg-emerald-500 rounded-full shadow-[0_0_0_4px_rgba(16,185,129,0.2)]"></div>
-        <div class="absolute top-7 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-[10px] font-bold px-2 py-1 rounded-md opacity-100 whitespace-nowrap">Cagayan de Oro</div>
-      </div>
-      <div class="absolute top-[60%] left-[25%] group">
-        <div class="w-4 h-4 bg-primary-500 rounded-full shadow-[0_0_0_4px_rgba(234,88,12,0.2)]"></div>
-        <div class="absolute top-6 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-[10px] font-bold px-2 py-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">Pagadian</div>
-      </div>
-      <div class="absolute top-[45%] left-[85%] group">
-        <div class="w-6 h-6 bg-primary-600 rounded-full shadow-[0_0_0_6px_rgba(234,88,12,0.2)]"></div>
-        <div class="absolute top-8 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-[10px] font-bold px-2 py-1 rounded-md opacity-100 whitespace-nowrap">Davao City</div>
-      </div>
-      <div class="absolute top-[60%] left-[70%] group">
-        <div class="w-4 h-4 bg-primary-500 rounded-full shadow-[0_0_0_4px_rgba(234,88,12,0.2)] animate-pulse"></div>
-        <div class="absolute top-6 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-[10px] font-bold px-2 py-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">General Santos</div>
-      </div>
-      <div class="absolute top-[25%] left-[65%] group">
-        <div class="w-4 h-4 bg-primary-500 rounded-full shadow-[0_0_0_4px_rgba(234,88,12,0.2)]"></div>
-        <div class="absolute top-6 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-[10px] font-bold px-2 py-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">Butuan</div>
-      </div>
-      
-      <div class="absolute bottom-6 right-6 glass text-xs font-bold text-slate-500 px-3 py-1.5 rounded-lg shadow-sm">
-        Interactive Map Illustration
-      </div>
-    </div>
-  </div>
-</section>
-
 {{-- ══════════════════════════════ FLEET SHOWCASE ══════════════════════════════ --}}
 @if(isset($busTypes) && $busTypes->isNotEmpty())
 <section class="py-20 bg-white border-t border-slate-100">
