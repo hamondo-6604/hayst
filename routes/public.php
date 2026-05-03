@@ -27,6 +27,9 @@ Route::get('/routes', [BookingRoutesController::class, 'index'])->name('landing.
 // Promos (public)
 Route::get('/promos', [HomeController::class, 'promos'])->name('landing.promos');
 
+// Track Trip
+Route::get('/track-trip', [HomeController::class, 'trackTrip'])->name('landing.track_trip');
+
 /*
 |--------------------------------------------------------------------------
 | AUTH-GATED — Requires login
@@ -72,6 +75,9 @@ Route::middleware('auth')->group(function () {
 |--------------------------------------------------------------------------
 */
 
+Route::get('/login', function () {
+    return redirect()->route('landing.home', ['open_login' => 1]);
+})->name('login');
 Route::post('/login',           [AuthController::class, 'login_post'])->name('login_post');
 Route::post('/register',        [AuthController::class, 'register_post'])->name('register_post');
 Route::post('/forgot-password', [AuthController::class, 'forgotPassword'])->name('forgot-password');

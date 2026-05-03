@@ -77,6 +77,23 @@
           </div>
         @endif
 
+        {{-- Amenity Filter --}}
+        @if($amenities->isNotEmpty())
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-2">Amenities</label>
+            <div class="space-y-1.5 max-h-48 overflow-y-auto pr-2">
+              @foreach($amenities as $amenity)
+                <label class="flex items-center gap-2 text-sm text-slate-600 cursor-pointer hover:text-slate-900">
+                  <input type="checkbox" name="amenity-filter" value="{{ $amenity->id }}"
+                         onchange="applyFilters()" class="accent-primary-600 rounded">
+                  <i data-lucide="{{ $amenity->icon ?? 'check' }}" style="width:14px;height:14px;color:#94a3b8"></i>
+                  {{ $amenity->display_name }}
+                </label>
+              @endforeach
+            </div>
+          </div>
+        @endif
+
         {{-- Sort --}}
         <div>
           <label class="block text-xs font-bold text-slate-700 mb-2">Sort By</label>
@@ -121,6 +138,12 @@
               : '—';
             $region         = strtolower($route->originCity?->region ?? '');
             $upcomingCount  = $route->upcoming_trips_count ?? 0;
+            
+            // Extract unique amenity IDs from trips
+            $amenityIds = $route->trips->flatMap(fn($t) => $t->bus?->amenities ?? collect())
+                                       ->pluck('id')
+                                       ->unique()
+                                       ->implode(',');
 
             // ── KEY FIX ─────────────────────────────────────────────
             // Do NOT pass today's date — let TicketBookingController
@@ -138,6 +161,7 @@
                data-fare="{{ $route->min_fare ?? 9999 }}"
                data-trips="{{ $upcomingCount }}"
                data-distance="{{ $route->distance_km ?? 9999 }}"
+               data-amenities="{{ $amenityIds }}"
                onclick="location.href='{{ $searchUrl }}'">
 
             {{-- Header row --}}
@@ -276,17 +300,23 @@
 
 @push('scripts')
 <script>
-  // ── Combined filter (search + region) ───────────────────────────
+  // ── Combined filter (search + region + amenities) ───────────────────────────
   function applyFilters() {
     const q      = (document.getElementById('route-search')?.value ?? '').toLowerCase();
     const region = document.querySelector('input[name="region-filter"]:checked')?.value ?? '';
+    const checkedAmenities = Array.from(document.querySelectorAll('input[name="amenity-filter"]:checked')).map(cb => cb.value);
+    
     const rows   = document.querySelectorAll('.route-row');
     let visible  = 0;
 
     rows.forEach(row => {
       const nameMatch   = row.dataset.name.includes(q);
       const regionMatch = !region || row.dataset.region.includes(region);
-      const show        = nameMatch && regionMatch;
+      
+      const routeAmenities = row.dataset.amenities ? row.dataset.amenities.split(',') : [];
+      const amenityMatch = checkedAmenities.every(id => routeAmenities.includes(id));
+
+      const show        = nameMatch && regionMatch && amenityMatch;
       row.style.display = show ? '' : 'none';
       if (show) visible++;
     });

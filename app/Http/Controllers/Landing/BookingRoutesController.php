@@ -13,7 +13,15 @@ class BookingRoutesController extends Controller
 {
     public function index(Request $request)
     {
-        $query = BusRoute::with(['originCity', 'destinationCity', 'originTerminal', 'destinationTerminal'])
+        $query = BusRoute::with([
+            'originCity', 
+            'destinationCity', 
+            'originTerminal', 
+            'destinationTerminal',
+            'trips' => fn ($q) => $q->where('status', 'scheduled')
+                                    ->where('trip_date', '>=', today())
+                                    ->with('bus.amenities')
+        ])
             ->where('status', 'active')
             ->withCount(['trips as upcoming_trips_count' => fn ($q) =>
                 $q->where('status', 'scheduled')->where('trip_date', '>=', today())
@@ -40,6 +48,7 @@ class BookingRoutesController extends Controller
         $routes    = $query->paginate(12)->withQueryString();
         $terminals = Terminal::with('city')->where('status', 'active')->orderBy('name')->get();
         $regions   = City::whereNotNull('region')->distinct()->orderBy('region')->pluck('region');
+        $amenities = \App\Models\Amenity::where('is_active', true)->orderBy('display_name')->get();
 
         $stats = [
             'totalRoutes'    => BusRoute::where('status', 'active')->count(),
@@ -50,6 +59,6 @@ class BookingRoutesController extends Controller
                                     ->min('fare') ?? 0,
         ];
 
-        return view('pages.booking_routes', compact('routes', 'terminals', 'regions', 'stats'));
+        return view('pages.booking_routes', compact('routes', 'terminals', 'regions', 'amenities', 'stats'));
     }
 }

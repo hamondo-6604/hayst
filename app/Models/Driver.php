@@ -20,6 +20,7 @@ class Driver extends Model
         'contact_number',
         'address',
         'status',
+        'image_url',
     ];
 
     protected $casts = [

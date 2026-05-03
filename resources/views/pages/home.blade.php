@@ -123,13 +123,19 @@
           </div>
         @endif
 
-        {{-- Quick search --}}
+        {{-- Tabs for Search & Track --}}
         <div class="bg-white rounded-2xl p-5 shadow-2xl">
-          <h3 class="flex items-center gap-2 text-sm font-bold text-slate-800 mb-4">
-            <i data-lucide="search" style="width:14px;height:14px;color:#ea580c"></i>
-            Quick Search
-          </h3>
-          <form action="{{ route('landing.ticket_booking.search') }}" method="POST" class="space-y-3">
+          <div class="flex gap-4 border-b border-slate-100 mb-4">
+            <button onclick="switchHeroTab('search')" id="tab-btn-search" class="pb-2 text-sm font-bold border-b-2 border-primary-600 text-primary-700 transition-colors">
+              <i data-lucide="search" style="width:14px;height:14px;display:inline;margin-right:4px"></i>Quick Search
+            </button>
+            <button onclick="switchHeroTab('track')" id="tab-btn-track" class="pb-2 text-sm font-bold border-b-2 border-transparent text-slate-400 hover:text-slate-600 transition-colors">
+              <i data-lucide="map" style="width:14px;height:14px;display:inline;margin-right:4px"></i>Track Trip
+            </button>
+          </div>
+
+          {{-- Quick Search Form --}}
+          <form action="{{ route('landing.ticket_booking.search') }}" method="POST" id="hero-search-form" class="space-y-3">
             @csrf
             <div class="grid grid-cols-2 gap-3">
               <div>
@@ -171,6 +177,25 @@
               <i data-lucide="search" style="width:14px;height:14px"></i> Find Trips
             </button>
           </form>
+
+          {{-- Track Trip Form --}}
+          <div id="hero-track-form" class="hidden space-y-3">
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1">Trip Code</label>
+              <div class="relative">
+                <i data-lucide="hash" style="width:12px;height:12px;position:absolute;left:10px;top:50%;transform:translateY(-50%);color:#94a3b8"></i>
+                <input type="text" id="track-trip-code" placeholder="e.g. TR-A1B2C3"
+                       class="w-full pl-7 pr-4 py-2.5 text-xs border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 uppercase">
+              </div>
+            </div>
+            <button onclick="trackTripCode()" id="btn-track-trip"
+                    class="w-full py-2.5 bg-slate-800 hover:bg-slate-900 text-white text-sm font-bold rounded-xl transition-colors flex items-center justify-center gap-2">
+              <i data-lucide="crosshair" style="width:14px;height:14px"></i> Check Status
+            </button>
+            <div id="track-result" class="hidden mt-3 p-3 bg-slate-50 border border-slate-100 rounded-xl text-xs space-y-1.5">
+              <!-- Result goes here -->
+            </div>
+          </div>
         </div>
 
       </div>
@@ -334,6 +359,187 @@
           </div>
           <h3 class="text-sm font-bold text-slate-900 mb-1">{{ $title }}</h3>
           <p class="text-xs text-slate-500 leading-relaxed">{{ $desc }}</p>
+        </div>
+      @endforeach
+    </div>
+  </div>
+</section>
+
+{{-- ══════════════════════════════ QUICK TIMETABLES ══════════════════════════════ --}}
+@if(isset($topSchedules) && count($topSchedules) > 0)
+<section class="py-20 bg-slate-900 border-t border-slate-800">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center max-w-lg mx-auto mb-12">
+      <p class="text-xs font-bold text-primary-400 uppercase tracking-widest mb-1">Daily Departures</p>
+      <h2 class="text-3xl font-extrabold text-white">Quick <span class="text-primary-400">Timetables</span></h2>
+      <p class="text-slate-400 text-sm mt-1.5">View our daily schedule for top routes across Mindanao.</p>
+    </div>
+
+    <div class="grid lg:grid-cols-2 gap-6">
+      @foreach(array_slice($topSchedules, 0, 4) as $item)
+        <div class="bg-white/5 border border-white/10 rounded-2xl p-6">
+          <div class="flex items-center gap-3 mb-4 border-b border-white/10 pb-4">
+            <div class="w-10 h-10 rounded-full bg-primary-500/20 flex items-center justify-center text-primary-400 shrink-0">
+              <i data-lucide="route" style="width:20px;height:20px"></i>
+            </div>
+            <div>
+              <h3 class="text-lg font-bold text-white">{{ $item['route']->originCity->name }} to {{ $item['route']->destinationCity->name }}</h3>
+              <p class="text-xs text-slate-400">{{ $item['route']->distance_km ? $item['route']->distance_km.' km' : 'Direct Route' }}</p>
+            </div>
+          </div>
+          <div class="flex flex-wrap gap-2">
+            @foreach($item['schedules']->take(8) as $sched)
+              <span class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-800 text-slate-300 text-xs font-semibold rounded-lg border border-slate-700">
+                <i data-lucide="clock" style="width:12px;height:12px;color:#94a3b8"></i>
+                {{ \Carbon\Carbon::parse($sched->departure_time)->format('h:i A') }}
+              </span>
+            @endforeach
+            @if($item['schedules']->count() > 8)
+              <span class="inline-flex items-center px-3 py-1.5 text-slate-400 text-xs font-semibold">
+                +{{ $item['schedules']->count() - 8 }} more
+              </span>
+            @endif
+          </div>
+        </div>
+      @endforeach
+    </div>
+  </div>
+</section>
+@endif
+
+{{-- ══════════════════════════════ INTERACTIVE ROUTE MAP (VISUAL) ══════════════════════════════ --}}
+<section class="py-20 bg-slate-50 border-t border-slate-200 overflow-hidden relative">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+    <div class="text-center max-w-lg mx-auto mb-12">
+      <p class="text-xs font-bold text-primary-600 uppercase tracking-widest mb-1">Our Network</p>
+      <h2 class="text-3xl font-extrabold text-slate-900">Connecting <span class="text-primary-600">Mindanao</span></h2>
+      <p class="text-slate-500 text-sm mt-1.5">Seamless travel across major cities and terminals.</p>
+    </div>
+    
+    <div class="relative w-full max-w-4xl mx-auto h-[400px] bg-white rounded-3xl border border-slate-200 shadow-xl overflow-hidden flex items-center justify-center">
+      {{-- Stylized SVG Network Map --}}
+      <svg class="absolute inset-0 w-full h-full text-slate-100" fill="none" viewBox="0 0 800 400" preserveAspectRatio="xMidYMid slice">
+        <path d="M100 100 Q 250 50 400 150 T 700 200" stroke="currentColor" stroke-width="4" stroke-dasharray="8 8" />
+        <path d="M400 150 Q 500 300 600 250" stroke="currentColor" stroke-width="4" stroke-dasharray="8 8" />
+        <path d="M150 250 Q 250 350 400 150" stroke="currentColor" stroke-width="4" stroke-dasharray="8 8" />
+      </svg>
+      
+      {{-- Nodes --}}
+      <div class="absolute top-[20%] left-[15%] group">
+        <div class="w-4 h-4 bg-primary-500 rounded-full shadow-[0_0_0_4px_rgba(234,88,12,0.2)] animate-pulse"></div>
+        <div class="absolute top-6 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-[10px] font-bold px-2 py-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">Zamboanga</div>
+      </div>
+      <div class="absolute top-[35%] left-[45%] group">
+        <div class="w-5 h-5 bg-emerald-500 rounded-full shadow-[0_0_0_4px_rgba(16,185,129,0.2)]"></div>
+        <div class="absolute top-7 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-[10px] font-bold px-2 py-1 rounded-md opacity-100 whitespace-nowrap">Cagayan de Oro</div>
+      </div>
+      <div class="absolute top-[60%] left-[25%] group">
+        <div class="w-4 h-4 bg-primary-500 rounded-full shadow-[0_0_0_4px_rgba(234,88,12,0.2)]"></div>
+        <div class="absolute top-6 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-[10px] font-bold px-2 py-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">Pagadian</div>
+      </div>
+      <div class="absolute top-[45%] left-[85%] group">
+        <div class="w-6 h-6 bg-primary-600 rounded-full shadow-[0_0_0_6px_rgba(234,88,12,0.2)]"></div>
+        <div class="absolute top-8 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-[10px] font-bold px-2 py-1 rounded-md opacity-100 whitespace-nowrap">Davao City</div>
+      </div>
+      <div class="absolute top-[60%] left-[70%] group">
+        <div class="w-4 h-4 bg-primary-500 rounded-full shadow-[0_0_0_4px_rgba(234,88,12,0.2)] animate-pulse"></div>
+        <div class="absolute top-6 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-[10px] font-bold px-2 py-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">General Santos</div>
+      </div>
+      <div class="absolute top-[25%] left-[65%] group">
+        <div class="w-4 h-4 bg-primary-500 rounded-full shadow-[0_0_0_4px_rgba(234,88,12,0.2)]"></div>
+        <div class="absolute top-6 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-[10px] font-bold px-2 py-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">Butuan</div>
+      </div>
+      
+      <div class="absolute bottom-6 right-6 bg-white/90 backdrop-blur text-xs font-bold text-slate-500 px-3 py-1.5 rounded-lg shadow-sm border border-slate-100">
+        Interactive Map Illustration
+      </div>
+    </div>
+  </div>
+</section>
+
+{{-- ══════════════════════════════ FLEET SHOWCASE ══════════════════════════════ --}}
+@if(isset($busTypes) && $busTypes->isNotEmpty())
+<section class="py-20 bg-white border-t border-slate-100">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center max-w-lg mx-auto mb-12">
+      <p class="text-xs font-bold text-primary-600 uppercase tracking-widest mb-1">Our Fleet</p>
+      <h2 class="text-3xl font-extrabold text-slate-900">Travel in <span class="text-primary-600">Comfort</span></h2>
+      <p class="text-slate-500 text-sm mt-1.5">Choose the class that fits your budget and style.</p>
+    </div>
+
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      @foreach($busTypes as $type)
+        @php
+          $icon = match(strtolower($type->type_name)) {
+            'deluxe' => 'star',
+            'express' => 'zap',
+            'aircon' => 'wind',
+            'mini bus' => 'truck',
+            default => 'bus'
+          };
+          $color = match(strtolower($type->type_name)) {
+            'deluxe' => 'text-amber-600 bg-amber-50 border-amber-200',
+            'express' => 'text-red-600 bg-red-50 border-red-200',
+            'aircon' => 'text-blue-600 bg-blue-50 border-blue-200',
+            default => 'text-slate-600 bg-slate-50 border-slate-200'
+          };
+        @endphp
+        <div class="border border-slate-200 rounded-2xl p-6 hover:shadow-xl transition-shadow relative overflow-hidden group">
+          <div class="absolute -right-6 -top-6 w-24 h-24 {{ explode(' ', $color)[1] }} rounded-full opacity-50 group-hover:scale-150 transition-transform duration-500"></div>
+          
+          <div class="w-12 h-12 {{ $color }} rounded-xl flex items-center justify-center mb-5 relative z-10 border">
+            <i data-lucide="{{ $icon }}" style="width:24px;height:24px"></i>
+          </div>
+          
+          <h3 class="text-xl font-bold text-slate-900 mb-2 relative z-10">{{ $type->type_name }}</h3>
+          <p class="text-sm text-slate-500 mb-5 relative z-10 line-clamp-2 min-h-[40px]">{{ $type->description }}</p>
+          
+          <ul class="space-y-2 relative z-10">
+            <li class="flex items-center gap-2 text-xs text-slate-600 font-medium">
+              <i data-lucide="check" style="width:14px;height:14px;color:#10b981"></i> Spacious Seating
+            </li>
+            @if(in_array(strtolower($type->type_name), ['aircon', 'express', 'deluxe']))
+              <li class="flex items-center gap-2 text-xs text-slate-600 font-medium">
+                <i data-lucide="check" style="width:14px;height:14px;color:#10b981"></i> Full Air-Conditioning
+              </li>
+            @endif
+            @if(strtolower($type->type_name) === 'deluxe')
+              <li class="flex items-center gap-2 text-xs text-slate-600 font-medium">
+                <i data-lucide="check" style="width:14px;height:14px;color:#10b981"></i> Extra Legroom & USB Ports
+              </li>
+            @endif
+          </ul>
+        </div>
+      @endforeach
+    </div>
+  </div>
+</section>
+@endif
+
+{{-- ══════════════════════════════ TRAVEL FAQ ══════════════════════════════ --}}
+<section class="py-20 bg-slate-50 border-t border-slate-200">
+  <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center mb-12">
+      <p class="text-xs font-bold text-primary-600 uppercase tracking-widest mb-1">Got Questions?</p>
+      <h2 class="text-3xl font-extrabold text-slate-900">Travel <span class="text-primary-600">FAQ</span></h2>
+    </div>
+
+    <div class="space-y-4">
+      @foreach([
+        ['What is your luggage policy?', 'Each passenger is allowed 1 hand-carry bag (up to 7kg) and 1 checked bag (up to 15kg). Excess luggage is subject to additional fees at the terminal.'],
+        ['Are pets allowed on the bus?', 'Yes, small pets are allowed but they must be placed in a secure, leak-proof pet carrier. They can be placed under the seat or in the cargo hold depending on the bus type.'],
+        ['Can I cancel or reschedule my ticket?', 'Tickets can be rescheduled at least 24 hours before departure with a minor rebooking fee. Cancellations are non-refundable but can be converted to travel credits.'],
+        ['Do children or infants travel for free?', 'Infants under 2 years old travel for free provided they sit on an adult\'s lap. Children 3 years and above require a regular ticket. Student discounts apply.'],
+        ['How do I claim my Senior Citizen or PWD discount?', 'You can select the discount type during checkout. However, you MUST present your valid Senior Citizen or PWD ID to the bus conductor before boarding. Failure to do so will require you to pay the fare difference.']
+      ] as $i => [$q, $a])
+        <div class="border border-slate-200 rounded-2xl overflow-hidden bg-white">
+          <button onclick="toggleFaq({{ $i }})" class="w-full flex items-center justify-between p-5 text-left bg-white hover:bg-slate-50 transition-colors focus:outline-none">
+            <span class="font-bold text-slate-900 text-sm">{{ $q }}</span>
+            <i data-lucide="chevron-down" id="faq-icon-{{ $i }}" style="width:16px;height:16px;color:#64748b;transition:transform 0.3s"></i>
+          </button>
+          <div id="faq-content-{{ $i }}" class="hidden px-5 pb-5 pt-2 text-sm text-slate-600 leading-relaxed bg-white">
+            {{ $a }}
+          </div>
         </div>
       @endforeach
     </div>
@@ -666,6 +872,59 @@
       .catch(() => toast('Could not copy code.', 'error'));
   }
 
+  // Hero Tabs Logic
+  function switchHeroTab(tab) {
+    document.getElementById('hero-search-form').classList.add('hidden');
+    document.getElementById('hero-track-form').classList.add('hidden');
+    
+    document.getElementById('tab-btn-search').className = 'pb-2 text-sm font-bold border-b-2 border-transparent text-slate-400 hover:text-slate-600 transition-colors';
+    document.getElementById('tab-btn-track').className = 'pb-2 text-sm font-bold border-b-2 border-transparent text-slate-400 hover:text-slate-600 transition-colors';
+    
+    document.getElementById(`hero-${tab}-form`).classList.remove('hidden');
+    document.getElementById(`tab-btn-${tab}`).className = 'pb-2 text-sm font-bold border-b-2 border-primary-600 text-primary-700 transition-colors';
+  }
+
+  // Track Trip AJAX
+  async function trackTripCode() {
+    const code = document.getElementById('track-trip-code').value.trim();
+    const resultBox = document.getElementById('track-result');
+    const btn = document.getElementById('btn-track-trip');
+    const orig = btn.innerHTML;
+
+    if (!code) return toast('Please enter a trip code.', 'error');
+
+    btn.innerHTML = `<i data-lucide="loader-2" class="animate-spin" style="width:14px;height:14px"></i> Tracking...`;
+    lucide.createIcons();
+    
+    try {
+      const res = await fetch(`{{ route('landing.track_trip') }}?trip_code=${code}`);
+      const j = await res.json();
+      
+      resultBox.classList.remove('hidden');
+      if (j.success) {
+        const t = j.trip;
+        const color = t.status === 'Completed' ? 'text-slate-500' : (t.status === 'Ongoing' ? 'text-blue-500' : 'text-emerald-500');
+        resultBox.innerHTML = `
+          <div class="flex justify-between items-center mb-2 pb-2 border-b border-slate-200">
+            <span class="font-bold text-slate-800">${t.code}</span>
+            <span class="font-bold ${color}">${t.status}</span>
+          </div>
+          <div class="flex items-center gap-1"><i data-lucide="map-pin" style="width:12px;height:12px"></i> ${t.origin} <i data-lucide="arrow-right" style="width:10px;height:10px"></i> ${t.destination}</div>
+          <div class="flex items-center gap-1"><i data-lucide="clock" style="width:12px;height:12px"></i> Departs: <span class="font-semibold text-slate-700">${t.departure}</span></div>
+          <div class="flex items-center gap-1"><i data-lucide="bus" style="width:12px;height:12px"></i> Class: ${t.bus_type}</div>
+        `;
+      } else {
+        resultBox.innerHTML = `<div class="text-red-500 font-semibold">${j.message}</div>`;
+      }
+      lucide.createIcons();
+    } catch (e) {
+      toast('Error tracking trip.', 'error');
+    } finally {
+      btn.innerHTML = orig;
+      lucide.createIcons();
+    }
+  }
+
   // Testimonials Carousel
   const reviews = @json($reviews->take(6));
   let currentReview = 0;
@@ -775,8 +1034,36 @@
     showReview(currentReview);
   }
 
+  // Travel FAQ Logic
+  function toggleFaq(index) {
+    const content = document.getElementById(`faq-content-${index}`);
+    const icon = document.getElementById(`faq-icon-${index}`);
+    
+    if (content.classList.contains('hidden')) {
+      content.classList.remove('hidden');
+      icon.style.transform = 'rotate(180deg)';
+    } else {
+      content.classList.add('hidden');
+      icon.style.transform = 'rotate(0deg)';
+    }
+  }
+
   // Auto-rotate carousel
   setInterval(nextReview, 5000);
+  }
+
+  // Travel FAQ Logic
+  function toggleFaq(index) {
+    const content = document.getElementById(`faq-content-${index}`);
+    const icon = document.getElementById(`faq-icon-${index}`);
+    
+    if (content.classList.contains('hidden')) {
+      content.classList.remove('hidden');
+      icon.style.transform = 'rotate(180deg)';
+    } else {
+      content.classList.add('hidden');
+      icon.style.transform = 'rotate(0deg)';
+    }
   }
 </script>
 @endpush

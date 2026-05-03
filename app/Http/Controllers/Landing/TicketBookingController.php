@@ -410,6 +410,23 @@ class TicketBookingController extends Controller
             'status' => 'confirmed',
         ]);
 
+        // Notify all admins about the successful booking
+        $admins = \App\Models\User::where('role', 'admin')->get();
+        $seatCount = $booking->bookingSeats()->count();
+        $tripRoute = $booking->trip->route->originCity->name . ' to ' . $booking->trip->route->destinationCity->name;
+        
+        foreach ($admins as $admin) {
+            \App\Models\Notification::create([
+                'user_id' => $admin->id,
+                'title' => 'New Booking #' . $booking->booking_reference,
+                'message' => auth()->user()->name . " booked $seatCount seat(s) on $tripRoute.",
+                'type' => 'booking_confirmed',
+                'notifiable_type' => \App\Models\Booking::class,
+                'notifiable_id' => $booking->id,
+                'is_read' => false,
+            ]);
+        }
+
         return redirect()->route('user.booking.success', $booking->id);
     }
 

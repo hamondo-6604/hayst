@@ -13,6 +13,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('province')->nullable();   // e.g. Metro Manila, Cebu
             $table->string('region')->nullable();     // e.g. NCR, Region VII
+            $table->string('image_url')->nullable();
             $table->enum('status', ['active', 'inactive'])->default('active');
             $table->timestamps();
         });

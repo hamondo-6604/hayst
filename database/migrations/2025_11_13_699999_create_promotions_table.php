@@ -20,6 +20,7 @@ return new class extends Migration
 
             $table->decimal('minimum_fare', 10, 2)->nullable();   // min booking amount to apply
             $table->decimal('maximum_discount', 10, 2)->nullable(); // cap for percent discounts
+            $table->string('image_url')->nullable();
 
             $table->integer('max_uses')->nullable();      // null = unlimited
             $table->integer('used_count')->default(0);

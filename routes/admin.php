@@ -52,4 +52,6 @@ Route::get('/feedback', [FeedbackController::class, 'index'])->name('feedback.in
 // System
 Route::get('/roles', [RoleController::class, 'index'])->name('roles.index');
 Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+Route::get('/notifications/poll', [NotificationController::class, 'poll'])->name('notifications.poll');
+Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllRead'])->name('notifications.mark-all-read');
 Route::resource('cities', CityController::class);

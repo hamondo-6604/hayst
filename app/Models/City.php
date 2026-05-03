@@ -15,6 +15,7 @@ class City extends Model
         'province',
         'region',
         'status',
+        'image_url',
     ];
 
     // ------------------------------------------------------------------

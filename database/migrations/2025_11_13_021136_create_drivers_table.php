@@ -24,6 +24,7 @@ return new class extends Migration
             $table->integer('experience_years')->nullable();
             $table->string('contact_number')->nullable();
             $table->text('address')->nullable();
+            $table->string('image_url')->nullable();
 
             $table->enum('status', ['available', 'on_trip', 'off_duty', 'suspended'])
                 ->default('available');

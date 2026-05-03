@@ -35,7 +35,7 @@ return new class extends Migration
 
             $table->enum('status', ['active', 'blocked'])->default('active');
 
-            $table->string('profile_photo')->nullable();
+            $table->string('image_url')->nullable();
 
             $table->timestamp('email_verified_at')->nullable();
             $table->rememberToken();

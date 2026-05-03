@@ -84,9 +84,13 @@
           <div class="relative" data-dd>
             <button onclick="document.getElementById('user-dd').classList.toggle('hidden')"
                     class="flex items-center gap-2 pl-2 pr-3 py-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-tertiary transition-colors border border-transparent hover:border-slate-200 dark:hover:border-primary">
-              <div class="w-7 h-7 rounded-full bg-primary-100 dark:bg-tertiary text-primary-700 dark:text-primary text-xs font-bold flex items-center justify-center">
-                {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
-              </div>
+              @if(auth()->user()->image_url)
+                <img src="{{ asset('storage/' . auth()->user()->image_url) }}" alt="Profile" class="w-7 h-7 rounded-full object-cover border border-slate-200 dark:border-primary">
+              @else
+                <div class="w-7 h-7 rounded-full bg-primary-100 dark:bg-tertiary text-primary-700 dark:text-primary text-xs font-bold flex items-center justify-center">
+                  {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                </div>
+              @endif
               <span class="text-sm font-medium text-slate-700 dark:text-secondary max-w-[110px] truncate">{{ auth()->user()->name }}</span>
               <i data-lucide="chevron-down" style="width:13px;height:13px;color:#94a3b8"></i>
             </button>

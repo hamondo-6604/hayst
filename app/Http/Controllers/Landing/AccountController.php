@@ -24,11 +24,24 @@ class AccountController extends Controller
         $user = Auth::user();
 
         $request->validate([
-            'name'  => 'required|string|max:255',
-            'phone' => 'nullable|string|max:20',
+            'name'      => 'required|string|max:255',
+            'phone'     => 'nullable|string|max:20',
+            'image_url' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
-        $user->update($request->only('name', 'phone'));
+        $data = $request->only('name', 'phone');
+
+        if ($request->hasFile('image_url')) {
+            // Delete old image if it exists and isn't a default URL
+            if ($user->image_url && \Storage::disk('public')->exists($user->image_url)) {
+                \Storage::disk('public')->delete($user->image_url);
+            }
+            
+            $path = $request->file('image_url')->store('profile_photos', 'public');
+            $data['image_url'] = $path;
+        }
+
+        $user->update($data);
 
         return back()->with('success', 'Profile updated successfully.');
     }

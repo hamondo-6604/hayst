@@ -124,7 +124,13 @@ async function doLogin(e) {
     if (j.success) {
       toast(j.message, 'success');
       closeModal('auth-modal');
-      setTimeout(() => location.href = j.redirect || '/', 400);
+      setTimeout(() => {
+        if (window.intendedUrl) {
+          location.href = window.intendedUrl;
+        } else {
+          location.reload();
+        }
+      }, 400);
     } else {
       if (j.errors) {
         for (const [field, messages] of Object.entries(j.errors)) {

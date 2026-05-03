@@ -16,6 +16,7 @@ class BusType extends Model
         'seat_layout_id',
         'status',
         'description',
+        'image_url',
     ];
 
     // ------------------------------------------------------------------

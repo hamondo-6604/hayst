@@ -11,31 +11,15 @@ class TerminalSeeder extends Seeder
     public function run(): void
     {
         $terminals = [
-            // Metro Manila
-            ['city' => 'Quezon City',   'name' => 'Cubao Bus Terminal',           'code' => 'CBT',  'address' => 'EDSA cor. New York Ave., Cubao, Quezon City',         'lat' => 14.6196,  'lng' => 121.0531],
-            ['city' => 'Pasay',         'name' => 'Pasay Bus Terminal (PITX)',     'code' => 'PITX', 'address' => 'PITX, Coastal Rd., Pasay City',                       'lat' => 14.5337,  'lng' => 120.9902],
-            ['city' => 'Manila',        'name' => 'Sampaloc Bus Terminal',         'code' => 'SBT',  'address' => 'Lacson Ave., Sampaloc, Manila',                       'lat' => 14.6131,  'lng' => 120.9942],
-            ['city' => 'Pasig',         'name' => 'Pasig Bus Terminal',            'code' => 'PBT',  'address' => 'Ortigas Ave., Pasig City',                            'lat' => 14.5865,  'lng' => 121.0735],
-
-            // Luzon
-            ['city' => 'Baguio',        'name' => 'Baguio City Bus Terminal',      'code' => 'BAG',  'address' => 'Slaughter House Rd., Baguio City',                   'lat' => 16.4023,  'lng' => 120.5960],
-            ['city' => 'Laoag',         'name' => 'Laoag Bus Terminal',            'code' => 'LAO',  'address' => 'Rizal St., Laoag City, Ilocos Norte',                'lat' => 18.1981,  'lng' => 120.5935],
-            ['city' => 'Vigan',         'name' => 'Vigan Bus Terminal',            'code' => 'VIG',  'address' => 'Quezon Ave., Vigan City, Ilocos Sur',                 'lat' => 17.5747,  'lng' => 120.3869],
-            ['city' => 'Legazpi',       'name' => 'Legazpi Bus Terminal',          'code' => 'LGZ',  'address' => 'Penaranda St., Legazpi City, Albay',                 'lat' => 13.1391,  'lng' => 123.7438],
-            ['city' => 'Naga',          'name' => 'Naga Bus Terminal',             'code' => 'NGA',  'address' => 'Magsaysay Ave., Naga City, Camarines Sur',            'lat' => 13.6218,  'lng' => 123.1945],
-
-            // Visayas
-            ['city' => 'Cebu City',     'name' => 'Cebu South Bus Terminal',       'code' => 'CSBT', 'address' => 'N. Bacalso Ave., Cebu City',                         'lat' => 10.2908,  'lng' => 123.8822],
-            ['city' => 'Cebu City',     'name' => 'Cebu North Bus Terminal',       'code' => 'CNBT', 'address' => 'Jakosalem St., Cebu City',                            'lat' => 10.3182,  'lng' => 123.9003],
-            ['city' => 'Iloilo City',   'name' => 'Iloilo Bus Terminal (QCPO)',    'code' => 'ILO',  'address' => 'Quezon St., Iloilo City',                             'lat' => 10.7202,  'lng' => 122.5621],
-            ['city' => 'Bacolod',       'name' => 'Bacolod Bus Terminal',          'code' => 'BAC',  'address' => 'Lacson St., Bacolod City',                            'lat' => 10.6765,  'lng' => 122.9509],
-            ['city' => 'Tacloban',      'name' => 'Tacloban Bus Terminal',         'code' => 'TAC',  'address' => 'Magsaysay Blvd., Tacloban City',                     'lat' => 11.2448,  'lng' => 125.0040],
-
             // Mindanao
             ['city' => 'Davao City',    'name' => 'Davao Ecoland Bus Terminal',    'code' => 'DVO',  'address' => 'Ecoland Drive, Davao City',                          'lat' => 7.0897,   'lng' => 125.6145],
             ['city' => 'Cagayan de Oro','name' => 'CDO Agora Bus Terminal',        'code' => 'CDO',  'address' => 'Mortola St., Cagayan de Oro City',                   'lat' => 8.4776,   'lng' => 124.6500],
             ['city' => 'General Santos','name' => 'GenSan Bus Terminal',           'code' => 'GEN',  'address' => 'Santiago Blvd., General Santos City',                'lat' => 6.1164,   'lng' => 125.1716],
             ['city' => 'Zamboanga',     'name' => 'Zamboanga Bus Terminal',        'code' => 'ZAM',  'address' => 'Veterans Ave., Zamboanga City',                      'lat' => 6.9101,   'lng' => 122.0730],
+            ['city' => 'Iligan',        'name' => 'Iligan Bus Terminal',           'code' => 'ILI',  'address' => 'Tambacan, Iligan City',                              'lat' => 8.2280,   'lng' => 124.2452],
+            ['city' => 'Tagum',         'name' => 'Tagum City Terminal',           'code' => 'TGM',  'address' => 'Tagum City, Davao del Norte',                        'lat' => 7.4475,   'lng' => 125.8080],
+            ['city' => 'Koronadal',     'name' => 'Koronadal Transport Terminal',  'code' => 'KOR',  'address' => 'Koronadal City, South Cotabato',                     'lat' => 6.4975,   'lng' => 124.8472],
+            ['city' => 'Butuan',        'name' => 'Butuan Integrated Terminal',    'code' => 'BXU',  'address' => 'Ampayon, Butuan City',                               'lat' => 8.9482,   'lng' => 125.5684],
         ];
 
         foreach ($terminals as $data) {

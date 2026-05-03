@@ -14,17 +14,16 @@ class StopSeeder extends Seeder
     {
         // ── Seed named stops ─────────────────────────────────────────────
         $stops = [
-            ['city' => 'Quezon City',    'terminal_code' => 'CBT',  'name' => 'Cubao Bus Stop',          'code' => 'CBT-STOP',  'type' => 'terminal'],
-            ['city' => 'Quezon City',    'terminal_code' => null,   'name' => 'Balintawak Stop',          'code' => 'BAL-STOP',  'type' => 'pickup'],
-            ['city' => 'Quezon City',    'terminal_code' => null,   'name' => 'Monumento Stop',           'code' => 'MON-STOP',  'type' => 'pickup'],
-            ['city' => 'Baguio',         'terminal_code' => 'BAG',  'name' => 'Baguio Terminal Stop',     'code' => 'BAG-STOP',  'type' => 'terminal'],
-            ['city' => 'Baguio',         'terminal_code' => null,   'name' => 'La Trinidad Stop',        'code' => 'LTR-STOP',  'type' => 'pickup'],
-            ['city' => 'Laoag',          'terminal_code' => 'LAO',  'name' => 'Laoag Terminal Stop',      'code' => 'LAO-STOP',  'type' => 'terminal'],
-            ['city' => 'Vigan',          'terminal_code' => 'VIG',  'name' => 'Vigan Terminal Stop',      'code' => 'VIG-STOP',  'type' => 'terminal'],
-            ['city' => 'San Fernando',   'terminal_code' => null,   'name' => 'San Fernando (La Union)',  'code' => 'SFU-STOP',  'type' => 'pickup'],
-            ['city' => 'Cebu City',      'terminal_code' => 'CSBT', 'name' => 'Cebu South Terminal Stop','code' => 'CSBT-STOP', 'type' => 'terminal'],
             ['city' => 'Davao City',     'terminal_code' => 'DVO',  'name' => 'Davao Ecoland Stop',       'code' => 'DVO-STOP',  'type' => 'terminal'],
+            ['city' => 'Davao City',     'terminal_code' => null,   'name' => 'Panacan Stop',             'code' => 'PAN-STOP',  'type' => 'pickup'],
             ['city' => 'Cagayan de Oro', 'terminal_code' => 'CDO',  'name' => 'CDO Agora Stop',           'code' => 'CDO-STOP',  'type' => 'terminal'],
+            ['city' => 'Cagayan de Oro', 'terminal_code' => null,   'name' => 'Puerto Stop',              'code' => 'PUE-STOP',  'type' => 'pickup'],
+            ['city' => 'General Santos', 'terminal_code' => 'GEN',  'name' => 'GenSan Terminal Stop',     'code' => 'GEN-STOP',  'type' => 'terminal'],
+            ['city' => 'General Santos', 'terminal_code' => null,   'name' => 'Polomolok Stop',           'code' => 'POL-STOP',  'type' => 'pickup'],
+            ['city' => 'Tagum',          'terminal_code' => 'TGM',  'name' => 'Tagum Terminal Stop',      'code' => 'TGM-STOP',  'type' => 'terminal'],
+            ['city' => 'Butuan',         'terminal_code' => 'BXU',  'name' => 'Butuan Terminal Stop',     'code' => 'BXU-STOP',  'type' => 'terminal'],
+            ['city' => 'Iligan',         'terminal_code' => 'ILI',  'name' => 'Iligan Terminal Stop',     'code' => 'ILI-STOP',  'type' => 'terminal'],
+            ['city' => 'Zamboanga',      'terminal_code' => 'ZAM',  'name' => 'Zamboanga Terminal Stop',  'code' => 'ZAM-STOP',  'type' => 'terminal'],
         ];
 
         foreach ($stops as $data) {
@@ -45,15 +44,15 @@ class StopSeeder extends Seeder
             );
         }
 
-        // ── Seed route_stops pivot for the Manila → Baguio route ─────────
-        $this->seedManilaToBAguioStops();
-        $this->seedManilaToLaoagStops();
+        // ── Seed route_stops pivot for some Mindanao routes ─────────
+        $this->seedDavaoToCdoStops();
+        $this->seedDavaoToGensanStops();
     }
 
-    private function seedManilaToBAguioStops(): void
+    private function seedDavaoToCdoStops(): void
     {
-        $route = BusRoute::whereHas('originCity', fn ($q) => $q->where('name', 'Quezon City'))
-            ->whereHas('destinationCity', fn ($q) => $q->where('name', 'Baguio'))
+        $route = BusRoute::whereHas('originCity', fn ($q) => $q->where('name', 'Davao City'))
+            ->whereHas('destinationCity', fn ($q) => $q->where('name', 'Cagayan de Oro'))
             ->first();
 
         if (! $route) {
@@ -61,10 +60,10 @@ class StopSeeder extends Seeder
         }
 
         $stopData = [
-            ['code' => 'BAL-STOP',  'order' => 1, 'minutes' => 20,  'fare' => 50.00,  'board' => true,  'alight' => false],
-            ['code' => 'MON-STOP',  'order' => 2, 'minutes' => 35,  'fare' => 80.00,  'board' => true,  'alight' => false],
-            ['code' => 'SFU-STOP',  'order' => 3, 'minutes' => 180, 'fare' => 180.00, 'board' => true,  'alight' => true],
-            ['code' => 'LTR-STOP',  'order' => 4, 'minutes' => 340, 'fare' => 300.00, 'board' => false, 'alight' => true],
+            ['code' => 'PAN-STOP',  'order' => 1, 'minutes' => 30,  'fare' => 50.00,  'board' => true,  'alight' => false],
+            ['code' => 'TGM-STOP',  'order' => 2, 'minutes' => 80,  'fare' => 100.00, 'board' => true,  'alight' => true],
+            ['code' => 'BXU-STOP',  'order' => 3, 'minutes' => 240, 'fare' => 300.00, 'board' => true,  'alight' => true],
+            ['code' => 'PUE-STOP',  'order' => 4, 'minutes' => 340, 'fare' => 400.00, 'board' => false, 'alight' => true],
         ];
 
         foreach ($stopData as $data) {
@@ -85,10 +84,10 @@ class StopSeeder extends Seeder
         }
     }
 
-    private function seedManilaToLaoagStops(): void
+    private function seedDavaoToGensanStops(): void
     {
-        $route = BusRoute::whereHas('originCity', fn ($q) => $q->where('name', 'Manila'))
-            ->whereHas('destinationCity', fn ($q) => $q->where('name', 'Laoag'))
+        $route = BusRoute::whereHas('originCity', fn ($q) => $q->where('name', 'Davao City'))
+            ->whereHas('destinationCity', fn ($q) => $q->where('name', 'General Santos'))
             ->first();
 
         if (! $route) {
@@ -96,9 +95,7 @@ class StopSeeder extends Seeder
         }
 
         $stopData = [
-            ['code' => 'BAL-STOP',  'order' => 1, 'minutes' => 25,  'fare' => 60.00,  'board' => true,  'alight' => false],
-            ['code' => 'SFU-STOP',  'order' => 2, 'minutes' => 200, 'fare' => 200.00, 'board' => true,  'alight' => true],
-            ['code' => 'VIG-STOP',  'order' => 3, 'minutes' => 390, 'fare' => 380.00, 'board' => false, 'alight' => true],
+            ['code' => 'POL-STOP',  'order' => 1, 'minutes' => 100, 'fare' => 150.00, 'board' => true,  'alight' => true],
         ];
 
         foreach ($stopData as $data) {

@@ -22,7 +22,7 @@ class User extends Authenticatable
         'discount_type_id',
         'status',
         'phone',
-        'profile_photo',
+        'image_url',
     ];
 
     protected $hidden = [
@@ -80,6 +80,11 @@ class User extends Authenticatable
     public function driver(): HasOne
     {
         return $this->hasOne(Driver::class);
+    }
+
+    public function appNotifications(): HasMany
+    {
+        return $this->hasMany(Notification::class);
     }
 
     // ─── Discount / Fare Logic ────────────────────────────────────────────────

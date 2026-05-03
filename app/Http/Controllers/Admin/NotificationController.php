@@ -20,4 +20,33 @@ class NotificationController extends Controller
         
         return view('admin.notifications.index', compact('notifications'));
     }
+
+    public function markAllRead()
+    {
+        auth()->user()->appNotifications()->unread()->update([
+            'is_read' => true,
+            'read_at' => now()
+        ]);
+        
+        return back()->with('success', 'All notifications marked as read.');
+    }
+
+    public function poll()
+    {
+        $unreadNotifs = auth()->user()->appNotifications()->unread()->latest()->take(5)->get();
+        $unreadCount = auth()->user()->appNotifications()->unread()->count();
+        
+        $newBookingsCount = auth()->user()->appNotifications()
+            ->unread()
+            ->where('type', 'booking_confirmed')
+            ->count();
+        
+        $html = view('admin.notifications.partials.dropdown-items', compact('unreadNotifs'))->render();
+        
+        return response()->json([
+            'count' => $unreadCount,
+            'html' => $html,
+            'new_bookings_count' => $newBookingsCount
+        ]);
+    }
 }

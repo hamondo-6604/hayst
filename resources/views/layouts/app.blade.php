@@ -391,8 +391,12 @@
 
     // ── require auth guard ────────────────────────────────────
     function requireAuth(url) {
-      @auth window.location.href = url;
-      @else openModal('auth-modal'); authTab('login');
+      @auth 
+        window.location.href = url;
+      @else 
+        window.intendedUrl = url;
+        openModal('auth-modal'); 
+        authTab('login');
       @endauth
     }
 
@@ -417,6 +421,13 @@
         document.getElementById('mob-menu')?.classList.toggle('hidden');
       });
     });
+    // ── check open_login ──────────────────────────────────────
+    @if(request()->has('open_login'))
+      document.addEventListener('DOMContentLoaded', () => {
+        openModal('auth-modal');
+        authTab('login');
+      });
+    @endif
   </script>
 
   @stack('scripts')

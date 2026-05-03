@@ -19,7 +19,7 @@ class Bus extends Model
         'seat_layout_id',
         'total_seats',
         'default_seat_type',
-        'bus_img',
+        'image_url',
         'status',
         'description',
     ];

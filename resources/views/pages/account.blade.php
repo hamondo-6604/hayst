@@ -47,13 +47,23 @@
           <h2 class="text-sm font-extrabold text-slate-900">My Profile</h2>
         </div>
 
-        <form method="POST" action="{{ route('settings.updateProfile') }}" class="p-6 space-y-5">
+        <form method="POST" action="{{ route('settings.updateProfile') }}" enctype="multipart/form-data" class="p-6 space-y-5">
           @csrf
 
           {{-- Avatar + name row --}}
           <div class="flex items-center gap-4">
-            <div class="w-16 h-16 rounded-2xl bg-primary-100 text-primary-700 text-2xl font-extrabold flex items-center justify-center shrink-0">
-              {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+            <div class="relative group">
+              @if(auth()->user()->image_url)
+                <img src="{{ asset('storage/' . auth()->user()->image_url) }}" alt="Profile Photo" class="w-16 h-16 rounded-2xl object-cover shrink-0 border border-slate-200">
+              @else
+                <div class="w-16 h-16 rounded-2xl bg-primary-100 text-primary-700 text-2xl font-extrabold flex items-center justify-center shrink-0">
+                  {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                </div>
+              @endif
+              <label for="image_url" class="absolute inset-0 bg-slate-900/50 rounded-2xl flex items-center justify-center opacity-0 group-hover:opacity-100 cursor-pointer transition-opacity">
+                <i data-lucide="camera" style="width:20px;height:20px;color:white"></i>
+              </label>
+              <input type="file" id="image_url" name="image_url" accept="image/*" class="hidden" onchange="previewImage(event)">
             </div>
             <div class="min-w-0">
               <div class="text-base font-extrabold text-slate-900">{{ auth()->user()->name }}</div>
@@ -432,6 +442,33 @@
     const open = !ans.classList.contains('hidden');
     ans.classList.toggle('hidden', open);
     icon.style.transform = open ? '' : 'rotate(180deg)';
+  }
+
+  // ── Preview profile photo ─────────────────────────────────────
+  function previewImage(event) {
+    const input = event.target;
+    if (input.files && input.files[0]) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        // Find the image container or the img tag
+        const container = input.parentElement;
+        let img = container.querySelector('img');
+        if (!img) {
+          // Replace the initials div with an img
+          const initials = container.querySelector('.bg-primary-100');
+          if (initials) initials.remove();
+          
+          img = document.createElement('img');
+          img.className = 'w-16 h-16 rounded-2xl object-cover shrink-0 border border-slate-200';
+          img.alt = 'Profile Photo';
+          // Insert before the label
+          const label = container.querySelector('label');
+          container.insertBefore(img, label);
+        }
+        img.src = e.target.result;
+      }
+      reader.readAsDataURL(input.files[0]);
+    }
   }
 
   // ── Contact form placeholder ──────────────────────────────────

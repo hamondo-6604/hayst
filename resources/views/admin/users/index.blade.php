@@ -64,8 +64,8 @@
                 @forelse($users as $user)
                 <tr class="hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
                     <td class="p-4 flex items-center gap-3">
-                        @if($user->profile_photo)
-                            <img src="{{ asset('storage/' . $user->profile_photo) }}" alt="{{ $user->name }}" class="w-10 h-10 rounded-full object-cover">
+                        @if($user->image_url)
+                            <img src="{{ asset('storage/' . $user->image_url) }}" alt="{{ $user->name }}" class="w-10 h-10 rounded-full object-cover border border-slate-200 dark:border-slate-700">
                         @else
                             <div class="w-10 h-10 rounded-full bg-primary-100 dark:bg-slate-700 text-primary-700 dark:text-primary-400 flex items-center justify-center font-bold text-sm">
                                 {{ strtoupper(substr($user->name, 0, 1)) }}

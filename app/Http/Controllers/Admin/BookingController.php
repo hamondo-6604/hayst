@@ -10,6 +10,14 @@ class BookingController extends Controller
 {
     public function index(Request $request)
     {
+        // Clear new booking notifications when admin visits the bookings page
+        if (auth()->check()) {
+            auth()->user()->appNotifications()
+                ->unread()
+                ->where('type', 'booking_confirmed')
+                ->update(['is_read' => true, 'read_at' => now()]);
+        }
+
         $query = Booking::with(['user', 'trip.route.originCity', 'trip.route.destinationCity'])
             ->latest();
 

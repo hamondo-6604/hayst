@@ -10,6 +10,9 @@ use App\Models\DiscountType;
 use App\Models\Feedback;
 use App\Models\Promotion;
 use App\Models\Trip;
+use App\Models\BusType;
+use App\Models\Schedule;
+use Illuminate\Http\Request;
 
 class HomeController extends Controller
 {
@@ -70,6 +73,30 @@ class HomeController extends Controller
             'avgRating'    => round(Feedback::where('rating', '>=', 1)->avg('rating'), 1),
         ];
 
+        // Fleet Showcase
+        $busTypes = BusType::where('status', 'active')->get();
+
+        // Top Schedules for Timetable Preview
+        $topRoutes = BusRoute::with(['originCity', 'destinationCity'])
+            ->where('status', 'active')
+            ->orderByDesc('distance_km') // Arbitrary proxy for popular routes or just use specific ones
+            ->take(4)
+            ->get();
+
+        $topSchedules = [];
+        foreach ($topRoutes as $route) {
+            $schedules = Schedule::where('route_id', $route->id)
+                ->where('status', 'active')
+                ->orderBy('departure_time')
+                ->get();
+            if ($schedules->isNotEmpty()) {
+                $topSchedules[] = [
+                    'route' => $route,
+                    'schedules' => $schedules,
+                ];
+            }
+        }
+
         return view('pages.home', compact(
             'heroTrip',
             'featuredRoutes',
@@ -77,8 +104,39 @@ class HomeController extends Controller
             'discountTypes',
             'stats',
             'liveStats',
-            'reviews'
+            'reviews',
+            'busTypes',
+            'topSchedules'
         ));
+    }
+
+    public function trackTrip(Request $request)
+    {
+        $code = $request->input('trip_code');
+        if (!$code) {
+            return response()->json(['success' => false, 'message' => 'Please enter a Trip Code.']);
+        }
+
+        $trip = Trip::with(['route.originCity', 'route.destinationCity', 'bus.type'])
+            ->where('trip_code', strtoupper($code))
+            ->first();
+
+        if (!$trip) {
+            return response()->json(['success' => false, 'message' => 'Trip not found. Please check the code and try again.']);
+        }
+
+        return response()->json([
+            'success' => true,
+            'trip' => [
+                'code' => $trip->trip_code,
+                'status' => ucfirst($trip->status),
+                'origin' => $trip->route->originCity->name,
+                'destination' => $trip->route->destinationCity->name,
+                'departure' => $trip->departure_time->format('M d, Y h:i A'),
+                'arrival' => $trip->arrival_time ? $trip->arrival_time->format('M d, Y h:i A') : 'TBD',
+                'bus_type' => $trip->bus->type->type_name ?? 'Standard',
+            ]
+        ]);
     }
 
     public function getLiveTripStats()
