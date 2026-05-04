@@ -23,8 +23,9 @@ class BusTypeController extends Controller
         }
         
         $busTypes = $query->latest()->paginate(15)->withQueryString();
+        $seatLayouts = SeatLayout::active()->get();
         
-        return view('admin.bus-types.index', compact('busTypes'));
+        return view('admin.bus-types.index', compact('busTypes', 'seatLayouts'));
     }
 
     public function create()
@@ -43,6 +44,10 @@ class BusTypeController extends Controller
         ]);
 
         BusType::create($validated);
+
+        if ($request->wantsJson()) {
+            return response()->json(['success' => true, 'message' => 'Bus type created successfully.']);
+        }
 
         return redirect()->route('admin.bus-types.index')->with('success', 'Bus type created successfully.');
     }
@@ -69,16 +74,28 @@ class BusTypeController extends Controller
 
         $busType->update($validated);
 
+        if ($request->wantsJson()) {
+            return response()->json(['success' => true, 'message' => 'Bus type updated successfully.']);
+        }
+
         return redirect()->route('admin.bus-types.index')->with('success', 'Bus type updated successfully.');
     }
 
-    public function destroy(BusType $busType)
+    public function destroy(Request $request, BusType $busType)
     {
         if ($busType->buses()->exists()) {
+            if ($request->wantsJson()) {
+                return response()->json(['success' => false, 'message' => 'Cannot delete bus type because it is assigned to existing buses.'], 400);
+            }
             return back()->with('error', 'Cannot delete bus type because it is assigned to existing buses.');
         }
 
         $busType->delete();
+        
+        if ($request->wantsJson()) {
+            return response()->json(['success' => true, 'message' => 'Bus type deleted successfully.']);
+        }
+        
         return redirect()->route('admin.bus-types.index')->with('success', 'Bus type deleted successfully.');
     }
 }

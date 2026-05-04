@@ -459,13 +459,38 @@
           closeSearch();
         }
       });
-      // Close dropdown on outside click
+      // Close dropdowns on outside click
       document.addEventListener('click', e => {
         const dd = document.getElementById('user-dd');
         if (dd && !dd.closest('[data-dd]')?.contains(e.target)) dd.classList.add('hidden');
         const notifDd = document.getElementById('notif-dd');
         if (notifDd && !notifDd.closest('[data-dd]')?.contains(e.target)) notifDd.classList.add('hidden');
+        
+        // Close custom selects
+        document.querySelectorAll('[data-custom-select]').forEach(container => {
+            if (!container.contains(e.target)) {
+                const menu = container.querySelector('.custom-select-menu');
+                if (menu) menu.classList.add('hidden');
+            }
+        });
       });
+
+      // Custom Select Logic
+      function selectCustomOption(el) {
+          const container = el.closest('[data-custom-select]');
+          const input = container.querySelector('.custom-select-input');
+          const textBtn = container.querySelector('.custom-select-text');
+          const menu = container.querySelector('.custom-select-menu');
+          
+          input.value = el.dataset.value;
+          textBtn.textContent = el.textContent.trim();
+          menu.classList.add('hidden');
+          
+          // Clear error border if exists
+          input.classList.remove('border-red-500');
+          const errorMsg = container.parentElement.querySelector('.error-text');
+          if (errorMsg) errorMsg.remove();
+      }
 
       // Real-time Notification Polling
       function pollNotifications() {
@@ -551,6 +576,103 @@
             iconContainer.innerHTML = '<i class="fa-solid fa-moon text-slate-500"></i>';
             textContainer.textContent = 'Switch to Dark Mode';
           }
+        }
+      }
+
+      // Admin Modal Management
+      function openAdminModal(id) {
+        const modal = document.getElementById(id);
+        if (modal) {
+          modal.classList.remove('hidden');
+          modal.classList.add('flex');
+          // small delay to allow display:flex to apply before animating opacity
+          setTimeout(() => {
+            modal.classList.remove('opacity-0');
+            const panel = modal.querySelector('.admin-modal-panel');
+            if (panel) {
+              panel.classList.remove('scale-95');
+              panel.classList.add('scale-100');
+            }
+          }, 10);
+        }
+      }
+
+      function closeAdminModal(id) {
+        const modal = document.getElementById(id);
+        if (modal) {
+          modal.classList.add('opacity-0');
+          const panel = modal.querySelector('.admin-modal-panel');
+          if (panel) {
+            panel.classList.remove('scale-100');
+            panel.classList.add('scale-95');
+          }
+          setTimeout(() => {
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+          }, 300);
+        }
+      }
+
+      // Generic AJAX Form Handler
+      async function handleAjaxForm(form, modalId, onSuccess) {
+        event.preventDefault();
+        
+        // Clear previous errors
+        form.querySelectorAll('.error-text').forEach(el => el.remove());
+        form.querySelectorAll('.border-red-500').forEach(el => el.classList.remove('border-red-500'));
+        
+        const submitBtn = form.querySelector('button[type="submit"]');
+        const originalText = submitBtn.innerHTML;
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i> Saving...';
+
+        try {
+          const formData = new FormData(form);
+          const response = await fetch(form.action, {
+            method: form.method === 'get' ? 'GET' : 'POST',
+            body: formData,
+            headers: {
+              'X-Requested-With': 'XMLHttpRequest',
+              'Accept': 'application/json'
+            }
+          });
+
+          const data = await response.json();
+
+          if (!response.ok) {
+            if (response.status === 422) {
+              // Handle validation errors
+              for (const [field, errors] of Object.entries(data.errors)) {
+                const input = form.querySelector(`[name="${field}"]`);
+                if (input) {
+                  input.classList.add('border-red-500');
+                  const errorP = document.createElement('p');
+                  errorP.className = 'error-text text-red-500 text-xs mt-1';
+                  errorP.textContent = errors[0];
+                  input.parentNode.appendChild(errorP);
+                }
+              }
+            } else {
+              alert(data.message || 'An error occurred.');
+            }
+            throw new Error('Validation failed');
+          }
+
+          // Success
+          if (modalId) {
+            closeAdminModal(modalId);
+          }
+          if (onSuccess) {
+            onSuccess(data);
+          } else {
+            // Default reload if no success handler
+            window.location.reload();
+          }
+        } catch (error) {
+          console.error(error);
+        } finally {
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = originalText;
         }
       }
 

@@ -30,8 +30,10 @@ class RouteController extends Controller
         }
 
         $routes = $query->paginate(15)->withQueryString();
+        $cities = City::active()->orderBy('name')->get();
+        $terminals = Terminal::active()->orderBy('name')->get();
 
-        return view('admin.routes.index', compact('routes'));
+        return view('admin.routes.index', compact('routes', 'cities', 'terminals'));
     }
 
     public function create()
@@ -56,6 +58,10 @@ class RouteController extends Controller
         ]);
 
         BusRoute::create($validated);
+
+        if ($request->wantsJson()) {
+            return response()->json(['success' => true, 'message' => 'Route created successfully.']);
+        }
 
         return redirect()->route('admin.routes.index')->with('success', 'Route created successfully.');
     }
@@ -89,16 +95,28 @@ class RouteController extends Controller
 
         $route->update($validated);
 
+        if ($request->wantsJson()) {
+            return response()->json(['success' => true, 'message' => 'Route updated successfully.']);
+        }
+
         return redirect()->route('admin.routes.index')->with('success', 'Route updated successfully.');
     }
 
-    public function destroy(BusRoute $route)
+    public function destroy(Request $request, BusRoute $route)
     {
         if ($route->trips()->exists()) {
+            if ($request->wantsJson()) {
+                return response()->json(['success' => false, 'message' => 'Cannot delete route because it is assigned to existing trips.'], 400);
+            }
             return back()->with('error', 'Cannot delete route because it is assigned to existing trips.');
         }
 
         $route->delete();
+        
+        if ($request->wantsJson()) {
+            return response()->json(['success' => true, 'message' => 'Route deleted successfully.']);
+        }
+        
         return redirect()->route('admin.routes.index')->with('success', 'Route deleted successfully.');
     }
 }

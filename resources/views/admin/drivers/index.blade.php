@@ -18,15 +18,29 @@
             <input type="text" name="search" value="{{ request('search') }}" placeholder="Search by name, email, or license..." 
                    class="w-full px-4 py-2 rounded-xl border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-white text-sm focus:ring-primary-500 focus:border-primary-500">
         </div>
-        <div class="w-full sm:w-48">
+        <div class="w-full sm:w-48 relative" data-custom-select>
             <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">Status</label>
-            <select name="status" class="w-full px-4 py-2 rounded-xl border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-white text-sm focus:ring-primary-500 focus:border-primary-500">
-                <option value="">All Statuses</option>
-                <option value="available" {{ request('status') === 'available' ? 'selected' : '' }}>Available</option>
-                <option value="on_trip" {{ request('status') === 'on_trip' ? 'selected' : '' }}>On Trip</option>
-                <option value="off_duty" {{ request('status') === 'off_duty' ? 'selected' : '' }}>Off Duty</option>
-                <option value="suspended" {{ request('status') === 'suspended' ? 'selected' : '' }}>Suspended</option>
-            </select>
+            <input type="hidden" name="status" value="{{ request('status') }}" class="custom-select-input">
+            
+            <button type="button" onclick="this.nextElementSibling.classList.toggle('hidden')" class="w-full px-4 py-2 flex items-center justify-between rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-white text-sm focus:ring-primary-500 focus:border-primary-500 transition-colors cursor-pointer">
+                <span class="custom-select-text">
+                    @if(request('status') === 'available') Available
+                    @elseif(request('status') === 'on_trip') On Trip
+                    @elseif(request('status') === 'off_duty') Off Duty
+                    @elseif(request('status') === 'suspended') Suspended
+                    @else All Statuses
+                    @endif
+                </span>
+                <i class="fa-solid fa-chevron-down text-[10px] text-slate-400"></i>
+            </button>
+            
+            <div class="custom-select-menu hidden absolute left-0 right-0 top-full mt-2 bg-white dark:bg-slate-800 rounded-xl shadow-xl border border-slate-100 dark:border-slate-700 py-1.5 z-50 overflow-hidden">
+                <div class="px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 cursor-pointer transition-colors" data-value="" onclick="selectCustomOption(this)">All Statuses</div>
+                <div class="px-4 py-2.5 text-sm font-medium text-emerald-700 bg-emerald-50 dark:bg-emerald-900/20 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-900/40 cursor-pointer transition-colors" data-value="available" onclick="selectCustomOption(this)">Available</div>
+                <div class="px-4 py-2.5 text-sm font-medium text-blue-700 bg-blue-50 dark:bg-blue-900/20 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/40 cursor-pointer transition-colors" data-value="on_trip" onclick="selectCustomOption(this)">On Trip</div>
+                <div class="px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 cursor-pointer transition-colors" data-value="off_duty" onclick="selectCustomOption(this)">Off Duty</div>
+                <div class="px-4 py-2.5 text-sm font-medium text-red-700 bg-red-50 dark:bg-red-900/20 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/40 cursor-pointer transition-colors" data-value="suspended" onclick="selectCustomOption(this)">Suspended</div>
+            </div>
         </div>
         <div>
             <button type="submit" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-900 dark:bg-slate-700 dark:hover:bg-slate-600 text-white text-sm font-semibold rounded-xl transition-colors">

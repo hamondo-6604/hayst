@@ -35,7 +35,12 @@ class TripController extends Controller
 
         $trips = $query->paginate(15)->withQueryString();
 
-        return view('admin.trips.index', compact('trips'));
+        $routes = BusRoute::active()->get();
+        $buses = Bus::active()->get();
+        $drivers = Driver::where('status', 'active')->get();
+        $terminals = class_exists(Terminal::class) ? Terminal::active()->get() : collect();
+
+        return view('admin.trips.index', compact('trips', 'routes', 'buses', 'drivers', 'terminals'));
     }
 
     public function create()
@@ -75,6 +80,10 @@ class TripController extends Controller
         $validated['is_active'] = $request->has('is_active');
 
         Trip::create($validated);
+
+        if ($request->wantsJson()) {
+            return response()->json(['success' => true, 'message' => 'Trip created successfully.']);
+        }
 
         return redirect()->route('admin.trips.index')->with('success', 'Trip created successfully.');
     }
@@ -127,16 +136,28 @@ class TripController extends Controller
 
         $trip->update($validated);
 
+        if ($request->wantsJson()) {
+            return response()->json(['success' => true, 'message' => 'Trip updated successfully.']);
+        }
+
         return redirect()->route('admin.trips.index')->with('success', 'Trip updated successfully.');
     }
 
-    public function destroy(Trip $trip)
+    public function destroy(Request $request, Trip $trip)
     {
         if ($trip->bookings()->exists()) {
+            if ($request->wantsJson()) {
+                return response()->json(['success' => false, 'message' => 'Cannot delete trip because it has existing bookings.'], 400);
+            }
             return back()->with('error', 'Cannot delete trip because it has existing bookings.');
         }
 
         $trip->delete();
+
+        if ($request->wantsJson()) {
+            return response()->json(['success' => true, 'message' => 'Trip deleted successfully.']);
+        }
+
         return redirect()->route('admin.trips.index')->with('success', 'Trip deleted successfully.');
     }
 }

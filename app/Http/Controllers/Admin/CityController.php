@@ -42,7 +42,11 @@ class CityController extends Controller
             'status' => 'required|in:active,inactive',
         ]);
 
-        City::create($validated);
+        $city = City::create($validated);
+
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json(['success' => true, 'message' => 'City created successfully.', 'data' => $city]);
+        }
 
         return redirect()->route('admin.cities.index')->with('success', 'City created successfully.');
     }
@@ -68,16 +72,28 @@ class CityController extends Controller
 
         $city->update($validated);
 
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json(['success' => true, 'message' => 'City updated successfully.', 'data' => $city]);
+        }
+
         return redirect()->route('admin.cities.index')->with('success', 'City updated successfully.');
     }
 
     public function destroy(City $city)
     {
         if ($city->originRoutes()->exists() || $city->destinationRoutes()->exists()) {
+            if (request()->wantsJson() || request()->ajax()) {
+                return response()->json(['success' => false, 'message' => 'Cannot delete city because it is assigned to existing routes.'], 400);
+            }
             return back()->with('error', 'Cannot delete city because it is assigned to existing routes.');
         }
 
         $city->delete();
+        
+        if (request()->wantsJson() || request()->ajax()) {
+            return response()->json(['success' => true, 'message' => 'City deleted successfully.']);
+        }
+        
         return redirect()->route('admin.cities.index')->with('success', 'City deleted successfully.');
     }
 }
