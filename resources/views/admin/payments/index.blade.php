@@ -18,15 +18,29 @@
             <input type="text" name="search" value="{{ request('search') }}" placeholder="Transaction ID, Booking Ref, or Customer Name..." 
                    class="w-full px-4 py-2 rounded-xl border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-white text-sm focus:ring-primary-500 focus:border-primary-500">
         </div>
-        <div class="w-full sm:w-48">
+        <div class="w-full sm:w-48 relative" data-custom-select>
             <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">Status</label>
-            <select name="status" class="w-full px-4 py-2 rounded-xl border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-white text-sm focus:ring-primary-500 focus:border-primary-500">
-                <option value="">All Statuses</option>
-                <option value="paid" {{ request('status') === 'paid' ? 'selected' : '' }}>Paid</option>
-                <option value="pending" {{ request('status') === 'pending' ? 'selected' : '' }}>Pending</option>
-                <option value="failed" {{ request('status') === 'failed' ? 'selected' : '' }}>Failed</option>
-                <option value="refunded" {{ request('status') === 'refunded' ? 'selected' : '' }}>Refunded</option>
-            </select>
+            <input type="hidden" name="status" value="{{ request('status') }}" class="custom-select-input">
+            
+            <button type="button" onclick="this.nextElementSibling.classList.toggle('hidden')" class="w-full px-4 py-2 flex items-center justify-between rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-white text-sm focus:ring-primary-500 focus:border-primary-500 transition-colors cursor-pointer">
+                <span class="custom-select-text">
+                    @if(request('status') === 'paid') Paid
+                    @elseif(request('status') === 'pending') Pending
+                    @elseif(request('status') === 'failed') Failed
+                    @elseif(request('status') === 'refunded') Refunded
+                    @else All Statuses
+                    @endif
+                </span>
+                <i class="fa-solid fa-chevron-down text-[10px] text-slate-400"></i>
+            </button>
+            
+            <div class="custom-select-menu hidden absolute left-0 right-0 top-full mt-2 bg-white dark:bg-slate-800 rounded-xl shadow-xl border border-slate-100 dark:border-slate-700 py-1.5 z-50 overflow-hidden">
+                <div class="px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 cursor-pointer transition-colors" data-value="" onclick="selectCustomOption(this)">All Statuses</div>
+                <div class="px-4 py-2.5 text-sm font-medium text-emerald-700 bg-emerald-50 dark:bg-emerald-900/20 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-900/40 cursor-pointer transition-colors" data-value="paid" onclick="selectCustomOption(this)">Paid</div>
+                <div class="px-4 py-2.5 text-sm font-medium text-amber-700 bg-amber-50 dark:bg-amber-900/20 dark:text-amber-400 hover:bg-amber-100 dark:hover:bg-amber-900/40 cursor-pointer transition-colors" data-value="pending" onclick="selectCustomOption(this)">Pending</div>
+                <div class="px-4 py-2.5 text-sm font-medium text-red-700 bg-red-50 dark:bg-red-900/20 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/40 cursor-pointer transition-colors" data-value="failed" onclick="selectCustomOption(this)">Failed</div>
+                <div class="px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 cursor-pointer transition-colors" data-value="refunded" onclick="selectCustomOption(this)">Refunded</div>
+            </div>
         </div>
         <div>
             <button type="submit" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-900 dark:bg-slate-700 dark:hover:bg-slate-600 text-white text-sm font-semibold rounded-xl transition-colors">
