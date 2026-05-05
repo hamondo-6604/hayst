@@ -6,6 +6,20 @@
   <meta name="csrf-token" content="{{ csrf_token() }}" />
   <title>@yield('title', 'Mindanao Express') — Bus Booking</title>
 
+  <!-- Prevent FOUC (Flash of Unstyled Content) -->
+  <script>
+    (function() {
+      try {
+        var theme = localStorage.getItem('theme');
+        if (!theme) {
+          theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        }
+        document.documentElement.setAttribute('data-theme', theme);
+        if (theme === 'dark') document.documentElement.classList.add('dark');
+      } catch (e) {}
+    })();
+  </script>
+
   {{-- Tailwind CDN --}}
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -249,8 +263,8 @@
     .clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
     .clamp-3 { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
 
-    /* Theme Transition */
-    * {
+    /* Theme Transition - Applied only after page load to prevent initial paint transitions */
+    .theme-loaded * {
       transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
     }
   </style>
@@ -338,6 +352,9 @@
     document.addEventListener('DOMContentLoaded', function() {
       const theme = getStoredTheme();
       setTheme(theme);
+      
+      // Enable transitions only after initial paint
+      setTimeout(() => document.documentElement.classList.add('theme-loaded'), 50);
       
       // Listen for system theme changes
       window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {

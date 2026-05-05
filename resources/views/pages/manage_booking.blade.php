@@ -292,12 +292,86 @@
       </form>
     </div>
   </div>
+{{-- Detail Modal --}}
+<div id="detail-modal"
+     class="hidden fixed inset-0 z-[9999] items-center justify-center modal-bg"
+     onclick="if(event.target===this)closeModal('detail-modal')">
+  <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg mx-4 overflow-hidden animate-slide-up flex flex-col max-h-[90vh]">
+    <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50 shrink-0">
+      <h3 class="font-bold text-slate-800 flex items-center gap-2">
+        <i data-lucide="ticket" style="width:18px;height:18px;color:#ea580c"></i>
+        Booking Details
+      </h3>
+      <button onclick="closeModal('detail-modal')" class="p-1 text-slate-400 hover:text-slate-600 transition-colors">
+        <i data-lucide="x" style="width:20px;height:20px"></i>
+      </button>
+    </div>
+    
+    <div class="p-6 overflow-y-auto">
+      <div class="flex items-center justify-between mb-6">
+        <div>
+          <p class="text-xs text-slate-400 uppercase tracking-wider font-bold mb-1">Reference No.</p>
+          <p id="dt-ref" class="text-lg font-mono font-extrabold text-slate-900"></p>
+        </div>
+        <div id="dt-status-badge" class="px-3 py-1 rounded-full text-xs font-bold inline-flex items-center gap-1.5">
+          <!-- populated via js -->
+        </div>
+      </div>
+
+      <div class="bg-slate-50 border border-slate-100 rounded-xl p-4 mb-6">
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <p class="text-xs text-slate-500 mb-1">Route</p>
+            <p id="dt-route" class="text-sm font-bold text-slate-800"></p>
+          </div>
+          <div>
+            <p class="text-xs text-slate-500 mb-1">Departure</p>
+            <p id="dt-dep" class="text-sm font-bold text-slate-800"></p>
+          </div>
+          <div>
+            <p class="text-xs text-slate-500 mb-1">Seat(s)</p>
+            <p id="dt-seats" class="text-sm font-bold text-slate-800"></p>
+          </div>
+          <div>
+            <p class="text-xs text-slate-500 mb-1">Bus Type</p>
+            <p id="dt-bus" class="text-sm font-bold text-slate-800"></p>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h4 class="text-sm font-bold text-slate-800 mb-3 border-b border-slate-100 pb-2">Payment Summary</h4>
+        <div class="space-y-2 text-sm">
+          <div class="flex justify-between">
+            <span class="text-slate-500">Base Fare</span>
+            <span id="dt-base" class="font-medium text-slate-800"></span>
+          </div>
+          <div id="dt-discount-row" class="flex justify-between text-emerald-600 hidden">
+            <span>Discount</span>
+            <span id="dt-discount" class="font-medium"></span>
+          </div>
+          <div class="flex justify-between border-t border-slate-100 pt-2 mt-2">
+            <span class="font-bold text-slate-800">Total Paid</span>
+            <span id="dt-total" class="font-extrabold text-slate-900"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="p-4 border-t border-slate-100 bg-slate-50 shrink-0">
+      <button onclick="closeModal('detail-modal')" class="w-full py-2.5 bg-slate-200 hover:bg-slate-300 text-slate-800 text-sm font-bold rounded-xl transition-colors">
+        Close
+      </button>
+    </div>
+  </div>
 </div>
 
 @endsection
 
 @push('scripts')
 <script>
+  const bookingsData = @json($bookings->items());
+
   function filterBookings(q) {
     q = q.toLowerCase();
     document.querySelectorAll('.booking-card').forEach(card => {
@@ -308,7 +382,7 @@
 
   function confirmCancel(id, ref) {
     document.getElementById('cancel-ref').textContent = 'Booking ' + ref + ' will be cancelled. This cannot be undone.';
-    document.getElementById('cancel-form').action = '/manage-bookings/' + id + '/cancel';
+    document.getElementById('cancel-form').action = '/my-bookings/' + id + '/cancel';
     openModal('cancel-modal');
   }
 
@@ -317,7 +391,62 @@
   });
 
   function openBookingDetail(id) {
-    toast('Booking detail view coming soon.', 'info');
+    const booking = bookingsData.find(b => b.id === id);
+    if(!booking) return;
+
+    document.getElementById('dt-ref').textContent = booking.booking_reference;
+    
+    // Status
+    const sMap = {
+      'confirmed': { bg: 'bg-blue-100', text: 'text-blue-700', icon: 'clock', label: 'Confirmed' },
+      'pending':   { bg: 'bg-amber-100', text: 'text-amber-700', icon: 'hourglass', label: 'Pending' },
+      'completed': { bg: 'bg-emerald-100', text: 'text-emerald-700', icon: 'check-circle', label: 'Completed' },
+      'cancelled': { bg: 'bg-red-100', text: 'text-red-700', icon: 'x-circle', label: 'Cancelled' }
+    };
+    const s = sMap[booking.status] || { bg: 'bg-slate-100', text: 'text-slate-600', icon: 'circle', label: booking.status };
+    
+    document.getElementById('dt-status-badge').className = `px-3 py-1 rounded-full text-xs font-bold inline-flex items-center gap-1.5 ${s.bg} ${s.text}`;
+    document.getElementById('dt-status-badge').innerHTML = `<i data-lucide="${s.icon}" style="width:12px;height:12px"></i> ${s.label}`;
+    
+    // Route & Bus
+    const origin = booking.trip?.route?.origin_city?.name || '—';
+    const dest = booking.trip?.route?.destination_city?.name || '—';
+    document.getElementById('dt-route').textContent = `${origin} → ${dest}`;
+    
+    document.getElementById('dt-bus').textContent = booking.trip?.bus?.type?.name || 'Standard Bus';
+    
+    // Dates
+    if(booking.trip?.departure_time) {
+      const d = new Date(booking.trip.departure_time);
+      document.getElementById('dt-dep').textContent = d.toLocaleString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true });
+    } else {
+      document.getElementById('dt-dep').textContent = '—';
+    }
+
+    // Seats
+    let seats = '—';
+    if(booking.booking_seats && booking.booking_seats.length > 0) {
+      seats = booking.booking_seats.map(s => s.seat_number).join(', ');
+    } else if (booking.seat_number) {
+      seats = booking.seat_number;
+    }
+    document.getElementById('dt-seats').textContent = seats;
+
+    // Payment
+    document.getElementById('dt-base').textContent = '₱' + parseFloat(booking.base_fare || 0).toLocaleString('en-US', {minimumFractionDigits: 2});
+    document.getElementById('dt-total').textContent = '₱' + parseFloat(booking.amount_paid || 0).toLocaleString('en-US', {minimumFractionDigits: 2});
+    
+    const disc = parseFloat(booking.discount_amount || 0);
+    const discRow = document.getElementById('dt-discount-row');
+    if(disc > 0) {
+      discRow.classList.remove('hidden');
+      document.getElementById('dt-discount').textContent = '-₱' + disc.toLocaleString('en-US', {minimumFractionDigits: 2});
+    } else {
+      discRow.classList.add('hidden');
+    }
+
+    lucide.createIcons();
+    openModal('detail-modal');
   }
 </script>
 @endpush

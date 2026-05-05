@@ -124,7 +124,7 @@
 
                 <!-- Edit Route Modal -->
                 <x-modal id="edit-route-modal-{{ $route->id }}" title="Edit Route" size="lg">
-                    <form action="{{ route('admin.routes.update', $route) }}" method="POST" onsubmit="handleAjaxForm(this, 'edit-route-modal-{{ $route->id }}', () => window.location.reload())">
+                    <form id="edit-route-form-{{ $route->id }}" action="{{ route('admin.routes.update', $route) }}" method="POST" onsubmit="handleAjaxForm(this, 'edit-route-modal-{{ $route->id }}', () => window.location.reload(), event)">
                         @csrf
                         @method('PUT')
                         <div class="space-y-6">
@@ -210,14 +210,14 @@
                         </div>
                         <x-slot:footer>
                             <button type="button" onclick="closeAdminModal('edit-route-modal-{{ $route->id }}')" class="px-4 py-2 rounded-xl text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-700 transition-colors font-semibold text-sm">Cancel</button>
-                            <button type="submit" class="px-4 py-2 rounded-xl bg-primary-600 text-white font-semibold text-sm hover:bg-primary-700 transition-colors">Save Changes</button>
+                            <button type="submit" form="edit-route-form-{{ $route->id }}" class="px-4 py-2 rounded-xl bg-primary-600 text-white font-semibold text-sm hover:bg-primary-700 transition-colors">Save Changes</button>
                         </x-slot:footer>
                     </form>
                 </x-modal>
 
                 <!-- Delete Route Modal -->
                 <x-modal id="delete-route-modal-{{ $route->id }}" title="Delete Route" size="sm">
-                    <form action="{{ route('admin.routes.destroy', $route) }}" method="POST" onsubmit="handleAjaxForm(this, 'delete-route-modal-{{ $route->id }}', () => window.location.reload())">
+                    <form id="delete-route-form-{{ $route->id }}" action="{{ route('admin.routes.destroy', $route) }}" method="POST" onsubmit="handleAjaxForm(this, 'delete-route-modal-{{ $route->id }}', () => window.location.reload(), event)">
                         @csrf
                         @method('DELETE')
                         <div class="text-center py-4">
@@ -229,7 +229,7 @@
                         </div>
                         <x-slot:footer>
                             <button type="button" onclick="closeAdminModal('delete-route-modal-{{ $route->id }}')" class="px-4 py-2 rounded-xl text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-700 transition-colors font-semibold text-sm">Cancel</button>
-                            <button type="submit" class="px-4 py-2 rounded-xl bg-red-600 text-white font-semibold text-sm hover:bg-red-700 transition-colors">Yes, Delete</button>
+                            <button type="submit" form="delete-route-form-{{ $route->id }}" class="px-4 py-2 rounded-xl bg-red-600 text-white font-semibold text-sm hover:bg-red-700 transition-colors">Yes, Delete</button>
                         </x-slot:footer>
                     </form>
                 </x-modal>
@@ -255,7 +255,7 @@
 
 <!-- Create Route Modal -->
 <x-modal id="create-route-modal" title="Add New Route" size="lg">
-    <form action="{{ route('admin.routes.store') }}" method="POST" onsubmit="handleAjaxForm(this, 'create-route-modal', () => window.location.reload())">
+    <form id="create-route-form" action="{{ route('admin.routes.store') }}" method="POST" onsubmit="handleAjaxForm(this, 'create-route-modal', () => window.location.reload(), event)">
         @csrf
         <div class="space-y-6">
             <div>
@@ -340,7 +340,7 @@
         </div>
         <x-slot:footer>
             <button type="button" onclick="closeAdminModal('create-route-modal')" class="px-4 py-2 rounded-xl text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-700 transition-colors font-semibold text-sm">Cancel</button>
-            <button type="submit" class="px-4 py-2 rounded-xl bg-primary-600 text-white font-semibold text-sm hover:bg-primary-700 transition-colors">Create Route</button>
+            <button type="submit" form="create-route-form" class="px-4 py-2 rounded-xl bg-primary-600 text-white font-semibold text-sm hover:bg-primary-700 transition-colors">Create Route</button>
         </x-slot:footer>
     </form>
 </x-modal>

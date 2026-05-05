@@ -16,3 +16,9 @@ Route::middleware(['web', 'auth', 'user'])
     ->prefix('user')
     ->as('user.')
     ->group(base_path('routes/user.php'));
+
+// Driver Routes
+Route::middleware(['web', 'auth', 'driver'])
+    ->prefix('driver')
+    ->as('driver.')
+    ->group(base_path('routes/driver.php'));

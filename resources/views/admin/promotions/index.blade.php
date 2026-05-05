@@ -163,7 +163,7 @@
 
         <!-- Body -->
         <div class="p-6 overflow-y-auto">
-            <form id="create-promo-form" action="{{ route('admin.promotions.store') }}" method="POST" onsubmit="handleAjaxForm(this, 'create-promo-modal')">
+            <form id="create-promo-form" action="{{ route('admin.promotions.store') }}" method="POST" onsubmit="handleAjaxForm(this, 'create-promo-modal', null, event)">
                 @csrf
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
@@ -272,7 +272,7 @@
 
         <!-- Body -->
         <div class="p-6 overflow-y-auto">
-            <form id="edit-promo-form" method="POST" onsubmit="handleAjaxForm(this, 'edit-promo-modal')">
+            <form id="edit-promo-form" method="POST" onsubmit="handleAjaxForm(this, 'edit-promo-modal', null, event)">
                 @csrf
                 @method('PUT')
                 

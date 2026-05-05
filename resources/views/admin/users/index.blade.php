@@ -181,7 +181,7 @@
 
         <!-- Body -->
         <div class="p-6 overflow-y-auto">
-            <form id="create-user-form" action="{{ route('admin.users.store') }}" method="POST" onsubmit="handleAjaxForm(this, 'create-user-modal')">
+            <form id="create-user-form" action="{{ route('admin.users.store') }}" method="POST" onsubmit="handleAjaxForm(this, 'create-user-modal', null, event)">
                 @csrf
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
@@ -294,7 +294,7 @@
 
         <!-- Body -->
         <div class="p-6 overflow-y-auto">
-            <form id="edit-user-form" method="POST" onsubmit="handleAjaxForm(this, 'edit-user-modal')">
+            <form id="edit-user-form" method="POST" onsubmit="handleAjaxForm(this, 'edit-user-modal', null, event)">
                 @csrf
                 @method('PUT')
                 

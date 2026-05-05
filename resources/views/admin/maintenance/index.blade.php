@@ -149,7 +149,7 @@
 
         <!-- Body -->
         <div class="p-6 overflow-y-auto">
-            <form id="create-maintenance-form" action="{{ route('admin.maintenance.store') }}" method="POST" onsubmit="handleAjaxForm(this, 'create-maintenance-modal')">
+            <form id="create-maintenance-form" action="{{ route('admin.maintenance.store') }}" method="POST" onsubmit="handleAjaxForm(this, 'create-maintenance-modal', null, event)">
                 @csrf
                 
                 <div class="mb-6">
@@ -271,7 +271,7 @@
 
         <!-- Body -->
         <div class="p-6 overflow-y-auto">
-            <form id="edit-maintenance-form" method="POST" onsubmit="handleAjaxForm(this, 'edit-maintenance-modal')">
+            <form id="edit-maintenance-form" method="POST" onsubmit="handleAjaxForm(this, 'edit-maintenance-modal', null, event)">
                 @csrf
                 @method('PUT')
                 

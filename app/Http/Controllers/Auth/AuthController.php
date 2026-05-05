@@ -32,8 +32,14 @@ class AuthController extends Controller
                 return response()->json(['success' => false, 'message' => 'Your account is blocked.'], 403);
             }
 
-            // Determine redirect (everyone goes to landing page first, admin nav handles dashboard link)
+            // Determine redirect
             $redirect = route('landing.home');
+            
+            if ($user->isAdmin()) {
+                $redirect = route('admin.dashboard');
+            } elseif ($user->isDriver()) {
+                $redirect = route('driver.dashboard');
+            }
 
             return response()->json([
                 'success'  => true,

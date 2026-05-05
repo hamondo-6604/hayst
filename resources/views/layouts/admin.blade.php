@@ -6,6 +6,21 @@
     <title>@yield('title', 'Admin Dashboard') - Mindanao Express</title>
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
+    <!-- Prevent FOUC (Flash of Unstyled Content) -->
+    <script>
+      (function() {
+        try {
+          var theme = localStorage.getItem('admin_theme');
+          if (!theme) {
+            theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+          }
+          if (theme === 'dark') {
+            document.documentElement.classList.add('dark');
+          }
+        } catch (e) {}
+      })();
+    </script>
+
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
@@ -617,17 +632,26 @@
       }
 
       // Generic AJAX Form Handler
-      async function handleAjaxForm(form, modalId, onSuccess) {
-        event.preventDefault();
+      async function handleAjaxForm(form, modalId, onSuccess, submitEvent = null) {
+        if (submitEvent?.preventDefault) {
+          submitEvent.preventDefault();
+        } else if (window.event?.preventDefault) {
+          window.event.preventDefault();
+        }
         
         // Clear previous errors
         form.querySelectorAll('.error-text').forEach(el => el.remove());
         form.querySelectorAll('.border-red-500').forEach(el => el.classList.remove('border-red-500'));
         
-        const submitBtn = form.querySelector('button[type="submit"]');
-        const originalText = submitBtn.innerHTML;
-        submitBtn.disabled = true;
-        submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i> Saving...';
+        const submitBtn =
+          (submitEvent && submitEvent.submitter) ||
+          form.querySelector('button[type="submit"]') ||
+          (form.id ? document.querySelector(`button[type="submit"][form="${form.id}"]`) : null);
+        const originalText = submitBtn ? submitBtn.innerHTML : null;
+        if (submitBtn) {
+          submitBtn.disabled = true;
+          submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i> Saving...';
+        }
 
         try {
           const formData = new FormData(form);
@@ -640,7 +664,10 @@
             }
           });
 
-          const data = await response.json();
+          const contentType = response.headers.get('content-type') || '';
+          const data = contentType.includes('application/json')
+            ? await response.json()
+            : { message: await response.text() };
 
           if (!response.ok) {
             if (response.status === 422) {
@@ -674,8 +701,10 @@
         } catch (error) {
           console.error(error);
         } finally {
-          submitBtn.disabled = false;
-          submitBtn.innerHTML = originalText;
+          if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalText;
+          }
         }
       }
 

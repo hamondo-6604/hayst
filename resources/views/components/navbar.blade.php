@@ -58,10 +58,17 @@
     {{-- Right side --}}
     <div class="hidden md:flex items-center gap-2">
       @auth
-        @if(auth()->user()->isAdmin())
-          <a href="{{ route('admin.dashboard') }}" class="px-4 py-2 text-sm font-semibold bg-primary-600 hover:bg-primary-700 text-white rounded-xl transition-colors shadow-sm flex items-center gap-2">
-            <i data-lucide="layout-dashboard" style="width:16px;height:16px"></i> Dashboard
-          </a>
+        @if(auth()->user()->isAdmin() || auth()->user()->isDriver())
+          @if(auth()->user()->isAdmin())
+            <a href="{{ route('admin.dashboard') }}" class="px-4 py-2 text-sm font-semibold bg-primary-600 hover:bg-primary-700 text-white rounded-xl transition-colors shadow-sm flex items-center gap-2">
+              <i data-lucide="layout-dashboard" style="width:16px;height:16px"></i> Dashboard
+            </a>
+          @else
+            <a href="{{ route('driver.dashboard') }}" class="px-4 py-2 text-sm font-semibold bg-primary-600 hover:bg-primary-700 text-white rounded-xl transition-colors shadow-sm flex items-center gap-2">
+              <i data-lucide="layout-dashboard" style="width:16px;height:16px"></i> Driver Portal
+            </a>
+          @endif
+          
           <form method="POST" action="{{ route('logout') }}" class="m-0 flex">
             @csrf
             <button type="submit" class="p-2 ml-1 rounded-xl text-red-500 hover:bg-red-50 hover:text-red-600 transition-colors" title="Sign Out">
@@ -174,10 +181,17 @@
       @endforeach
 
       @auth
-        @if(auth()->user()->isAdmin())
-          <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-slate-700 hover:bg-slate-50">
-            <i data-lucide="layout-dashboard" style="width:16px;height:16px"></i> Dashboard
-          </a>
+        @if(auth()->user()->isAdmin() || auth()->user()->isDriver())
+          @if(auth()->user()->isAdmin())
+            <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-slate-700 hover:bg-slate-50">
+              <i data-lucide="layout-dashboard" style="width:16px;height:16px"></i> Dashboard
+            </a>
+          @else
+            <a href="{{ route('driver.dashboard') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-slate-700 hover:bg-slate-50">
+              <i data-lucide="layout-dashboard" style="width:16px;height:16px"></i> Driver Portal
+            </a>
+          @endif
+          
           <div class="pt-2 mt-1 border-t border-slate-100">
             <form method="POST" action="{{ route('logout') }}">
               @csrf

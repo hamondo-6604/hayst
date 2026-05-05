@@ -111,7 +111,7 @@
 
                 <!-- Edit Modal -->
                 <x-modal id="edit-bus-modal-{{ $bus->id }}" title="Edit Bus" size="lg">
-                    <form action="{{ route('admin.buses.update', $bus) }}" method="POST" onsubmit="handleAjaxForm(this, 'edit-bus-modal-{{ $bus->id }}', () => window.location.reload())">
+                    <form id="edit-bus-form-{{ $bus->id }}" action="{{ route('admin.buses.update', $bus) }}" method="POST" onsubmit="handleAjaxForm(this, 'edit-bus-modal-{{ $bus->id }}', () => window.location.reload(), event)">
                         @csrf
                         @method('PUT')
                         <div class="space-y-6">
@@ -176,14 +176,14 @@
                         </div>
                         <x-slot:footer>
                             <button type="button" onclick="closeAdminModal('edit-bus-modal-{{ $bus->id }}')" class="px-4 py-2 rounded-xl text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-700 transition-colors font-semibold text-sm">Cancel</button>
-                            <button type="submit" class="px-4 py-2 rounded-xl bg-primary-600 text-white font-semibold text-sm hover:bg-primary-700 transition-colors">Save Changes</button>
+                            <button type="submit" form="edit-bus-form-{{ $bus->id }}" class="px-4 py-2 rounded-xl bg-primary-600 text-white font-semibold text-sm hover:bg-primary-700 transition-colors">Save Changes</button>
                         </x-slot:footer>
                     </form>
                 </x-modal>
 
                 <!-- Delete Modal -->
                 <x-modal id="delete-bus-modal-{{ $bus->id }}" title="Delete Bus" size="sm">
-                    <form action="{{ route('admin.buses.destroy', $bus) }}" method="POST" onsubmit="handleAjaxForm(this, 'delete-bus-modal-{{ $bus->id }}', () => window.location.reload())">
+                    <form id="delete-bus-form-{{ $bus->id }}" action="{{ route('admin.buses.destroy', $bus) }}" method="POST" onsubmit="handleAjaxForm(this, 'delete-bus-modal-{{ $bus->id }}', () => window.location.reload(), event)">
                         @csrf
                         @method('DELETE')
                         <div class="text-center py-4">
@@ -195,7 +195,7 @@
                         </div>
                         <x-slot:footer>
                             <button type="button" onclick="closeAdminModal('delete-bus-modal-{{ $bus->id }}')" class="px-4 py-2 rounded-xl text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-700 transition-colors font-semibold text-sm">Cancel</button>
-                            <button type="submit" class="px-4 py-2 rounded-xl bg-red-600 text-white font-semibold text-sm hover:bg-red-700 transition-colors">Yes, Delete</button>
+                            <button type="submit" form="delete-bus-form-{{ $bus->id }}" class="px-4 py-2 rounded-xl bg-red-600 text-white font-semibold text-sm hover:bg-red-700 transition-colors">Yes, Delete</button>
                         </x-slot:footer>
                     </form>
                 </x-modal>
@@ -220,7 +220,7 @@
 
 <!-- Create Modal -->
 <x-modal id="create-bus-modal" title="Add New Bus" size="lg">
-    <form action="{{ route('admin.buses.store') }}" method="POST" onsubmit="handleAjaxForm(this, 'create-bus-modal', () => window.location.reload())">
+    <form id="create-bus-form" action="{{ route('admin.buses.store') }}" method="POST" onsubmit="handleAjaxForm(this, 'create-bus-modal', () => window.location.reload(), event)">
         @csrf
         <div class="space-y-6">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -284,7 +284,7 @@
         </div>
         <x-slot:footer>
             <button type="button" onclick="closeAdminModal('create-bus-modal')" class="px-4 py-2 rounded-xl text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-700 transition-colors font-semibold text-sm">Cancel</button>
-            <button type="submit" class="px-4 py-2 rounded-xl bg-primary-600 text-white font-semibold text-sm hover:bg-primary-700 transition-colors">Create Bus</button>
+            <button type="submit" form="create-bus-form" class="px-4 py-2 rounded-xl bg-primary-600 text-white font-semibold text-sm hover:bg-primary-700 transition-colors">Create Bus</button>
         </x-slot:footer>
     </form>
 </x-modal>

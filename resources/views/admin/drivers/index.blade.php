@@ -163,7 +163,7 @@
 
         <!-- Body -->
         <div class="p-6 overflow-y-auto">
-            <form id="create-driver-form" action="{{ route('admin.drivers.store') }}" method="POST" onsubmit="handleAjaxForm(this, 'create-driver-modal')">
+            <form id="create-driver-form" action="{{ route('admin.drivers.store') }}" method="POST" onsubmit="handleAjaxForm(this, 'create-driver-modal', null, event)">
                 @csrf
                 
                 <div class="mb-6">
@@ -257,7 +257,7 @@
 
         <!-- Body -->
         <div class="p-6 overflow-y-auto">
-            <form id="edit-driver-form" method="POST" onsubmit="handleAjaxForm(this, 'edit-driver-modal')">
+            <form id="edit-driver-form" method="POST" onsubmit="handleAjaxForm(this, 'edit-driver-modal', null, event)">
                 @csrf
                 @method('PUT')
                 

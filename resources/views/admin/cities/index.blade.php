@@ -108,7 +108,7 @@
 
                 <!-- Edit City Modal for {{ $city->name }} -->
                 <x-modal id="edit-city-modal-{{ $city->id }}" title="Edit City" size="md">
-                    <form action="{{ route('admin.cities.update', $city) }}" method="POST" onsubmit="handleAjaxForm(this, 'edit-city-modal-{{ $city->id }}', () => window.location.reload())">
+                    <form id="edit-city-form-{{ $city->id }}" action="{{ route('admin.cities.update', $city) }}" method="POST" onsubmit="handleAjaxForm(this, 'edit-city-modal-{{ $city->id }}', () => window.location.reload(), event)">
                         @csrf
                         @method('PUT')
                         <div class="space-y-4">
@@ -147,14 +147,14 @@
                         </div>
                         <x-slot:footer>
                             <button type="button" onclick="closeAdminModal('edit-city-modal-{{ $city->id }}')" class="px-4 py-2 rounded-xl text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-700 transition-colors font-semibold text-sm">Cancel</button>
-                            <button type="submit" class="px-4 py-2 rounded-xl bg-primary-600 text-white font-semibold text-sm hover:bg-primary-700 transition-colors">Save Changes</button>
+                            <button type="submit" form="edit-city-form-{{ $city->id }}" class="px-4 py-2 rounded-xl bg-primary-600 text-white font-semibold text-sm hover:bg-primary-700 transition-colors">Save Changes</button>
                         </x-slot:footer>
                     </form>
                 </x-modal>
 
                 <!-- Delete City Modal for {{ $city->name }} -->
                 <x-modal id="delete-city-modal-{{ $city->id }}" title="Delete City" size="sm">
-                    <form action="{{ route('admin.cities.destroy', $city) }}" method="POST" onsubmit="handleAjaxForm(this, 'delete-city-modal-{{ $city->id }}', () => window.location.reload())">
+                    <form id="delete-city-form-{{ $city->id }}" action="{{ route('admin.cities.destroy', $city) }}" method="POST" onsubmit="handleAjaxForm(this, 'delete-city-modal-{{ $city->id }}', () => window.location.reload(), event)">
                         @csrf
                         @method('DELETE')
                         <div class="text-center py-4">
@@ -166,7 +166,7 @@
                         </div>
                         <x-slot:footer>
                             <button type="button" onclick="closeAdminModal('delete-city-modal-{{ $city->id }}')" class="px-4 py-2 rounded-xl text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-700 transition-colors font-semibold text-sm">Cancel</button>
-                            <button type="submit" class="px-4 py-2 rounded-xl bg-red-600 text-white font-semibold text-sm hover:bg-red-700 transition-colors">Yes, Delete</button>
+                            <button type="submit" form="delete-city-form-{{ $city->id }}" class="px-4 py-2 rounded-xl bg-red-600 text-white font-semibold text-sm hover:bg-red-700 transition-colors">Yes, Delete</button>
                         </x-slot:footer>
                     </form>
                 </x-modal>
@@ -192,7 +192,7 @@
 
 <!-- Create City Modal -->
 <x-modal id="create-city-modal" title="Add New City" size="md">
-    <form action="{{ route('admin.cities.store') }}" method="POST" onsubmit="handleAjaxForm(this, 'create-city-modal', () => window.location.reload())">
+    <form id="create-city-form" action="{{ route('admin.cities.store') }}" method="POST" onsubmit="handleAjaxForm(this, 'create-city-modal', () => window.location.reload(), event)">
         @csrf
         <div class="space-y-4">
             <div>
@@ -230,7 +230,7 @@
         </div>
         <x-slot:footer>
             <button type="button" onclick="closeAdminModal('create-city-modal')" class="px-4 py-2 rounded-xl text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-700 transition-colors font-semibold text-sm">Cancel</button>
-            <button type="submit" class="px-4 py-2 rounded-xl bg-primary-600 text-white font-semibold text-sm hover:bg-primary-700 transition-colors">Create City</button>
+            <button type="submit" form="create-city-form" class="px-4 py-2 rounded-xl bg-primary-600 text-white font-semibold text-sm hover:bg-primary-700 transition-colors">Create City</button>
         </x-slot:footer>
     </form>
 </x-modal>
