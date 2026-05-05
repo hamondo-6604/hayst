@@ -1,0 +1,153 @@
+@extends('layouts.admin')
+
+@section('title', 'Trash / Recycle Bin')
+
+@section('content')
+<div class="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div>
+        <h1 class="text-2xl font-bold text-slate-800 dark:text-white">Trash</h1>
+        <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">View and restore deleted records.</p>
+    </div>
+</div>
+
+<!-- Tabs -->
+<div class="flex overflow-x-auto space-x-2 border-b border-slate-200 dark:border-slate-700 mb-6 pb-2 scrollbar-hide">
+    <a href="{{ route('admin.trash.index', ['type' => 'cities']) }}" class="px-4 py-2 text-sm font-semibold rounded-xl whitespace-nowrap transition-colors {{ $type === 'cities' ? 'bg-primary-50 text-primary-600 dark:bg-primary-900/20 dark:text-primary-400' : 'text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800' }}">
+        <i class="fa-solid fa-city mr-2"></i> Cities
+    </a>
+    <a href="{{ route('admin.trash.index', ['type' => 'routes']) }}" class="px-4 py-2 text-sm font-semibold rounded-xl whitespace-nowrap transition-colors {{ $type === 'routes' ? 'bg-primary-50 text-primary-600 dark:bg-primary-900/20 dark:text-primary-400' : 'text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800' }}">
+        <i class="fa-solid fa-route mr-2"></i> Routes
+    </a>
+    <a href="{{ route('admin.trash.index', ['type' => 'trips']) }}" class="px-4 py-2 text-sm font-semibold rounded-xl whitespace-nowrap transition-colors {{ $type === 'trips' ? 'bg-primary-50 text-primary-600 dark:bg-primary-900/20 dark:text-primary-400' : 'text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800' }}">
+        <i class="fa-solid fa-location-dot mr-2"></i> Trips
+    </a>
+    <a href="{{ route('admin.trash.index', ['type' => 'buses']) }}" class="px-4 py-2 text-sm font-semibold rounded-xl whitespace-nowrap transition-colors {{ $type === 'buses' ? 'bg-primary-50 text-primary-600 dark:bg-primary-900/20 dark:text-primary-400' : 'text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800' }}">
+        <i class="fa-solid fa-bus mr-2"></i> Buses
+    </a>
+    <a href="{{ route('admin.trash.index', ['type' => 'bus-types']) }}" class="px-4 py-2 text-sm font-semibold rounded-xl whitespace-nowrap transition-colors {{ $type === 'bus-types' ? 'bg-primary-50 text-primary-600 dark:bg-primary-900/20 dark:text-primary-400' : 'text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800' }}">
+        <i class="fa-solid fa-couch mr-2"></i> Bus Types
+    </a>
+</div>
+
+<!-- Filters -->
+<div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 p-4 mb-6">
+    <form method="GET" action="{{ route('admin.trash.index') }}" class="flex flex-col sm:flex-row gap-4 items-end">
+        <input type="hidden" name="type" value="{{ $type }}">
+        <div class="flex-1">
+            <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">Search {{ ucfirst($type) }}</label>
+            <input type="text" name="search" value="{{ request('search') }}" placeholder="Search by name, code, or number..." 
+                   class="w-full px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-white text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-colors">
+        </div>
+        <div>
+            <button type="submit" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-900 dark:bg-slate-700 dark:hover:bg-slate-600 text-white text-sm font-semibold rounded-xl transition-colors">
+                Search
+            </button>
+            @if(request()->has('search'))
+                <a href="{{ route('admin.trash.index', ['type' => $type]) }}" class="ml-2 text-sm text-primary-600 hover:text-primary-700 dark:text-primary-400">Clear</a>
+            @endif
+        </div>
+    </form>
+</div>
+
+<!-- Table -->
+<div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 overflow-hidden">
+    <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+            <thead>
+                <tr class="bg-slate-50 dark:bg-slate-700/50 border-b border-slate-100 dark:border-slate-700 text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400 font-semibold">
+                    @if($type === 'cities')
+                        <th class="p-4">Name</th>
+                        <th class="p-4">Province/Region</th>
+                    @elseif($type === 'routes')
+                        <th class="p-4">Route Name</th>
+                        <th class="p-4">Distance / Duration</th>
+                    @elseif($type === 'trips')
+                        <th class="p-4">Trip Code</th>
+                        <th class="p-4">Trip Date</th>
+                    @elseif($type === 'buses')
+                        <th class="p-4">Bus Number</th>
+                        <th class="p-4">Bus Name</th>
+                    @elseif($type === 'bus-types')
+                        <th class="p-4">Type Name</th>
+                    @endif
+                    <th class="p-4">Deleted At</th>
+                    <th class="p-4 text-right">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100 dark:divide-slate-700">
+                @forelse($trashedItems as $item)
+                <tr class="hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
+                    @if($type === 'cities')
+                        <td class="p-4">
+                            <div class="font-bold text-slate-800 dark:text-slate-200">{{ $item->name }}</div>
+                        </td>
+                        <td class="p-4 text-sm text-slate-600 dark:text-slate-400">
+                            {{ $item->province }}, {{ $item->region }}
+                        </td>
+                    @elseif($type === 'routes')
+                        <td class="p-4">
+                            <div class="font-bold text-slate-800 dark:text-slate-200">{{ $item->route_name ?? $item->full_route_name }}</div>
+                        </td>
+                        <td class="p-4 text-sm text-slate-600 dark:text-slate-400">
+                            {{ $item->distance_km }} km / {{ $item->estimated_duration_minutes }} mins
+                        </td>
+                    @elseif($type === 'trips')
+                        <td class="p-4">
+                            <div class="font-bold text-slate-800 dark:text-slate-200">{{ $item->trip_code }}</div>
+                        </td>
+                        <td class="p-4 text-sm text-slate-600 dark:text-slate-400">
+                            {{ $item->trip_date ? $item->trip_date->format('M d, Y') : '—' }}
+                        </td>
+                    @elseif($type === 'buses')
+                        <td class="p-4">
+                            <div class="font-bold text-slate-800 dark:text-slate-200">{{ $item->bus_number }}</div>
+                        </td>
+                        <td class="p-4 text-sm text-slate-600 dark:text-slate-400">
+                            {{ $item->bus_name }}
+                        </td>
+                    @elseif($type === 'bus-types')
+                        <td class="p-4">
+                            <div class="font-bold text-slate-800 dark:text-slate-200">{{ $item->type_name }}</div>
+                        </td>
+                    @endif
+                    <td class="p-4 text-sm text-slate-500 dark:text-slate-400">
+                        {{ $item->deleted_at ? $item->deleted_at->format('M d, Y h:i A') : '—' }}
+                    </td>
+                    <td class="p-4 text-right">
+                        <div class="flex items-center justify-end gap-2">
+                            <form action="{{ route('admin.trash.restore', ['type' => $type, 'id' => $item->id]) }}" method="POST" onsubmit="return confirm('Are you sure you want to restore this record?')">
+                                @csrf
+                                <button type="submit" class="w-8 h-8 rounded-lg bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-900/20 dark:hover:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center transition-colors" title="Restore">
+                                    <i class="fa-solid fa-arrow-rotate-left text-sm"></i>
+                                </button>
+                            </form>
+                            
+                            <form action="{{ route('admin.trash.force-delete', ['type' => $type, 'id' => $item->id]) }}" method="POST" onsubmit="return confirm('Are you sure you want to PERMANENTLY delete this record? This action cannot be undone.')">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="w-8 h-8 rounded-lg bg-red-50 hover:bg-red-100 dark:bg-red-900/20 dark:hover:bg-red-900/40 text-red-600 dark:text-red-400 flex items-center justify-center transition-colors" title="Delete Permanently">
+                                    <i class="fa-solid fa-trash-can text-sm"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                @empty
+                <tr>
+                    <td colspan="4" class="p-8 text-center text-slate-500 dark:text-slate-400">
+                        <div class="text-4xl mb-2"><i class="fa-solid fa-trash-can text-slate-300 dark:text-slate-600"></i></div>
+                        <p>No deleted {{ str_replace('-', ' ', $type) }} found.</p>
+                    </td>
+                </tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
+    
+    @if($trashedItems->hasPages())
+    <div class="p-4 border-t border-slate-100 dark:border-slate-700">
+        {{ $trashedItems->links() }}
+    </div>
+    @endif
+</div>
+@endsection

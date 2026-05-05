@@ -17,6 +17,7 @@ use App\Http\Controllers\Admin\MaintenanceController;
 use App\Http\Controllers\Admin\FeedbackController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\NotificationController;
+use App\Http\Controllers\Admin\TrashController;
 
 /*
 |--------------------------------------------------------------------------
@@ -55,3 +56,6 @@ Route::get('/notifications', [NotificationController::class, 'index'])->name('no
 Route::get('/notifications/poll', [NotificationController::class, 'poll'])->name('notifications.poll');
 Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllRead'])->name('notifications.mark-all-read');
 Route::resource('cities', CityController::class);
+Route::get('/trash', [TrashController::class, 'index'])->name('trash.index');
+Route::post('/trash/{type}/{id}/restore', [TrashController::class, 'restore'])->name('trash.restore');
+Route::delete('/trash/{type}/{id}/force-delete', [TrashController::class, 'forceDelete'])->name('trash.force-delete');

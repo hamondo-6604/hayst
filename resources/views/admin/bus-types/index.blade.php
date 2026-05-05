@@ -18,7 +18,7 @@
         <div class="flex-1">
             <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">Search Types</label>
             <input type="text" name="search" value="{{ request('search') }}" placeholder="Type Name..." 
-                   class="w-full px-4 py-2 rounded-xl border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-white text-sm focus:ring-primary-500 focus:border-primary-500">
+                   class="w-full px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-white text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-colors">
         </div>
         <div class="w-full sm:w-48 relative" data-custom-select>
             <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">Status</label>
@@ -107,13 +107,13 @@
                         <div class="space-y-6">
                             <div>
                                 <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Type Name <span class="text-red-500">*</span></label>
-                                <input type="text" name="type_name" value="{{ $type->type_name }}" required class="w-full p-0 pl-3 pb-2 text-base bg-transparent border-0 border-b-2 border-slate-300 hover:border-slate-300 dark:border-slate-600 dark:hover:border-slate-600 text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-0 focus:border-primary-500 transition-colors">
+                                <input type="text" name="type_name" value="{{ $type->type_name }}" required class="w-full px-4 py-2 text-sm bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors">
                             </div>
 
                             <div class="grid grid-cols-1 gap-6">
                                 <div>
                                     <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Default Seat Layout</label>
-                                    <select name="seat_layout_id" class="w-full p-0 pl-3 pr-8 pb-2 text-base bg-transparent border-0 border-b-2 border-slate-300 hover:border-slate-300 dark:border-slate-600 dark:hover:border-slate-600 text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-0 focus:border-primary-500 transition-colors cursor-pointer">
+                                    <select name="seat_layout_id" class="w-full px-4 py-2 pr-8 text-sm bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors cursor-pointer">
                                         <option value="">-- None (Dynamic) --</option>
                                         @foreach($seatLayouts as $layout)
                                             <option value="{{ $layout->id }}" {{ $type->seat_layout_id == $layout->id ? 'selected' : '' }}>{{ $layout->layout_name }} ({{ $layout->capacity }} Seats)</option>
@@ -124,7 +124,7 @@
                                     <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Status <span class="text-red-500">*</span></label>
                                     <div class="relative" data-custom-select>
                                         <input type="hidden" name="status" value="{{ $type->status }}" class="custom-select-input" required>
-                                        <button type="button" onclick="this.nextElementSibling.classList.toggle('hidden')" class="w-full flex items-center justify-between p-0 pl-3 pb-2 text-base bg-transparent border-0 border-b-2 border-slate-300 hover:border-slate-300 dark:border-slate-600 dark:hover:border-slate-600 text-slate-800 dark:text-white outline-none focus:outline-none transition-colors cursor-pointer">
+                                        <button type="button" onclick="this.nextElementSibling.classList.toggle('hidden')" class="w-full flex items-center justify-between px-4 py-2 text-sm bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors cursor-pointer">
                                             <span class="custom-select-text">{{ ucfirst($type->status) }}</span>
                                             <i class="fa-solid fa-chevron-down text-[10px] text-slate-400"></i>
                                         </button>
@@ -138,7 +138,7 @@
                             
                             <div>
                                 <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Description</label>
-                                <textarea name="description" rows="2" class="w-full p-0 pl-3 pb-2 text-base bg-transparent border-0 border-b-2 border-slate-300 hover:border-slate-300 dark:border-slate-600 dark:hover:border-slate-600 text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-0 focus:border-primary-500 transition-colors">{{ $type->description }}</textarea>
+                                <textarea name="description" rows="2" class="w-full px-4 py-2 text-sm bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors">{{ $type->description }}</textarea>
                             </div>
                         </div>
                         <x-slot:footer>
@@ -192,13 +192,13 @@
         <div class="space-y-6">
             <div>
                 <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Type Name <span class="text-red-500">*</span></label>
-                <input type="text" name="type_name" required placeholder="e.g. Economy, VIP Sleeper" class="w-full p-0 pl-3 pb-2 text-base bg-transparent border-0 border-b-2 border-slate-300 hover:border-slate-300 dark:border-slate-600 dark:hover:border-slate-600 text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-0 focus:border-primary-500 transition-colors">
+                <input type="text" name="type_name" required placeholder="e.g. Economy, VIP Sleeper" class="w-full px-4 py-2 text-sm bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors">
             </div>
 
             <div class="grid grid-cols-1 gap-6">
                 <div>
                     <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Default Seat Layout</label>
-                    <select name="seat_layout_id" class="w-full p-0 pl-3 pr-8 pb-2 text-base bg-transparent border-0 border-b-2 border-slate-300 hover:border-slate-300 dark:border-slate-600 dark:hover:border-slate-600 text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-0 focus:border-primary-500 transition-colors cursor-pointer">
+                    <select name="seat_layout_id" class="w-full px-4 py-2 pr-8 text-sm bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors cursor-pointer">
                         <option value="">-- None (Dynamic) --</option>
                         @foreach($seatLayouts as $layout)
                             <option value="{{ $layout->id }}">{{ $layout->layout_name }} ({{ $layout->capacity }} Seats)</option>
@@ -209,7 +209,7 @@
                     <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Status <span class="text-red-500">*</span></label>
                     <div class="relative" data-custom-select>
                         <input type="hidden" name="status" value="active" class="custom-select-input" required>
-                        <button type="button" onclick="this.nextElementSibling.classList.toggle('hidden')" class="w-full flex items-center justify-between p-0 pl-3 pb-2 text-base bg-transparent border-0 border-b-2 border-slate-300 hover:border-slate-300 dark:border-slate-600 dark:hover:border-slate-600 text-slate-800 dark:text-white outline-none focus:outline-none transition-colors cursor-pointer">
+                        <button type="button" onclick="this.nextElementSibling.classList.toggle('hidden')" class="w-full flex items-center justify-between px-4 py-2 text-sm bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors cursor-pointer">
                             <span class="custom-select-text">Active</span>
                             <i class="fa-solid fa-chevron-down text-[10px] text-slate-400"></i>
                         </button>
@@ -223,7 +223,7 @@
             
             <div>
                 <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Description</label>
-                <textarea name="description" rows="2" class="w-full p-0 pl-3 pb-2 text-base bg-transparent border-0 border-b-2 border-slate-300 hover:border-slate-300 dark:border-slate-600 dark:hover:border-slate-600 text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-0 focus:border-primary-500 transition-colors"></textarea>
+                <textarea name="description" rows="2" class="w-full px-4 py-2 text-sm bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"></textarea>
             </div>
         </div>
         <x-slot:footer>

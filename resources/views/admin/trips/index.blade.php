@@ -19,7 +19,7 @@
         <div class="flex-1">
             <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">Search</label>
             <input type="text" name="search" value="{{ request('search') }}" placeholder="Trip Code, Origin, or Destination..." 
-                   class="w-full px-4 py-2 rounded-xl border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-white text-sm focus:ring-primary-500 focus:border-primary-500">
+                   class="w-full px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-white text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-colors">
         </div>
         <div class="w-full sm:w-48 relative" data-custom-select>
             <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">Status</label>
@@ -151,7 +151,7 @@
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div>
                                     <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Trip Code <span class="text-red-500">*</span></label>
-                                    <input type="text" name="trip_code" value="{{ $trip->trip_code }}" required class="w-full p-0 pl-3 pb-2 text-base bg-transparent border-0 border-b-2 border-slate-300 hover:border-slate-300 dark:border-slate-600 dark:hover:border-slate-600 text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-0 focus:border-primary-500 font-mono uppercase transition-colors">
+                                    <input type="text" name="trip_code" value="{{ $trip->trip_code }}" required class="w-full px-4 py-2 text-sm bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 font-mono uppercase transition-colors">
                                 </div>
                                 <div class="flex items-center pt-5">
                                     <label class="flex items-center gap-3 cursor-pointer">
@@ -164,7 +164,7 @@
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div>
                                     <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Route <span class="text-red-500">*</span></label>
-                                    <select name="route_id" required class="w-full p-0 pl-3 pr-8 pb-2 text-base bg-transparent border-0 border-b-2 border-slate-300 hover:border-slate-300 dark:border-slate-600 dark:hover:border-slate-600 text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-0 focus:border-primary-500 transition-colors cursor-pointer">
+                                    <select name="route_id" required class="w-full px-4 py-2 pr-8 text-sm bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors cursor-pointer">
                                         <option value="">-- Select Route --</option>
                                         @foreach($routes as $route)
                                             <option value="{{ $route->id }}" {{ $trip->route_id == $route->id ? 'selected' : '' }}>{{ $route->route_name }} ({{ $route->originCity->name ?? '?' }} → {{ $route->destinationCity->name ?? '?' }})</option>
@@ -174,7 +174,7 @@
                                 <div class="grid grid-cols-2 gap-4">
                                     <div>
                                         <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Dep. Terminal</label>
-                                        <select name="departure_terminal_id" class="w-full p-0 pl-3 pr-8 pb-2 text-base bg-transparent border-0 border-b-2 border-slate-300 hover:border-slate-300 dark:border-slate-600 dark:hover:border-slate-600 text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-0 focus:border-primary-500 transition-colors cursor-pointer">
+                                        <select name="departure_terminal_id" class="w-full px-4 py-2 pr-8 text-sm bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors cursor-pointer">
                                             <option value="">-- Auto --</option>
                                             @foreach($terminals as $terminal)
                                                 <option value="{{ $terminal->id }}" {{ $trip->departure_terminal_id == $terminal->id ? 'selected' : '' }}>{{ $terminal->name }}</option>
@@ -183,7 +183,7 @@
                                     </div>
                                     <div>
                                         <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Arr. Terminal</label>
-                                        <select name="arrival_terminal_id" class="w-full p-0 pl-3 pr-8 pb-2 text-base bg-transparent border-0 border-b-2 border-slate-300 hover:border-slate-300 dark:border-slate-600 dark:hover:border-slate-600 text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-0 focus:border-primary-500 transition-colors cursor-pointer">
+                                        <select name="arrival_terminal_id" class="w-full px-4 py-2 pr-8 text-sm bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors cursor-pointer">
                                             <option value="">-- Auto --</option>
                                             @foreach($terminals as $terminal)
                                                 <option value="{{ $terminal->id }}" {{ $trip->arrival_terminal_id == $terminal->id ? 'selected' : '' }}>{{ $terminal->name }}</option>
@@ -196,7 +196,7 @@
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div>
                                     <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Bus Assignment <span class="text-red-500">*</span></label>
-                                    <select name="bus_id" required onchange="const s = this.options[this.selectedIndex].getAttribute('data-seats'); if(s) this.form.querySelector('[name=available_seats]').value = s;" class="w-full p-0 pl-3 pr-8 pb-2 text-base bg-transparent border-0 border-b-2 border-slate-300 hover:border-slate-300 dark:border-slate-600 dark:hover:border-slate-600 text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-0 focus:border-primary-500 transition-colors cursor-pointer">
+                                    <select name="bus_id" required onchange="const s = this.options[this.selectedIndex].getAttribute('data-seats'); if(s) this.form.querySelector('[name=available_seats]').value = s;" class="w-full px-4 py-2 pr-8 text-sm bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors cursor-pointer">
                                         <option value="">-- Select Bus --</option>
                                         @foreach($buses as $bus)
                                             <option value="{{ $bus->id }}" data-seats="{{ $bus->total_seats }}" {{ $trip->bus_id == $bus->id ? 'selected' : '' }}>#{{ $bus->bus_number }} - {{ $bus->type->type_name ?? 'Standard' }} ({{ $bus->total_seats }} Seats)</option>
@@ -205,7 +205,7 @@
                                 </div>
                                 <div>
                                     <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Driver Assignment <span class="text-red-500">*</span></label>
-                                    <select name="driver_id" required class="w-full p-0 pl-3 pr-8 pb-2 text-base bg-transparent border-0 border-b-2 border-slate-300 hover:border-slate-300 dark:border-slate-600 dark:hover:border-slate-600 text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-0 focus:border-primary-500 transition-colors cursor-pointer">
+                                    <select name="driver_id" required class="w-full px-4 py-2 pr-8 text-sm bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors cursor-pointer">
                                         <option value="">-- Select Driver --</option>
                                         @foreach($drivers as $driver)
                                             <option value="{{ $driver->id }}" {{ $trip->driver_id == $driver->id ? 'selected' : '' }}>{{ $driver->user->name ?? 'Unknown' }} (Lic: {{ $driver->license_number }})</option>
@@ -217,32 +217,32 @@
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                                 <div>
                                     <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Trip Date <span class="text-red-500">*</span></label>
-                                    <input type="date" name="trip_date" value="{{ $trip->trip_date ? $trip->trip_date->format('Y-m-d') : '' }}" required class="w-full p-0 pl-3 pb-2 text-base bg-transparent border-0 border-b-2 border-slate-300 hover:border-slate-300 dark:border-slate-600 dark:hover:border-slate-600 text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-0 focus:border-primary-500 transition-colors cursor-pointer">
+                                    <input type="date" name="trip_date" value="{{ $trip->trip_date ? $trip->trip_date->format('Y-m-d') : '' }}" required class="w-full px-4 py-2 text-sm bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors cursor-pointer">
                                 </div>
                                 <div>
                                     <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Departure Time <span class="text-red-500">*</span></label>
-                                    <input type="datetime-local" name="departure_time" value="{{ $trip->departure_time ? $trip->departure_time->format('Y-m-d\TH:i') : '' }}" required class="w-full p-0 pl-3 pb-2 text-base bg-transparent border-0 border-b-2 border-slate-300 hover:border-slate-300 dark:border-slate-600 dark:hover:border-slate-600 text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-0 focus:border-primary-500 transition-colors cursor-pointer">
+                                    <input type="datetime-local" name="departure_time" value="{{ $trip->departure_time ? $trip->departure_time->format('Y-m-d\TH:i') : '' }}" required class="w-full px-4 py-2 text-sm bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors cursor-pointer">
                                 </div>
                                 <div>
                                     <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Arrival Time <span class="text-red-500">*</span></label>
-                                    <input type="datetime-local" name="arrival_time" value="{{ $trip->arrival_time ? $trip->arrival_time->format('Y-m-d\TH:i') : '' }}" required class="w-full p-0 pl-3 pb-2 text-base bg-transparent border-0 border-b-2 border-slate-300 hover:border-slate-300 dark:border-slate-600 dark:hover:border-slate-600 text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-0 focus:border-primary-500 transition-colors cursor-pointer">
+                                    <input type="datetime-local" name="arrival_time" value="{{ $trip->arrival_time ? $trip->arrival_time->format('Y-m-d\TH:i') : '' }}" required class="w-full px-4 py-2 text-sm bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors cursor-pointer">
                                 </div>
                             </div>
 
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                                 <div>
                                     <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Available Seats <span class="text-red-500">*</span></label>
-                                    <input type="number" name="available_seats" value="{{ $trip->available_seats }}" required min="0" class="w-full p-0 pl-3 pb-2 text-base bg-transparent border-0 border-b-2 border-slate-300 hover:border-slate-300 dark:border-slate-600 dark:hover:border-slate-600 text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-0 focus:border-primary-500 transition-colors">
+                                    <input type="number" name="available_seats" value="{{ $trip->available_seats }}" required min="0" class="w-full px-4 py-2 text-sm bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors">
                                 </div>
                                 <div>
                                     <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Fare (₱) <span class="text-red-500">*</span></label>
-                                    <input type="number" step="0.01" name="fare" value="{{ $trip->fare }}" required min="0" class="w-full p-0 pl-3 pb-2 text-base bg-transparent border-0 border-b-2 border-slate-300 hover:border-slate-300 dark:border-slate-600 dark:hover:border-slate-600 text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-0 focus:border-primary-500 transition-colors">
+                                    <input type="number" step="0.01" name="fare" value="{{ $trip->fare }}" required min="0" class="w-full px-4 py-2 text-sm bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors">
                                 </div>
                                 <div>
                                     <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Status <span class="text-red-500">*</span></label>
                                     <div class="relative" data-custom-select>
                                         <input type="hidden" name="status" value="{{ $trip->status }}" class="custom-select-input" required>
-                                        <button type="button" onclick="this.nextElementSibling.classList.toggle('hidden')" class="w-full flex items-center justify-between p-0 pl-3 pb-2 text-base bg-transparent border-0 border-b-2 border-slate-300 hover:border-slate-300 dark:border-slate-600 dark:hover:border-slate-600 text-slate-800 dark:text-white outline-none focus:outline-none transition-colors cursor-pointer">
+                                        <button type="button" onclick="this.nextElementSibling.classList.toggle('hidden')" class="w-full flex items-center justify-between px-4 py-2 text-sm bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors cursor-pointer">
                                             <span class="custom-select-text">{{ ucfirst(str_replace('_', ' ', $trip->status)) }}</span>
                                             <i class="fa-solid fa-chevron-down text-[10px] text-slate-400"></i>
                                         </button>
@@ -260,7 +260,7 @@
                             
                             <div>
                                 <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Notes</label>
-                                <textarea name="notes" rows="2" class="w-full p-0 pl-3 pb-2 text-base bg-transparent border-0 border-b-2 border-slate-300 hover:border-slate-300 dark:border-slate-600 dark:hover:border-slate-600 text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-0 focus:border-primary-500 transition-colors">{{ $trip->notes }}</textarea>
+                                <textarea name="notes" rows="2" class="w-full px-4 py-2 text-sm bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors">{{ $trip->notes }}</textarea>
                             </div>
                         </div>
                         <x-slot:footer>
@@ -315,7 +315,7 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                     <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Trip Code <span class="text-red-500">*</span></label>
-                    <input type="text" name="trip_code" value="{{ strtoupper(Str::random(6)) }}" required class="w-full p-0 pl-3 pb-2 text-base bg-transparent border-0 border-b-2 border-slate-300 hover:border-slate-300 dark:border-slate-600 dark:hover:border-slate-600 text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-0 focus:border-primary-500 font-mono uppercase transition-colors">
+                    <input type="text" name="trip_code" value="{{ strtoupper(Str::random(6)) }}" required class="w-full px-4 py-2 text-sm bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 font-mono uppercase transition-colors">
                 </div>
                 <div class="flex items-center pt-5">
                     <label class="flex items-center gap-3 cursor-pointer">
@@ -328,7 +328,7 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                     <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Route <span class="text-red-500">*</span></label>
-                    <select name="route_id" required class="w-full p-0 pl-3 pr-8 pb-2 text-base bg-transparent border-0 border-b-2 border-slate-300 hover:border-slate-300 dark:border-slate-600 dark:hover:border-slate-600 text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-0 focus:border-primary-500 transition-colors cursor-pointer">
+                    <select name="route_id" required class="w-full px-4 py-2 pr-8 text-sm bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors cursor-pointer">
                         <option value="">-- Select Route --</option>
                         @foreach($routes as $route)
                             <option value="{{ $route->id }}">{{ $route->route_name }} ({{ $route->originCity->name ?? '?' }} → {{ $route->destinationCity->name ?? '?' }})</option>
@@ -338,7 +338,7 @@
                 <div class="grid grid-cols-2 gap-4">
                     <div>
                         <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Dep. Terminal</label>
-                        <select name="departure_terminal_id" class="w-full p-0 pl-3 pr-8 pb-2 text-base bg-transparent border-0 border-b-2 border-slate-300 hover:border-slate-300 dark:border-slate-600 dark:hover:border-slate-600 text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-0 focus:border-primary-500 transition-colors cursor-pointer">
+                        <select name="departure_terminal_id" class="w-full px-4 py-2 pr-8 text-sm bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors cursor-pointer">
                             <option value="">-- Auto --</option>
                             @foreach($terminals as $terminal)
                                 <option value="{{ $terminal->id }}">{{ $terminal->name }}</option>
@@ -347,7 +347,7 @@
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Arr. Terminal</label>
-                        <select name="arrival_terminal_id" class="w-full p-0 pl-3 pr-8 pb-2 text-base bg-transparent border-0 border-b-2 border-slate-300 hover:border-slate-300 dark:border-slate-600 dark:hover:border-slate-600 text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-0 focus:border-primary-500 transition-colors cursor-pointer">
+                        <select name="arrival_terminal_id" class="w-full px-4 py-2 pr-8 text-sm bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors cursor-pointer">
                             <option value="">-- Auto --</option>
                             @foreach($terminals as $terminal)
                                 <option value="{{ $terminal->id }}">{{ $terminal->name }}</option>
@@ -360,7 +360,7 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                     <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Bus Assignment <span class="text-red-500">*</span></label>
-                    <select name="bus_id" required onchange="const s = this.options[this.selectedIndex].getAttribute('data-seats'); if(s) this.form.querySelector('[name=available_seats]').value = s;" class="w-full p-0 pl-3 pr-8 pb-2 text-base bg-transparent border-0 border-b-2 border-slate-300 hover:border-slate-300 dark:border-slate-600 dark:hover:border-slate-600 text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-0 focus:border-primary-500 transition-colors cursor-pointer">
+                    <select name="bus_id" required onchange="const s = this.options[this.selectedIndex].getAttribute('data-seats'); if(s) this.form.querySelector('[name=available_seats]').value = s;" class="w-full px-4 py-2 pr-8 text-sm bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors cursor-pointer">
                         <option value="">-- Select Bus --</option>
                         @foreach($buses as $bus)
                             <option value="{{ $bus->id }}" data-seats="{{ $bus->total_seats }}">#{{ $bus->bus_number }} - {{ $bus->type->type_name ?? 'Standard' }} ({{ $bus->total_seats }} Seats)</option>
@@ -369,7 +369,7 @@
                 </div>
                 <div>
                     <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Driver Assignment <span class="text-red-500">*</span></label>
-                    <select name="driver_id" required class="w-full p-0 pl-3 pr-8 pb-2 text-base bg-transparent border-0 border-b-2 border-slate-300 hover:border-slate-300 dark:border-slate-600 dark:hover:border-slate-600 text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-0 focus:border-primary-500 transition-colors cursor-pointer">
+                    <select name="driver_id" required class="w-full px-4 py-2 pr-8 text-sm bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors cursor-pointer">
                         <option value="">-- Select Driver --</option>
                         @foreach($drivers as $driver)
                             <option value="{{ $driver->id }}">{{ $driver->user->name ?? 'Unknown' }} (Lic: {{ $driver->license_number }})</option>
@@ -381,32 +381,32 @@
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div>
                     <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Trip Date <span class="text-red-500">*</span></label>
-                    <input type="date" name="trip_date" required class="w-full p-0 pl-3 pb-2 text-base bg-transparent border-0 border-b-2 border-slate-300 hover:border-slate-300 dark:border-slate-600 dark:hover:border-slate-600 text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-0 focus:border-primary-500 transition-colors cursor-pointer">
+                    <input type="date" name="trip_date" required class="w-full px-4 py-2 text-sm bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors cursor-pointer">
                 </div>
                 <div>
                     <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Departure Time <span class="text-red-500">*</span></label>
-                    <input type="datetime-local" name="departure_time" required class="w-full p-0 pl-3 pb-2 text-base bg-transparent border-0 border-b-2 border-slate-300 hover:border-slate-300 dark:border-slate-600 dark:hover:border-slate-600 text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-0 focus:border-primary-500 transition-colors cursor-pointer">
+                    <input type="datetime-local" name="departure_time" required class="w-full px-4 py-2 text-sm bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors cursor-pointer">
                 </div>
                 <div>
                     <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Arrival Time <span class="text-red-500">*</span></label>
-                    <input type="datetime-local" name="arrival_time" required class="w-full p-0 pl-3 pb-2 text-base bg-transparent border-0 border-b-2 border-slate-300 hover:border-slate-300 dark:border-slate-600 dark:hover:border-slate-600 text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-0 focus:border-primary-500 transition-colors cursor-pointer">
+                    <input type="datetime-local" name="arrival_time" required class="w-full px-4 py-2 text-sm bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors cursor-pointer">
                 </div>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div>
                     <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Available Seats <span class="text-red-500">*</span></label>
-                    <input type="number" name="available_seats" required min="0" class="w-full p-0 pl-3 pb-2 text-base bg-transparent border-0 border-b-2 border-slate-300 hover:border-slate-300 dark:border-slate-600 dark:hover:border-slate-600 text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-0 focus:border-primary-500 transition-colors">
+                    <input type="number" name="available_seats" required min="0" class="w-full px-4 py-2 text-sm bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors">
                 </div>
                 <div>
                     <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Fare (₱) <span class="text-red-500">*</span></label>
-                    <input type="number" step="0.01" name="fare" required min="0" class="w-full p-0 pl-3 pb-2 text-base bg-transparent border-0 border-b-2 border-slate-300 hover:border-slate-300 dark:border-slate-600 dark:hover:border-slate-600 text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-0 focus:border-primary-500 transition-colors">
+                    <input type="number" step="0.01" name="fare" required min="0" class="w-full px-4 py-2 text-sm bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors">
                 </div>
                 <div>
                     <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Status <span class="text-red-500">*</span></label>
                     <div class="relative" data-custom-select>
                         <input type="hidden" name="status" value="scheduled" class="custom-select-input" required>
-                        <button type="button" onclick="this.nextElementSibling.classList.toggle('hidden')" class="w-full flex items-center justify-between p-0 pl-3 pb-2 text-base bg-transparent border-0 border-b-2 border-slate-300 hover:border-slate-300 dark:border-slate-600 dark:hover:border-slate-600 text-slate-800 dark:text-white outline-none focus:outline-none transition-colors cursor-pointer">
+                        <button type="button" onclick="this.nextElementSibling.classList.toggle('hidden')" class="w-full flex items-center justify-between px-4 py-2 text-sm bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors cursor-pointer">
                             <span class="custom-select-text">Scheduled</span>
                             <i class="fa-solid fa-chevron-down text-[10px] text-slate-400"></i>
                         </button>
@@ -424,7 +424,7 @@
             
             <div>
                 <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Notes</label>
-                <textarea name="notes" rows="2" class="w-full p-0 pl-3 pb-2 text-base bg-transparent border-0 border-b-2 border-slate-300 hover:border-slate-300 dark:border-slate-600 dark:hover:border-slate-600 text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-0 focus:border-primary-500 transition-colors"></textarea>
+                <textarea name="notes" rows="2" class="w-full px-4 py-2 text-sm bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"></textarea>
             </div>
         </div>
         <x-slot:footer>

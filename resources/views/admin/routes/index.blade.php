@@ -19,7 +19,7 @@
         <div class="flex-1">
             <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">Search Routes</label>
             <input type="text" name="search" value="{{ request('search') }}" placeholder="Search by route name, origin, or destination..." 
-                   class="w-full px-4 py-2 rounded-xl border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-white text-sm focus:ring-primary-500 focus:border-primary-500">
+                   class="w-full px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-white text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-colors">
         </div>
         <div class="w-full sm:w-48 relative" data-custom-select>
             <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">Status</label>
@@ -130,7 +130,7 @@
                         <div class="space-y-6">
                             <div>
                                 <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Route Name <span class="text-red-500">*</span></label>
-                                <input type="text" name="route_name" value="{{ $route->route_name }}" required class="w-full p-0 pl-3 pb-2 text-base bg-transparent border-0 border-b-2 border-slate-300 hover:border-slate-300 dark:border-slate-600 dark:hover:border-slate-600 text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-0 focus:border-primary-500 transition-colors">
+                                <input type="text" name="route_name" value="{{ $route->route_name }}" required class="w-full px-4 py-2 text-sm bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors">
                             </div>
 
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -138,7 +138,7 @@
                                     <h3 class="text-xs font-bold text-primary-500 uppercase tracking-wider"><i class="fa-solid fa-location-dot"></i> Origin</h3>
                                     <div>
                                         <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">City <span class="text-red-500">*</span></label>
-                                        <select name="origin_city_id" required class="w-full p-0 pl-3 pr-8 pb-2 text-base bg-transparent border-0 border-b-2 border-slate-300 hover:border-slate-300 dark:border-slate-600 dark:hover:border-slate-600 text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-0 focus:border-primary-500 transition-colors cursor-pointer">
+                                        <select name="origin_city_id" required class="w-full px-4 py-2 pr-8 text-sm bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors cursor-pointer">
                                             <option value="">-- Select Origin City --</option>
                                             @foreach($cities as $city)
                                                 <option value="{{ $city->id }}" {{ $route->origin_city_id == $city->id ? 'selected' : '' }}>{{ $city->name }}</option>
@@ -147,7 +147,7 @@
                                     </div>
                                     <div>
                                         <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Terminal</label>
-                                        <select name="origin_terminal_id" class="w-full p-0 pl-3 pr-8 pb-2 text-base bg-transparent border-0 border-b-2 border-slate-300 hover:border-slate-300 dark:border-slate-600 dark:hover:border-slate-600 text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-0 focus:border-primary-500 transition-colors cursor-pointer">
+                                        <select name="origin_terminal_id" class="w-full px-4 py-2 pr-8 text-sm bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors cursor-pointer">
                                             <option value="">-- Select Terminal --</option>
                                             @foreach($terminals as $terminal)
                                                 <option value="{{ $terminal->id }}" {{ $route->origin_terminal_id == $terminal->id ? 'selected' : '' }}>{{ $terminal->name }}</option>
@@ -159,7 +159,7 @@
                                     <h3 class="text-xs font-bold text-emerald-500 uppercase tracking-wider"><i class="fa-solid fa-flag-checkered"></i> Destination</h3>
                                     <div>
                                         <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">City <span class="text-red-500">*</span></label>
-                                        <select name="destination_city_id" required class="w-full p-0 pl-3 pr-8 pb-2 text-base bg-transparent border-0 border-b-2 border-slate-300 hover:border-slate-300 dark:border-slate-600 dark:hover:border-slate-600 text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-0 focus:border-primary-500 transition-colors cursor-pointer">
+                                        <select name="destination_city_id" required class="w-full px-4 py-2 pr-8 text-sm bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors cursor-pointer">
                                             <option value="">-- Select Destination City --</option>
                                             @foreach($cities as $city)
                                                 <option value="{{ $city->id }}" {{ $route->destination_city_id == $city->id ? 'selected' : '' }}>{{ $city->name }}</option>
@@ -168,7 +168,7 @@
                                     </div>
                                     <div>
                                         <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Terminal</label>
-                                        <select name="destination_terminal_id" class="w-full p-0 pl-3 pr-8 pb-2 text-base bg-transparent border-0 border-b-2 border-slate-300 hover:border-slate-300 dark:border-slate-600 dark:hover:border-slate-600 text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-0 focus:border-primary-500 transition-colors cursor-pointer">
+                                        <select name="destination_terminal_id" class="w-full px-4 py-2 pr-8 text-sm bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors cursor-pointer">
                                             <option value="">-- Select Terminal --</option>
                                             @foreach($terminals as $terminal)
                                                 <option value="{{ $terminal->id }}" {{ $route->destination_terminal_id == $terminal->id ? 'selected' : '' }}>{{ $terminal->name }}</option>
@@ -181,17 +181,17 @@
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                                 <div>
                                     <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Distance (km)</label>
-                                    <input type="number" step="0.1" name="distance_km" value="{{ $route->distance_km }}" min="0" class="w-full p-0 pl-3 pb-2 text-base bg-transparent border-0 border-b-2 border-slate-300 hover:border-slate-300 dark:border-slate-600 dark:hover:border-slate-600 text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-0 focus:border-primary-500 transition-colors">
+                                    <input type="number" step="0.1" name="distance_km" value="{{ $route->distance_km }}" min="0" class="w-full px-4 py-2 text-sm bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors">
                                 </div>
                                 <div>
                                     <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Est. Duration (mins)</label>
-                                    <input type="number" name="estimated_duration_minutes" value="{{ $route->estimated_duration_minutes }}" min="1" class="w-full p-0 pl-3 pb-2 text-base bg-transparent border-0 border-b-2 border-slate-300 hover:border-slate-300 dark:border-slate-600 dark:hover:border-slate-600 text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-0 focus:border-primary-500 transition-colors">
+                                    <input type="number" name="estimated_duration_minutes" value="{{ $route->estimated_duration_minutes }}" min="1" class="w-full px-4 py-2 text-sm bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors">
                                 </div>
                                 <div>
                                     <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Status <span class="text-red-500">*</span></label>
                                     <div class="relative" data-custom-select>
                                         <input type="hidden" name="status" value="{{ $route->status }}" class="custom-select-input" required>
-                                        <button type="button" onclick="this.nextElementSibling.classList.toggle('hidden')" class="w-full flex items-center justify-between p-0 pl-3 pb-2 text-base bg-transparent border-0 border-b-2 border-slate-300 hover:border-slate-300 dark:border-slate-600 dark:hover:border-slate-600 text-slate-800 dark:text-white outline-none focus:outline-none transition-colors cursor-pointer">
+                                        <button type="button" onclick="this.nextElementSibling.classList.toggle('hidden')" class="w-full flex items-center justify-between px-4 py-2 text-sm bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors cursor-pointer">
                                             <span class="custom-select-text">{{ ucfirst($route->status) }}</span>
                                             <i class="fa-solid fa-chevron-down text-[10px] text-slate-400"></i>
                                         </button>
@@ -205,7 +205,7 @@
                             
                             <div>
                                 <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Description</label>
-                                <textarea name="description" rows="2" class="w-full p-0 pl-3 pb-2 text-base bg-transparent border-0 border-b-2 border-slate-300 hover:border-slate-300 dark:border-slate-600 dark:hover:border-slate-600 text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-0 focus:border-primary-500 transition-colors">{{ $route->description }}</textarea>
+                                <textarea name="description" rows="2" class="w-full px-4 py-2 text-sm bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors">{{ $route->description }}</textarea>
                             </div>
                         </div>
                         <x-slot:footer>
@@ -260,7 +260,7 @@
         <div class="space-y-6">
             <div>
                 <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Route Name <span class="text-red-500">*</span></label>
-                <input type="text" name="route_name" required placeholder="e.g. Manila to Baguio Direct" class="w-full p-0 pl-3 pb-2 text-base bg-transparent border-0 border-b-2 border-slate-300 hover:border-slate-300 dark:border-slate-600 dark:hover:border-slate-600 text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-0 focus:border-primary-500 transition-colors">
+                <input type="text" name="route_name" required placeholder="e.g. Manila to Baguio Direct" class="w-full px-4 py-2 text-sm bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors">
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -268,7 +268,7 @@
                     <h3 class="text-xs font-bold text-primary-500 uppercase tracking-wider"><i class="fa-solid fa-location-dot"></i> Origin</h3>
                     <div>
                         <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">City <span class="text-red-500">*</span></label>
-                        <select name="origin_city_id" required class="w-full p-0 pl-3 pr-8 pb-2 text-base bg-transparent border-0 border-b-2 border-slate-300 hover:border-slate-300 dark:border-slate-600 dark:hover:border-slate-600 text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-0 focus:border-primary-500 transition-colors cursor-pointer">
+                        <select name="origin_city_id" required class="w-full px-4 py-2 pr-8 text-sm bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors cursor-pointer">
                             <option value="">-- Select Origin City --</option>
                             @foreach($cities as $city)
                                 <option value="{{ $city->id }}">{{ $city->name }}</option>
@@ -277,7 +277,7 @@
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Terminal</label>
-                        <select name="origin_terminal_id" class="w-full p-0 pl-3 pr-8 pb-2 text-base bg-transparent border-0 border-b-2 border-slate-300 hover:border-slate-300 dark:border-slate-600 dark:hover:border-slate-600 text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-0 focus:border-primary-500 transition-colors cursor-pointer">
+                        <select name="origin_terminal_id" class="w-full px-4 py-2 pr-8 text-sm bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors cursor-pointer">
                             <option value="">-- Select Terminal --</option>
                             @foreach($terminals as $terminal)
                                 <option value="{{ $terminal->id }}">{{ $terminal->name }}</option>
@@ -289,7 +289,7 @@
                     <h3 class="text-xs font-bold text-emerald-500 uppercase tracking-wider"><i class="fa-solid fa-flag-checkered"></i> Destination</h3>
                     <div>
                         <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">City <span class="text-red-500">*</span></label>
-                        <select name="destination_city_id" required class="w-full p-0 pl-3 pr-8 pb-2 text-base bg-transparent border-0 border-b-2 border-slate-300 hover:border-slate-300 dark:border-slate-600 dark:hover:border-slate-600 text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-0 focus:border-primary-500 transition-colors cursor-pointer">
+                        <select name="destination_city_id" required class="w-full px-4 py-2 pr-8 text-sm bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors cursor-pointer">
                             <option value="">-- Select Destination City --</option>
                             @foreach($cities as $city)
                                 <option value="{{ $city->id }}">{{ $city->name }}</option>
@@ -298,7 +298,7 @@
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Terminal</label>
-                        <select name="destination_terminal_id" class="w-full p-0 pl-3 pr-8 pb-2 text-base bg-transparent border-0 border-b-2 border-slate-300 hover:border-slate-300 dark:border-slate-600 dark:hover:border-slate-600 text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-0 focus:border-primary-500 transition-colors cursor-pointer">
+                        <select name="destination_terminal_id" class="w-full px-4 py-2 pr-8 text-sm bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors cursor-pointer">
                             <option value="">-- Select Terminal --</option>
                             @foreach($terminals as $terminal)
                                 <option value="{{ $terminal->id }}">{{ $terminal->name }}</option>
@@ -311,17 +311,17 @@
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div>
                     <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Distance (km)</label>
-                    <input type="number" step="0.1" name="distance_km" min="0" class="w-full p-0 pl-3 pb-2 text-base bg-transparent border-0 border-b-2 border-slate-300 hover:border-slate-300 dark:border-slate-600 dark:hover:border-slate-600 text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-0 focus:border-primary-500 transition-colors">
+                    <input type="number" step="0.1" name="distance_km" min="0" class="w-full px-4 py-2 text-sm bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors">
                 </div>
                 <div>
                     <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Est. Duration (mins)</label>
-                    <input type="number" name="estimated_duration_minutes" min="1" class="w-full p-0 pl-3 pb-2 text-base bg-transparent border-0 border-b-2 border-slate-300 hover:border-slate-300 dark:border-slate-600 dark:hover:border-slate-600 text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-0 focus:border-primary-500 transition-colors">
+                    <input type="number" name="estimated_duration_minutes" min="1" class="w-full px-4 py-2 text-sm bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors">
                 </div>
                 <div>
                     <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Status <span class="text-red-500">*</span></label>
                     <div class="relative" data-custom-select>
                         <input type="hidden" name="status" value="active" class="custom-select-input" required>
-                        <button type="button" onclick="this.nextElementSibling.classList.toggle('hidden')" class="w-full flex items-center justify-between p-0 pl-3 pb-2 text-base bg-transparent border-0 border-b-2 border-slate-300 hover:border-slate-300 dark:border-slate-600 dark:hover:border-slate-600 text-slate-800 dark:text-white outline-none focus:outline-none transition-colors cursor-pointer">
+                        <button type="button" onclick="this.nextElementSibling.classList.toggle('hidden')" class="w-full flex items-center justify-between px-4 py-2 text-sm bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors cursor-pointer">
                             <span class="custom-select-text">Active</span>
                             <i class="fa-solid fa-chevron-down text-[10px] text-slate-400"></i>
                         </button>
@@ -335,7 +335,7 @@
             
             <div>
                 <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Description</label>
-                <textarea name="description" rows="2" class="w-full p-0 pl-3 pb-2 text-base bg-transparent border-0 border-b-2 border-slate-300 hover:border-slate-300 dark:border-slate-600 dark:hover:border-slate-600 text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-0 focus:border-primary-500 transition-colors"></textarea>
+                <textarea name="description" rows="2" class="w-full px-4 py-2 text-sm bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"></textarea>
             </div>
         </div>
         <x-slot:footer>

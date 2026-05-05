@@ -257,6 +257,9 @@
             <a href="{{ route('admin.cities.index') }}" class="nav-item {{ request()->routeIs('admin.cities.*') ? 'active' : '' }}">
                 <span class="nav-icon"><i class="fa-solid fa-city"></i></span> Cities
             </a>
+            <a href="{{ route('admin.trash.index') }}" class="nav-item {{ request()->routeIs('admin.trash.*') ? 'active' : '' }}">
+                <span class="nav-icon"><i class="fa-solid fa-trash-can"></i></span> Trash
+            </a>
         </nav>
     </aside>
 

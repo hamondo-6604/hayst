@@ -18,7 +18,7 @@
         <div class="flex-1">
             <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">Search Buses</label>
             <input type="text" name="search" value="{{ request('search') }}" placeholder="Bus Number or Name..." 
-                   class="w-full px-4 py-2 rounded-xl border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-white text-sm focus:ring-primary-500 focus:border-primary-500">
+                   class="w-full px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-white text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-colors">
         </div>
         <div class="w-full sm:w-48 relative" data-custom-select>
             <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">Status</label>
@@ -118,18 +118,18 @@
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div>
                                     <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Bus Number / Plate <span class="text-red-500">*</span></label>
-                                    <input type="text" name="bus_number" value="{{ $bus->bus_number }}" required class="w-full p-0 pl-3 pb-2 text-base bg-transparent border-0 border-b-2 border-slate-300 hover:border-slate-300 dark:border-slate-600 dark:hover:border-slate-600 text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-0 focus:border-primary-500 transition-colors">
+                                    <input type="text" name="bus_number" value="{{ $bus->bus_number }}" required class="w-full px-4 py-2 text-sm bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors">
                                 </div>
                                 <div>
                                     <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Bus Name / Alias</label>
-                                    <input type="text" name="bus_name" value="{{ $bus->bus_name }}" class="w-full p-0 pl-3 pb-2 text-base bg-transparent border-0 border-b-2 border-slate-300 hover:border-slate-300 dark:border-slate-600 dark:hover:border-slate-600 text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-0 focus:border-primary-500 transition-colors">
+                                    <input type="text" name="bus_name" value="{{ $bus->bus_name }}" class="w-full px-4 py-2 text-sm bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors">
                                 </div>
                             </div>
 
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div>
                                     <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Bus Type <span class="text-red-500">*</span></label>
-                                    <select name="bus_type_id" required class="w-full p-0 pl-3 pr-8 pb-2 text-base bg-transparent border-0 border-b-2 border-slate-300 hover:border-slate-300 dark:border-slate-600 dark:hover:border-slate-600 text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-0 focus:border-primary-500 transition-colors cursor-pointer">
+                                    <select name="bus_type_id" required class="w-full px-4 py-2 pr-8 text-sm bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors cursor-pointer">
                                         <option value="">-- Select Type --</option>
                                         @foreach($busTypes as $type)
                                             <option value="{{ $type->id }}" {{ $bus->bus_type_id == $type->id ? 'selected' : '' }}>{{ $type->type_name }}</option>
@@ -138,7 +138,7 @@
                                 </div>
                                 <div>
                                     <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Seat Layout <span class="text-red-500">*</span></label>
-                                    <select name="seat_layout_id" required onchange="const c = this.options[this.selectedIndex].getAttribute('data-capacity'); if(c) this.form.querySelector('[name=total_seats]').value = c;" class="w-full p-0 pl-3 pr-8 pb-2 text-base bg-transparent border-0 border-b-2 border-slate-300 hover:border-slate-300 dark:border-slate-600 dark:hover:border-slate-600 text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-0 focus:border-primary-500 transition-colors cursor-pointer">
+                                    <select name="seat_layout_id" required onchange="const c = this.options[this.selectedIndex].getAttribute('data-capacity'); if(c) this.form.querySelector('[name=total_seats]').value = c;" class="w-full px-4 py-2 pr-8 text-sm bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors cursor-pointer">
                                         <option value="">-- Select Layout --</option>
                                         @foreach($seatLayouts as $layout)
                                             <option value="{{ $layout->id }}" data-capacity="{{ $layout->capacity }}" {{ $bus->seat_layout_id == $layout->id ? 'selected' : '' }}>{{ $layout->layout_name }} ({{ $layout->capacity }} Seats)</option>
@@ -150,13 +150,13 @@
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div>
                                     <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Total Seats <span class="text-red-500">*</span></label>
-                                    <input type="number" name="total_seats" value="{{ $bus->total_seats }}" required min="1" class="w-full p-0 pl-3 pb-2 text-base bg-transparent border-0 border-b-2 border-slate-300 hover:border-slate-300 dark:border-slate-600 dark:hover:border-slate-600 text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-0 focus:border-primary-500 transition-colors">
+                                    <input type="number" name="total_seats" value="{{ $bus->total_seats }}" required min="1" class="w-full px-4 py-2 text-sm bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors">
                                 </div>
                                 <div>
                                     <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Status <span class="text-red-500">*</span></label>
                                     <div class="relative" data-custom-select>
                                         <input type="hidden" name="status" value="{{ $bus->status }}" class="custom-select-input" required>
-                                        <button type="button" onclick="this.nextElementSibling.classList.toggle('hidden')" class="w-full flex items-center justify-between p-0 pl-3 pb-2 text-base bg-transparent border-0 border-b-2 border-slate-300 hover:border-slate-300 dark:border-slate-600 dark:hover:border-slate-600 text-slate-800 dark:text-white outline-none focus:outline-none transition-colors cursor-pointer">
+                                        <button type="button" onclick="this.nextElementSibling.classList.toggle('hidden')" class="w-full flex items-center justify-between px-4 py-2 text-sm bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors cursor-pointer">
                                             <span class="custom-select-text">{{ ucfirst($bus->status) }}</span>
                                             <i class="fa-solid fa-chevron-down text-[10px] text-slate-400"></i>
                                         </button>
@@ -171,7 +171,7 @@
                             
                             <div>
                                 <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Description</label>
-                                <textarea name="description" rows="2" class="w-full p-0 pl-3 pb-2 text-base bg-transparent border-0 border-b-2 border-slate-300 hover:border-slate-300 dark:border-slate-600 dark:hover:border-slate-600 text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-0 focus:border-primary-500 transition-colors">{{ $bus->description }}</textarea>
+                                <textarea name="description" rows="2" class="w-full px-4 py-2 text-sm bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors">{{ $bus->description }}</textarea>
                             </div>
                         </div>
                         <x-slot:footer>
@@ -226,18 +226,18 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                     <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Bus Number / Plate <span class="text-red-500">*</span></label>
-                    <input type="text" name="bus_number" required class="w-full p-0 pl-3 pb-2 text-base bg-transparent border-0 border-b-2 border-slate-300 hover:border-slate-300 dark:border-slate-600 dark:hover:border-slate-600 text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-0 focus:border-primary-500 transition-colors">
+                    <input type="text" name="bus_number" required class="w-full px-4 py-2 text-sm bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors">
                 </div>
                 <div>
                     <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Bus Name / Alias</label>
-                    <input type="text" name="bus_name" class="w-full p-0 pl-3 pb-2 text-base bg-transparent border-0 border-b-2 border-slate-300 hover:border-slate-300 dark:border-slate-600 dark:hover:border-slate-600 text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-0 focus:border-primary-500 transition-colors">
+                    <input type="text" name="bus_name" class="w-full px-4 py-2 text-sm bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors">
                 </div>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                     <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Bus Type <span class="text-red-500">*</span></label>
-                    <select name="bus_type_id" required class="w-full p-0 pl-3 pr-8 pb-2 text-base bg-transparent border-0 border-b-2 border-slate-300 hover:border-slate-300 dark:border-slate-600 dark:hover:border-slate-600 text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-0 focus:border-primary-500 transition-colors cursor-pointer">
+                    <select name="bus_type_id" required class="w-full px-4 py-2 pr-8 text-sm bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors cursor-pointer">
                         <option value="">-- Select Type --</option>
                         @foreach($busTypes as $type)
                             <option value="{{ $type->id }}">{{ $type->type_name }}</option>
@@ -246,7 +246,7 @@
                 </div>
                 <div>
                     <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Seat Layout <span class="text-red-500">*</span></label>
-                    <select name="seat_layout_id" required onchange="const c = this.options[this.selectedIndex].getAttribute('data-capacity'); if(c) this.form.querySelector('[name=total_seats]').value = c;" class="w-full p-0 pl-3 pr-8 pb-2 text-base bg-transparent border-0 border-b-2 border-slate-300 hover:border-slate-300 dark:border-slate-600 dark:hover:border-slate-600 text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-0 focus:border-primary-500 transition-colors cursor-pointer">
+                    <select name="seat_layout_id" required onchange="const c = this.options[this.selectedIndex].getAttribute('data-capacity'); if(c) this.form.querySelector('[name=total_seats]').value = c;" class="w-full px-4 py-2 pr-8 text-sm bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors cursor-pointer">
                         <option value="">-- Select Layout --</option>
                         @foreach($seatLayouts as $layout)
                             <option value="{{ $layout->id }}" data-capacity="{{ $layout->capacity }}">{{ $layout->layout_name }} ({{ $layout->capacity }} Seats)</option>
@@ -258,13 +258,13 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                     <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Total Seats <span class="text-red-500">*</span></label>
-                    <input type="number" name="total_seats" required min="1" class="w-full p-0 pl-3 pb-2 text-base bg-transparent border-0 border-b-2 border-slate-300 hover:border-slate-300 dark:border-slate-600 dark:hover:border-slate-600 text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-0 focus:border-primary-500 transition-colors">
+                    <input type="number" name="total_seats" required min="1" class="w-full px-4 py-2 text-sm bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors">
                 </div>
                 <div>
                     <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Status <span class="text-red-500">*</span></label>
                     <div class="relative" data-custom-select>
                         <input type="hidden" name="status" value="active" class="custom-select-input" required>
-                        <button type="button" onclick="this.nextElementSibling.classList.toggle('hidden')" class="w-full flex items-center justify-between p-0 pl-3 pb-2 text-base bg-transparent border-0 border-b-2 border-slate-300 hover:border-slate-300 dark:border-slate-600 dark:hover:border-slate-600 text-slate-800 dark:text-white outline-none focus:outline-none transition-colors cursor-pointer">
+                        <button type="button" onclick="this.nextElementSibling.classList.toggle('hidden')" class="w-full flex items-center justify-between px-4 py-2 text-sm bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors cursor-pointer">
                             <span class="custom-select-text">Active</span>
                             <i class="fa-solid fa-chevron-down text-[10px] text-slate-400"></i>
                         </button>
@@ -279,7 +279,7 @@
             
             <div>
                 <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Description</label>
-                <textarea name="description" rows="2" class="w-full p-0 pl-3 pb-2 text-base bg-transparent border-0 border-b-2 border-slate-300 hover:border-slate-300 dark:border-slate-600 dark:hover:border-slate-600 text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-0 focus:border-primary-500 transition-colors"></textarea>
+                <textarea name="description" rows="2" class="w-full px-4 py-2 text-sm bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-slate-800 dark:text-white outline-none focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"></textarea>
             </div>
         </div>
         <x-slot:footer>
