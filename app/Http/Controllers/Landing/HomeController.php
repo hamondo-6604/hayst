@@ -13,93 +13,160 @@ use App\Models\Trip;
 use App\Models\BusType;
 use App\Models\Schedule;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class HomeController extends Controller
 {
     public function index()
     {
-        // Live trip statistics
-        $liveStats = $this->getLiveTripStats();
+        $today = today()->toDateString();
 
-        // Hero: next departing scheduled trip
-        $heroTrip = Trip::with(['route.originCity', 'route.destinationCity', 'bus.type'])
-            ->where('status', 'scheduled')
-            ->where('departure_time', '>', now())
-            ->orderBy('departure_time')
-            ->first();
+        // Live trip statistics (cache short)
+        $liveStats = Cache::remember("home:liveStats:{$today}", now()->addMinutes(5), function () {
+            return $this->getLiveTripStats();
+        });
 
-        // Popular routes: active, with upcoming trips, ordered by trip count
-        $featuredRoutes = BusRoute::with(['originCity', 'destinationCity'])
-            ->where('status', 'active')
-            ->withCount(['trips as upcoming_trips_count' => fn ($q) =>
-                $q->where('status', 'scheduled')->where('trip_date', '>=', today())
-            ])
-            ->withMin('trips as min_fare', 'fare')
-            ->having('upcoming_trips_count', '>', 0)
-            ->orderByDesc('upcoming_trips_count')
-            ->take(6)
-            ->get();
-
-        // Search dropdowns
-        $originCities = BusRoute::with('originCity')->where('status', 'active')
-            ->get()->pluck('originCity')->filter()->unique('id')->sortBy('name')->values();
-
-        $destinationCities = BusRoute::with('destinationCity')->where('status', 'active')
-            ->get()->pluck('destinationCity')->filter()->unique('id')->sortBy('name')->values();
-
-        // Active promos (max 3 for home page)
-        $promotions = Promotion::valid()->where('is_active', true)
-            ->orderByDesc('discount_value')
-            ->take(3)
-            ->get();
-
-        // Reviews: 4+ star, has a comment
-        $reviews = Feedback::with('user')
-            ->where('rating', '>=', 4)
-            ->whereNotNull('comment')
-            ->inRandomOrder()
-            ->take(6)
-            ->get();
-
-        // Government discount types (for the strip)
-        $discountTypes = DiscountType::active()->get();
-
-        // Stats
-        $stats = [
-            'totalCities'  => City::where('status', 'active')->count(),
-            'totalRoutes'  => BusRoute::where('status', 'active')->count(),
-            'activeBuses'  => Bus::where('status', 'active')->count(),
-            'todayTrips'   => Trip::whereDate('trip_date', today())->count(),
-            'avgRating'    => round(Feedback::where('rating', '>=', 1)->avg('rating'), 1),
-        ];
-
-        // Fleet Showcase
-        $busTypes = BusType::where('status', 'active')->get();
-
-        // Top Schedules for Timetable Preview
-        $topRoutes = BusRoute::with(['originCity', 'destinationCity'])
-            ->where('status', 'active')
-            ->orderByDesc('distance_km') // Arbitrary proxy for popular routes or just use specific ones
-            ->take(4)
-            ->get();
-
-        $topSchedules = [];
-        foreach ($topRoutes as $route) {
-            $schedules = Schedule::where('route_id', $route->id)
-                ->where('status', 'active')
+        // Hero: next departing scheduled trip (cache short)
+        $heroTrip = Cache::remember('home:heroTrip', now()->addMinutes(5), function () {
+            return Trip::with(['route.originCity', 'route.destinationCity', 'bus.type'])
+                ->where('status', 'scheduled')
+                ->where('departure_time', '>', now())
                 ->orderBy('departure_time')
+                ->first();
+        });
+
+        // Popular routes (cache)
+        $featuredRoutes = Cache::remember("home:featuredRoutes:{$today}", now()->addMinutes(10), function () {
+            return BusRoute::with(['originCity', 'destinationCity'])
+                ->where('status', 'active')
+                ->withCount(['trips as upcoming_trips_count' => fn ($q) =>
+                    $q->where('status', 'scheduled')->where('trip_date', '>=', today())
+                ])
+                ->withMin('trips as min_fare', 'fare')
+                ->having('upcoming_trips_count', '>', 0)
+                ->orderByDesc('upcoming_trips_count')
+                ->take(6)
                 ->get();
-            if ($schedules->isNotEmpty()) {
-                $topSchedules[] = [
-                    'route' => $route,
-                    'schedules' => $schedules,
+        });
+
+        // Search dropdowns + pairs (cache)
+        [$originCities, $destinationCities, $routePairs] = Cache::remember('home:searchDropdowns', now()->addMinutes(15), function () {
+            $originCities = BusRoute::with('originCity')->where('status', 'active')
+                ->get()->pluck('originCity')->filter()->unique('id')->sortBy('name')->values();
+
+            $destinationCities = BusRoute::with('destinationCity')->where('status', 'active')
+                ->get()->pluck('destinationCity')->filter()->unique('id')->sortBy('name')->values();
+
+            $routePairs = BusRoute::with(['originCity', 'destinationCity'])
+                ->where('status', 'active')
+                ->get()
+                ->filter(fn ($r) => $r->originCity && $r->destinationCity)
+                ->map(fn ($r) => [
+                    'from' => $r->originCity->name,
+                    'to' => $r->destinationCity->name,
+                ])
+                ->values();
+
+            return [$originCities, $destinationCities, $routePairs];
+        });
+
+        // Active promos (cache)
+        $promotions = Cache::remember('home:promotions', now()->addMinutes(15), function () {
+            return Promotion::valid()->where('is_active', true)
+                ->orderByDesc('discount_value')
+                ->take(3)
+                ->get();
+        });
+
+        // Reviews (cache)
+        $reviews = Cache::remember('home:reviews', now()->addMinutes(15), function () {
+            return Feedback::with('user')
+                ->where('rating', '>=', 4)
+                ->whereNotNull('comment')
+                ->inRandomOrder()
+                ->take(6)
+                ->get();
+        });
+
+        // Government discount types (cache)
+        $discountTypes = Cache::remember('home:discountTypes', now()->addMinutes(60), function () {
+            return DiscountType::active()->get();
+        });
+
+        // Stats (cache)
+        $stats = Cache::remember("home:stats:{$today}", now()->addMinutes(10), function () {
+            return [
+                'totalCities'  => City::where('status', 'active')->count(),
+                'totalRoutes'  => BusRoute::where('status', 'active')->count(),
+                'activeBuses'  => Bus::where('status', 'active')->count(),
+                'todayTrips'   => Trip::whereDate('trip_date', today())->count(),
+                'avgRating'    => round(Feedback::where('rating', '>=', 1)->avg('rating'), 1),
+            ];
+        });
+
+        // Fleet Showcase (cache)
+        $busTypes = Cache::remember('home:busTypes', now()->addMinutes(60), function () {
+            return BusType::where('status', 'active')->get();
+        });
+
+        // Top Schedules for Timetable Preview (cache)
+        $topSchedules = Cache::remember('home:topSchedules', now()->addMinutes(15), function () {
+            $topRoutes = BusRoute::with(['originCity', 'destinationCity'])
+                ->where('status', 'active')
+                ->orderByDesc('distance_km')
+                ->take(4)
+                ->get();
+
+            $topSchedules = [];
+            foreach ($topRoutes as $route) {
+                $schedules = Schedule::where('route_id', $route->id)
+                    ->where('status', 'active')
+                    ->orderBy('departure_time')
+                    ->get();
+                if ($schedules->isNotEmpty()) {
+                    $topSchedules[] = [
+                        'route' => $route,
+                        'schedules' => $schedules,
+                    ];
+                }
+            }
+
+            return $topSchedules;
+        });
+
+        // Featured route live stats for "today" (NO N+1)
+        $featuredRouteLive = Cache::remember("home:featuredRouteLive:{$today}", now()->addMinutes(5), function () use ($featuredRoutes) {
+            $routeIds = $featuredRoutes->pluck('id')->filter()->values();
+            if ($routeIds->isEmpty()) {
+                return [];
+            }
+
+            $rows = Trip::query()
+                ->selectRaw('route_id, COUNT(*) as trips_today, COALESCE(SUM(available_seats), 0) as seats_today')
+                ->whereIn('route_id', $routeIds)
+                ->whereDate('trip_date', today())
+                ->where('status', 'scheduled')
+                ->where('is_active', true)
+                ->groupBy('route_id')
+                ->get();
+
+            $map = [];
+            foreach ($rows as $row) {
+                $map[(int) $row->route_id] = [
+                    'tripsToday' => (int) $row->trips_today,
+                    'seatsToday' => (int) $row->seats_today,
                 ];
             }
-        }
+            return $map;
+        });
 
         return view('pages.home', compact(
             'heroTrip',
             'featuredRoutes',
+            'featuredRouteLive',
+            'originCities',
+            'destinationCities',
+            'routePairs',
             'promotions',
             'discountTypes',
             'stats',

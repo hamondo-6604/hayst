@@ -12,6 +12,14 @@ use Illuminate\Http\Request;
 
 class TripController extends Controller
 {
+    private function assignableDrivers()
+    {
+        return Driver::with('user')
+            ->whereIn('status', ['available', 'off_duty', 'on_trip'])
+            ->orderBy('id', 'desc')
+            ->get();
+    }
+
     public function index(Request $request)
     {
         $query = Trip::with(['route.originCity', 'route.destinationCity', 'bus', 'driver'])
@@ -37,7 +45,7 @@ class TripController extends Controller
 
         $routes = BusRoute::active()->get();
         $buses = Bus::active()->get();
-        $drivers = Driver::where('status', 'active')->get();
+        $drivers = $this->assignableDrivers();
         $terminals = class_exists(Terminal::class) ? Terminal::active()->get() : collect();
 
         return view('admin.trips.index', compact('trips', 'routes', 'buses', 'drivers', 'terminals'));
@@ -47,7 +55,7 @@ class TripController extends Controller
     {
         $routes = BusRoute::active()->get();
         $buses = Bus::active()->get();
-        $drivers = Driver::where('status', 'active')->get();
+        $drivers = $this->assignableDrivers();
         $terminals = class_exists(Terminal::class) ? Terminal::active()->get() : collect();
         
         return view('admin.trips.form', [
@@ -108,7 +116,7 @@ class TripController extends Controller
     {
         $routes = BusRoute::active()->get();
         $buses = Bus::active()->get();
-        $drivers = Driver::where('status', 'active')->get();
+        $drivers = $this->assignableDrivers();
         $terminals = class_exists(Terminal::class) ? Terminal::active()->get() : collect();
         
         return view('admin.trips.form', compact('trip', 'routes', 'buses', 'drivers', 'terminals'));

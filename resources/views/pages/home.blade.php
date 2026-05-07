@@ -27,7 +27,7 @@
       <!-- Slide 1 -->
       <div class="swiper-slide">
         <!-- User will replace src -->
-        <img src="https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&q=80&w=2000" alt="Bus">
+        <img src="https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&q=80&w=2000" alt="Bus" loading="eager" fetchpriority="high" decoding="async">
         <div class="hero-overlay"></div>
         <div class="absolute inset-0 flex items-center">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full pt-10">
@@ -57,7 +57,7 @@
 
       <!-- Slide 2 -->
       <div class="swiper-slide">
-        <img src="https://images.unsplash.com/photo-1570125909232-eb263c188f7e?auto=format&fit=crop&q=80&w=2000" alt="Comfort">
+        <img src="https://images.unsplash.com/photo-1570125909232-eb263c188f7e?auto=format&fit=crop&q=80&w=2000" alt="Comfort" loading="lazy" decoding="async">
         <div class="hero-overlay"></div>
         <div class="absolute inset-0 flex items-center">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full pt-10">
@@ -81,7 +81,7 @@
 
       <!-- Slide 3 -->
       <div class="swiper-slide">
-        <img src="https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&q=80&w=2000" alt="Journey">
+        <img src="https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&q=80&w=2000" alt="Journey" loading="lazy" decoding="async">
         <div class="hero-overlay"></div>
         <div class="absolute inset-0 flex items-center">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full pt-10">
@@ -149,50 +149,73 @@
     {{-- Horizontal Search Form --}}
     <form action="{{ route('landing.ticket_booking.search') }}" method="POST" id="hero-search-form" class="p-4">
       @csrf
-      <div class="flex flex-col md:flex-row items-end gap-3">
-        <div class="flex-1 w-full relative">
+      <div class="flex flex-col md:flex-row items-start gap-3">
+        <div class="flex-1 w-full">
           <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5 ml-1">Origin</label>
-          <div class="relative">
-            <i data-lucide="map-pin" style="width:16px;height:16px;position:absolute;left:14px;top:50%;transform:translateY(-50%);color:#94a3b8"></i>
-            <select name="from" id="hero-from" required class="w-full pl-10 pr-4 py-3.5 text-sm font-semibold border-2 border-slate-200 rounded-xl focus:border-primary-500 focus:ring-0 bg-white appearance-none hover:border-slate-300 transition-colors">
-              <option value="">Leaving from...</option>
+          <div class="relative" data-hero-select="from">
+            <input type="hidden" name="from" id="hero-from" value="">
+            <button type="button" class="w-full pl-10 pr-10 py-3.5 text-sm font-semibold border-2 border-slate-200 rounded-xl bg-white text-slate-800 outline-none focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 hover:border-slate-300 transition-colors shadow-sm text-left flex items-center justify-between gap-3"
+                    onclick="toggleHeroSelect('from')">
+              <span id="hero-from-text" class="truncate text-slate-500">Leaving from...</span>
+              <i data-lucide="chevron-down" style="width:16px;height:16px;color:#94a3b8;flex-shrink:0"></i>
+            </button>
+            <i data-lucide="map-pin" style="width:16px;height:16px;position:absolute;left:14px;top:50%;transform:translateY(-50%);color:#94a3b8;pointer-events:none"></i>
+
+            <div id="hero-from-menu" class="hidden absolute left-0 right-0 top-full mt-2 bg-white rounded-xl shadow-xl border border-slate-100 py-1.5 z-50 overflow-hidden max-h-60 overflow-y-auto">
               @foreach($originCities ?? [] as $city)
-                <option value="{{ $city->name }}">{{ $city->name }}</option>
+                <div class="px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50 cursor-pointer transition-colors"
+                     data-value="{{ $city->name }}"
+                     onclick="selectHeroOption('from', this.dataset.value, this.textContent)">
+                  {{ $city->name }}
+                </div>
               @endforeach
-            </select>
+            </div>
           </div>
+          <p id="hero-from-error" class="hidden mt-1.5 ml-1 text-xs font-semibold text-red-600 min-h-[16px] leading-tight"></p>
         </div>
         
         <!-- Swap Button -->
-        <button type="button" class="hidden md:flex shrink-0 w-10 h-10 bg-slate-100 rounded-full items-center justify-center text-slate-500 hover:bg-primary-50 hover:text-primary-600 transition-colors border border-slate-200 self-end mb-1" onclick="swapHeroCities()" title="Swap Cities">
-            <i data-lucide="arrow-left-right" style="width:16px;height:16px"></i>
-        </button>
+        <div class="hidden md:flex shrink-0 pt-[26px]">
+          <button type="button" class="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center text-slate-500 hover:bg-primary-50 hover:text-primary-600 transition-colors border border-slate-200" onclick="swapHeroCities()" title="Swap Cities">
+              <i data-lucide="arrow-left-right" style="width:16px;height:16px"></i>
+          </button>
+        </div>
 
-        <div class="flex-1 w-full relative">
+        <div class="flex-1 w-full">
           <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5 ml-1">Destination</label>
-          <div class="relative">
-            <i data-lucide="map-pin" style="width:16px;height:16px;position:absolute;left:14px;top:50%;transform:translateY(-50%);color:#94a3b8"></i>
-            <select name="to" id="hero-to" required class="w-full pl-10 pr-4 py-3.5 text-sm font-semibold border-2 border-slate-200 rounded-xl focus:border-primary-500 focus:ring-0 bg-white appearance-none hover:border-slate-300 transition-colors">
-              <option value="">Going to...</option>
-              @foreach($destinationCities ?? [] as $city)
-                <option value="{{ $city->name }}">{{ $city->name }}</option>
-              @endforeach
-            </select>
+          <div class="relative" data-hero-select="to">
+            <input type="hidden" name="to" id="hero-to" value="">
+            <button type="button" class="w-full pl-10 pr-10 py-3.5 text-sm font-semibold border-2 border-slate-200 rounded-xl bg-white text-slate-800 outline-none focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 hover:border-slate-300 transition-colors shadow-sm text-left flex items-center justify-between gap-3"
+                    onclick="toggleHeroSelect('to')">
+              <span id="hero-to-text" class="truncate text-slate-500">Going to...</span>
+              <i data-lucide="chevron-down" style="width:16px;height:16px;color:#94a3b8;flex-shrink:0"></i>
+            </button>
+            <i data-lucide="map-pin" style="width:16px;height:16px;position:absolute;left:14px;top:50%;transform:translateY(-50%);color:#94a3b8;pointer-events:none"></i>
+
+            <div id="hero-to-menu" class="hidden absolute left-0 right-0 top-full mt-2 bg-white rounded-xl shadow-xl border border-slate-100 py-1.5 z-50 overflow-hidden max-h-60 overflow-y-auto">
+              {{-- Filled by JS based on origin --}}
+              <div class="px-4 py-2.5 text-sm text-slate-500">Select an origin first.</div>
+            </div>
           </div>
+          <p id="hero-to-error" class="hidden mt-1.5 ml-1 text-xs font-semibold text-red-600 min-h-[16px] leading-tight"></p>
         </div>
         
-        <div class="flex-1 w-full relative">
+        <div class="flex-1 w-full">
           <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5 ml-1">Travel Date</label>
           <div class="relative">
             <i data-lucide="calendar" style="width:16px;height:16px;position:absolute;left:14px;top:50%;transform:translateY(-50%);color:#94a3b8"></i>
             <input type="date" name="date" required min="{{ today()->toDateString() }}" value="{{ today()->toDateString() }}"
-                   class="w-full pl-10 pr-4 py-3.5 text-sm font-semibold border-2 border-slate-200 rounded-xl focus:border-primary-500 focus:ring-0 hover:border-slate-300 transition-colors">
+                   id="hero-date"
+                   class="w-full pl-10 pr-4 py-3.5 text-sm font-semibold border-2 border-slate-200 rounded-xl bg-white text-slate-800 outline-none focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 hover:border-slate-300 transition-colors shadow-sm">
           </div>
+          <p id="hero-date-error" class="hidden mt-1.5 ml-1 text-xs font-semibold text-red-600 min-h-[16px] leading-tight"></p>
         </div>
         
-        <button type="submit" class="w-full md:w-auto md:min-w-[140px] py-3.5 px-6 bg-primary-600 hover:bg-primary-700 text-white text-base font-bold rounded-xl transition-all shadow-[0_4px_14px_0_rgba(234,88,12,0.39)] hover:shadow-[0_6px_20px_rgba(234,88,12,0.23)] flex items-center justify-center gap-2 mt-2 md:mt-0">
+        <div class="w-full md:w-auto md:min-w-[140px] pt-[26px] md:pt-[26px]">
+          <button type="submit" class="w-full py-3.5 px-6 bg-primary-600 hover:bg-primary-700 text-white text-base font-bold rounded-xl transition-all shadow-[0_4px_14px_0_rgba(234,88,12,0.39)] hover:shadow-[0_6px_20px_rgba(234,88,12,0.23)] flex items-center justify-center gap-2">
           Search
-        </button>
+          </button>
+        </div>
       </div>
     </form>
 
@@ -207,7 +230,7 @@
                    class="w-full pl-10 pr-4 py-3.5 text-sm font-semibold border-2 border-slate-200 rounded-xl focus:border-primary-500 focus:ring-0 uppercase hover:border-slate-300 transition-colors">
           </div>
         </div>
-        <button onclick="trackTripCode()" id="btn-track-trip" class="w-full md:w-auto px-8 py-3.5 bg-slate-800 hover:bg-slate-900 text-white text-sm font-bold rounded-xl transition-all shadow-lg flex items-center justify-center gap-2 mt-2 md:mt-0">
+        <button onclick="trackTripCode()" id="btn-track-trip" class="w-full md:w-auto px-8 py-3.5 bg-slate-800 hover:bg-slate-900 text-white text-sm font-bold rounded-xl transition-all shadow-lg flex items-center justify-center gap-2 mt-2 md:mt-0 disabled:opacity-60 disabled:cursor-not-allowed">
           Track Status
         </button>
       </div>
@@ -267,18 +290,10 @@
             ['bg-emerald-100 text-emerald-700',   'trending-up', 'Trending'],
           ];
           [$bcls,$bicon,$blabel] = $badges[$i % 3];
-          
-          // Get live stats for this route
-          $tripsToday = \App\Models\Trip::where('route_id', $route->id)
-            ->whereDate('trip_date', today())
-            ->where('status', 'scheduled')
-            ->where('is_active', true)
-            ->count();
-          $seatsToday = \App\Models\Trip::where('route_id', $route->id)
-            ->whereDate('trip_date', today())
-            ->where('status', 'scheduled')
-            ->where('is_active', true)
-            ->sum('available_seats');
+
+          $live = $featuredRouteLive[$route->id] ?? ['tripsToday' => 0, 'seatsToday' => 0];
+          $tripsToday = $live['tripsToday'] ?? 0;
+          $seatsToday = $live['seatsToday'] ?? 0;
         @endphp
         <div class="group bg-white rounded-2xl p-5 border border-slate-200 cursor-pointer
                     hover:shadow-lg hover:-translate-y-1 transition-all duration-200"
@@ -777,6 +792,8 @@
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 <script>
+  const HOME_ROUTE_PAIRS = @json($routePairs ?? []);
+
   document.addEventListener('DOMContentLoaded', function() {
     new Swiper('.hero-swiper', {
       loop: true,
@@ -802,6 +819,97 @@
     const temp = from.value;
     from.value = to.value;
     to.value = temp;
+    // Update visible labels
+    document.getElementById('hero-from-text').textContent = from.value || 'Leaving from...';
+    document.getElementById('hero-from-text').classList.toggle('text-slate-500', !from.value);
+    document.getElementById('hero-from-text').classList.toggle('text-slate-800', !!from.value);
+
+    // Refresh destination options based on new origin
+    initHeroDependentDropdowns();
+
+    // Keep swapped destination only if valid for the new origin
+    const desiredTo = to.value;
+    const validTos = window.__heroDestIndex?.get(from.value) || new Set();
+    if (!desiredTo || !validTos.has(desiredTo)) {
+      to.value = '';
+      document.getElementById('hero-to-text').textContent = 'Going to...';
+      document.getElementById('hero-to-text').classList.add('text-slate-500');
+      document.getElementById('hero-to-text').classList.remove('text-slate-800');
+    } else {
+      document.getElementById('hero-to-text').textContent = desiredTo;
+      document.getElementById('hero-to-text').classList.remove('text-slate-500');
+      document.getElementById('hero-to-text').classList.add('text-slate-800');
+    }
+  }
+
+  function buildDestinationIndex(routePairs) {
+    const index = new Map();
+    for (const pair of routePairs || []) {
+      if (!pair?.from || !pair?.to) continue;
+      if (!index.has(pair.from)) index.set(pair.from, new Set());
+      index.get(pair.from).add(pair.to);
+    }
+    return index;
+  }
+
+  function setSelectOptions(selectEl, values, placeholder) {
+    if (!selectEl) return;
+    const current = selectEl.value;
+    selectEl.innerHTML = '';
+    const ph = document.createElement('option');
+    ph.value = '';
+    ph.textContent = placeholder;
+    selectEl.appendChild(ph);
+
+    const sorted = Array.from(values || []).sort((a, b) => a.localeCompare(b));
+    for (const v of sorted) {
+      const opt = document.createElement('option');
+      opt.value = v;
+      opt.textContent = v;
+      selectEl.appendChild(opt);
+    }
+
+    // keep selection if still valid
+    if (sorted.includes(current)) {
+      selectEl.value = current;
+    }
+  }
+
+  function initHeroDependentDropdowns() {
+    const fromEl = document.getElementById('hero-from');
+    const toEl = document.getElementById('hero-to');
+    const toMenu = document.getElementById('hero-to-menu');
+    if (!fromEl || !toEl) return;
+
+    const destIndex = buildDestinationIndex(HOME_ROUTE_PAIRS);
+    window.__heroDestIndex = destIndex;
+
+    const fromValue = fromEl.value;
+    const destinations = fromValue ? (destIndex.get(fromValue) || new Set()) : new Set();
+
+    // Build destination menu
+    if (!toMenu) return;
+    toMenu.innerHTML = '';
+
+    if (!fromValue) {
+      toMenu.innerHTML = `<div class="px-4 py-2.5 text-sm text-slate-500">Select an origin first.</div>`;
+      return;
+    }
+
+    const sorted = Array.from(destinations).sort((a, b) => a.localeCompare(b));
+    if (sorted.length === 0) {
+      toMenu.innerHTML = `<div class="px-4 py-2.5 text-sm text-slate-500">No destinations available.</div>`;
+      return;
+    }
+
+    for (const d of sorted) {
+      const item = document.createElement('div');
+      item.className = 'px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50 cursor-pointer transition-colors';
+      item.dataset.value = d;
+      item.textContent = d;
+      item.addEventListener('click', () => selectHeroOption('to', d, d));
+      toMenu.appendChild(item);
+    }
   }
 
   // Copy Code
@@ -851,6 +959,7 @@
 
     if (!code) return toast('Please enter a trip code.', 'error');
 
+    btn.disabled = true;
     btn.innerHTML = `<i data-lucide="loader-2" class="animate-spin" style="width:14px;height:14px"></i> Tracking...`;
     lucide.createIcons();
     
@@ -861,27 +970,56 @@
       resultBox.classList.remove('hidden');
       if (j.success) {
         const t = j.trip;
-        const color = t.status === 'Completed' ? 'text-slate-500' : (t.status === 'Ongoing' ? 'text-blue-500' : 'text-emerald-500');
+        const statusKey = (t.status || '').toLowerCase();
+        const color = statusKey.includes('cancel')
+          ? 'text-red-600'
+          : (statusKey.includes('complete') ? 'text-slate-600' : (statusKey.includes('ongoing') ? 'text-blue-600' : 'text-emerald-600'));
+
+        const badgeBg = statusKey.includes('cancel')
+          ? 'bg-red-50 border-red-200'
+          : (statusKey.includes('complete') ? 'bg-slate-50 border-slate-200' : (statusKey.includes('ongoing') ? 'bg-blue-50 border-blue-200' : 'bg-emerald-50 border-emerald-200'));
+
         resultBox.innerHTML = `
-          <div class="flex justify-between items-center mb-2 pb-2 border-b border-slate-200">
-            <span class="font-bold text-slate-800">${t.code}</span>
-            <span class="font-bold ${color}">${t.status}</span>
+          <div class="rounded-xl border ${badgeBg} bg-white p-4">
+            <div class="flex justify-between items-center mb-3 pb-3 border-b border-slate-100">
+              <span class="font-extrabold text-slate-900">${t.code}</span>
+              <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-extrabold border ${badgeBg} ${color}">${t.status}</span>
+            </div>
+            <div class="grid sm:grid-cols-2 gap-2 text-sm text-slate-700">
+              <div class="flex items-center gap-2"><i data-lucide="map-pin" style="width:14px;height:14px;color:#64748b"></i><span>${t.origin} <span class="text-slate-400">→</span> ${t.destination}</span></div>
+              <div class="flex items-center gap-2"><i data-lucide="bus" style="width:14px;height:14px;color:#64748b"></i><span>${t.bus_type}</span></div>
+              <div class="flex items-center gap-2"><i data-lucide="clock" style="width:14px;height:14px;color:#64748b"></i><span>Departs: <span class="font-semibold">${t.departure}</span></span></div>
+              <div class="flex items-center gap-2"><i data-lucide="clock-3" style="width:14px;height:14px;color:#64748b"></i><span>Arrives: <span class="font-semibold">${t.arrival || 'TBD'}</span></span></div>
+            </div>
           </div>
-          <div class="flex items-center gap-1"><i data-lucide="map-pin" style="width:12px;height:12px"></i> ${t.origin} <i data-lucide="arrow-right" style="width:10px;height:10px"></i> ${t.destination}</div>
-          <div class="flex items-center gap-1"><i data-lucide="clock" style="width:12px;height:12px"></i> Departs: <span class="font-semibold text-slate-700">${t.departure}</span></div>
-          <div class="flex items-center gap-1"><i data-lucide="bus" style="width:12px;height:12px"></i> Class: ${t.bus_type}</div>
         `;
       } else {
-        resultBox.innerHTML = `<div class="text-red-500 font-semibold">${j.message}</div>`;
+        resultBox.innerHTML = `
+          <div class="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700 font-semibold">
+            ${j.message}
+          </div>
+        `;
       }
       lucide.createIcons();
     } catch (e) {
       toast('Error tracking trip.', 'error');
     } finally {
       btn.innerHTML = orig;
+      btn.disabled = false;
       lucide.createIcons();
     }
   }
+
+  // Enter key triggers Track Trip
+  document.addEventListener('DOMContentLoaded', () => {
+    const trackInput = document.getElementById('track-trip-code');
+    trackInput?.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        trackTripCode();
+      }
+    });
+  });
 
   // Testimonial Swiper Initialization
   if (document.querySelector('.testimonial-swiper')) {
@@ -921,5 +1059,154 @@
       icon.style.transform = 'rotate(0deg)';
     }
   }
+
+  document.addEventListener('DOMContentLoaded', initHeroDependentDropdowns);
+
+  // Custom Tailwind "select" logic (home page only)
+  function setHeroFieldError(kind, message) {
+    const input = document.getElementById(kind === 'date' ? 'hero-date' : (kind === 'from' ? 'hero-from' : 'hero-to'));
+    const error = document.getElementById(kind === 'date' ? 'hero-date-error' : (kind === 'from' ? 'hero-from-error' : 'hero-to-error'));
+    const container = kind === 'date'
+      ? document.getElementById('hero-date')?.closest('.relative')
+      : document.querySelector(`[data-hero-select="${kind}"]`)?.querySelector('button');
+
+    if (error) {
+      error.textContent = message || '';
+      error.classList.toggle('hidden', !message);
+    }
+    if (container) {
+      container.classList.toggle('border-red-300', !!message);
+      container.classList.toggle('focus:border-red-500', !!message);
+      container.classList.toggle('focus:ring-red-500/20', !!message);
+      container.classList.toggle('border-slate-200', !message);
+    }
+  }
+
+  function clearHeroErrors() {
+    setHeroFieldError('from', '');
+    setHeroFieldError('to', '');
+    setHeroFieldError('date', '');
+  }
+
+  function closeHeroSelects() {
+    document.getElementById('hero-from-menu')?.classList.add('hidden');
+    document.getElementById('hero-to-menu')?.classList.add('hidden');
+  }
+
+  function toggleHeroSelect(kind) {
+    const menu = document.getElementById(kind === 'from' ? 'hero-from-menu' : 'hero-to-menu');
+    if (!menu) return;
+    const isHidden = menu.classList.contains('hidden');
+    closeHeroSelects();
+    if (isHidden) menu.classList.remove('hidden');
+  }
+
+  function selectHeroOption(kind, value, label) {
+    const input = document.getElementById(kind === 'from' ? 'hero-from' : 'hero-to');
+    const text = document.getElementById(kind === 'from' ? 'hero-from-text' : 'hero-to-text');
+    const menu = document.getElementById(kind === 'from' ? 'hero-from-menu' : 'hero-to-menu');
+    if (!input || !text) return;
+
+    input.value = value || '';
+    text.textContent = value ? (label || value) : (kind === 'from' ? 'Leaving from...' : 'Going to...');
+    text.classList.toggle('text-slate-500', !value);
+    text.classList.toggle('text-slate-800', !!value);
+
+    if (menu) menu.classList.add('hidden');
+    setHeroFieldError(kind, '');
+
+    if (kind === 'from') {
+      // Reset destination and rebuild its menu
+      const toInput = document.getElementById('hero-to');
+      const toText = document.getElementById('hero-to-text');
+      if (toInput) toInput.value = '';
+      if (toText) {
+        toText.textContent = 'Going to...';
+        toText.classList.add('text-slate-500');
+        toText.classList.remove('text-slate-800');
+      }
+      initHeroDependentDropdowns();
+    }
+  }
+
+  document.addEventListener('click', (e) => {
+    const container = e.target.closest('[data-hero-select]');
+    if (!container) closeHeroSelects();
+  });
+
+  function isValidISODate(value) {
+    if (!value || typeof value !== 'string') return false;
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+    const d = new Date(value + 'T00:00:00');
+    return !Number.isNaN(d.getTime());
+  }
+
+  function prefillHeroSearchFromUrl() {
+    const params = new URLSearchParams(window.location.search);
+    const from = params.get('from') || params.get('f') || '';
+    const to = params.get('to') || params.get('t') || '';
+    const date = params.get('date') || params.get('d') || '';
+
+    const fromMenu = document.getElementById('hero-from-menu');
+    const fromExists = fromMenu ? Array.from(fromMenu.querySelectorAll('[data-value]')).some(el => el.dataset.value === from) : false;
+
+    if (from && fromExists) {
+      selectHeroOption('from', from, from);
+      // rebuild destination menu
+      initHeroDependentDropdowns();
+
+      const validTos = window.__heroDestIndex?.get(from) || new Set();
+      if (to && validTos.has(to)) {
+        selectHeroOption('to', to, to);
+      }
+    }
+
+    const dateEl = document.getElementById('hero-date');
+    if (dateEl && isValidISODate(date)) {
+      const min = dateEl.getAttribute('min');
+      if (!min || date >= min) {
+        dateEl.value = date;
+        setHeroFieldError('date', '');
+      }
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    // ensure lucide icons applied inside custom dropdown buttons
+    try { lucide?.createIcons?.(); } catch (e) {}
+    prefillHeroSearchFromUrl();
+  });
+
+  document.getElementById('hero-search-form')?.addEventListener('submit', (e) => {
+    clearHeroErrors();
+
+    const fromVal = document.getElementById('hero-from')?.value || '';
+    const toVal = document.getElementById('hero-to')?.value || '';
+    const dateEl = document.getElementById('hero-date');
+    const dateVal = dateEl?.value || '';
+
+    let hasError = false;
+
+    if (!fromVal) {
+      setHeroFieldError('from', 'Please select an origin city.');
+      hasError = true;
+    }
+    if (!toVal) {
+      setHeroFieldError('to', 'Please select a destination city.');
+      hasError = true;
+    }
+    if (!dateVal) {
+      setHeroFieldError('date', 'Please select a travel date.');
+      hasError = true;
+    } else if (dateEl?.min && dateVal < dateEl.min) {
+      setHeroFieldError('date', `Date must be on or after ${dateEl.min}.`);
+      hasError = true;
+    }
+
+    if (hasError) {
+      e.preventDefault();
+      return;
+    }
+  });
 </script>
 @endpush

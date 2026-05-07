@@ -47,7 +47,15 @@ Route::get('/maintenance', [MaintenanceController::class, 'index'])->name('maint
 
 // People
 Route::get('/users', [UserController::class, 'index'])->name('users.index');
+Route::post('/users', [UserController::class, 'store'])->name('users.store');
+Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update');
+Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
+
 Route::get('/drivers', [DriverController::class, 'index'])->name('drivers.index');
+Route::post('/drivers', [DriverController::class, 'store'])->name('drivers.store');
+Route::put('/drivers/{driver}', [DriverController::class, 'update'])->name('drivers.update');
+Route::delete('/drivers/{driver}', [DriverController::class, 'destroy'])->name('drivers.destroy');
+
 Route::get('/feedback', [FeedbackController::class, 'index'])->name('feedback.index');
 
 // System

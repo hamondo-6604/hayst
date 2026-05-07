@@ -29,6 +29,9 @@ class Trip extends Model
         'status',
         'is_active',
         'notes',
+        'current_lat',
+        'current_lng',
+        'last_location_updated_at',
     ];
 
     protected $casts = [
@@ -37,6 +40,9 @@ class Trip extends Model
         'arrival_time'   => 'datetime',
         'fare'           => 'decimal:2',
         'is_active'      => 'boolean',
+        'current_lat'    => 'float',
+        'current_lng'    => 'float',
+        'last_location_updated_at' => 'datetime',
     ];
 
     // ------------------------------------------------------------------

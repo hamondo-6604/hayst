@@ -347,5 +347,6 @@
         setAdminTheme(getAdminTheme());
       });
     </script>
+    @stack('scripts')
 </body>
 </html>

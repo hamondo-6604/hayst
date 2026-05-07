@@ -331,6 +331,25 @@ class TicketBookingController extends Controller
     }
 
     // ------------------------------------------------------------------
+    // GET /select-seats/{trip_id}/location - Return live bus coordinates
+    // ------------------------------------------------------------------
+    public function tripLocation($trip_id)
+    {
+        $trip = Trip::select(['id', 'current_lat', 'current_lng', 'last_location_updated_at'])
+            ->findOrFail($trip_id);
+
+        $hasLocation = !is_null($trip->current_lat) && !is_null($trip->current_lng);
+
+        return response()->json([
+            'trip_id' => $trip->id,
+            'has_location' => $hasLocation,
+            'lat' => $hasLocation ? (float) $trip->current_lat : null,
+            'lng' => $hasLocation ? (float) $trip->current_lng : null,
+            'last_updated_at' => $trip->last_location_updated_at?->toIso8601String(),
+        ]);
+    }
+
+    // ------------------------------------------------------------------
     // GET /booking/{booking_id}/details
     // ------------------------------------------------------------------
     public function passengerDetails($booking_id)

@@ -118,6 +118,13 @@
     }
 
     .cell-empty { width: 48px; height: 48px; }
+
+    .cell-aisle {
+        width: 28px;
+        height: 48px;
+        border-radius: 999px;
+        background: transparent;
+    }
     
     .cell-door {
         width: 48px;
@@ -147,16 +154,42 @@
     .legend-item {
         display: flex;
         align-items: center;
-        gap: 8px;
-        font-size: 13px;
+        gap: 6px;
+        font-size: 12px;
         color: #64748b;
         font-weight: 500;
+        white-space: nowrap;
     }
 
     .legend-box {
         width: 24px;
         height: 24px;
         border-radius: 6px;
+    }
+
+    .trip-map-card {
+        border: 1px solid #e2e8f0;
+        border-radius: 16px;
+        overflow: hidden;
+        background: #fff;
+        margin-bottom: 24px;
+    }
+
+    #trip-map {
+        height: 320px;
+        width: 100%;
+        z-index: 1;
+    }
+
+    .trip-map-meta {
+        padding: 12px 16px;
+        border-top: 1px solid #e2e8f0;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px 16px;
+        font-size: 12px;
+        color: #475569;
+        background: #f8fafc;
     }
 </style>
 @endpush
@@ -214,7 +247,7 @@
             <div class="bg-white border border-slate-200 rounded-2xl p-8 shadow-sm">
                 
                 {{-- Legend --}}
-                <div class="flex flex-wrap justify-center gap-6 mb-10">
+                <div class="flex flex-wrap justify-center gap-x-4 gap-y-3 mb-10">
                     <div class="legend-item">
                         <div class="legend-box border-2 border-slate-200 bg-white"></div> Available
                     </div>
@@ -229,6 +262,16 @@
                     </div>
                 </div>
 
+                {{-- Trip GPS Map --}}
+                <div class="trip-map-card">
+                    <div id="trip-map"></div>
+                    <div class="trip-map-meta">
+                        <span><strong>From:</strong> {{ $trip->route?->originCity?->name ?? 'Origin' }}</span>
+                        <span><strong>To:</strong> {{ $trip->route?->destinationCity?->name ?? 'Destination' }}</span>
+                        <span class="text-slate-500">Live tracking updates every 5 seconds</span>
+                    </div>
+                </div>
+
                 {{-- Bus Layout --}}
                 <div class="overflow-x-auto pb-4">
                     <div class="bus-container">
@@ -236,9 +279,68 @@
                         <div class="bus-steering"></div>
                         
                         <div class="flex flex-col gap-4 mt-8">
-                            @foreach($seatMap as $row)
-                                <div class="flex gap-4 justify-center">
-                                    @foreach($row as $cell)
+                            @foreach($seatMap as $rowIndex => $row)
+                                <div class="flex gap-4 justify-center"
+                                     style="{{ $rowIndex === (count($seatMap) - 1) ? 'column-gap: 11px;' : '' }}">
+                                    @php
+                                        $isLastRow = $rowIndex === (count($seatMap) - 1);
+                                        $renderRow = $row;
+
+                                        // Common bus pattern: rear bench has one extra middle seat.
+                                        // If last row only has 4 seats, add a visual 5th seat block.
+                                        $bookableSeatsInRow = collect($row)->filter(function ($rowCell) {
+                                            return ($rowCell['cell_type'] ?? 'empty') === 'seat'
+                                                && ($rowCell['is_bookable'] ?? false);
+                                        })->values();
+
+                                        if ($isLastRow && $bookableSeatsInRow->count() === 4) {
+                                            $lastSeatLabel = $bookableSeatsInRow->last()['seat_label'] ?? '';
+                                            $rearExtraLabel = '';
+
+                                            if (preg_match('/^(\d+)([A-Z])$/', $lastSeatLabel, $matches)) {
+                                                $rearExtraLabel = $matches[1] . chr(ord($matches[2]) + 1);
+                                            }
+
+                                            $rearExtraSeat = [
+                                                'cell_type' => 'seat',
+                                                'is_bookable' => true,
+                                                'is_available' => false, // display-only seat block
+                                                'is_own_booking' => false,
+                                                'seat_label' => $rearExtraLabel,
+                                                'fare' => 0,
+                                            ];
+
+                                            // Put the extra rear seat in the center for visual alignment.
+                                            array_splice($renderRow, 2, 0, [$rearExtraSeat]);
+                                        }
+
+                                        $rowCount = count($renderRow);
+                                        $hasExplicitAisle = collect($row)->contains(function ($rowCell) {
+                                            return ($rowCell['cell_type'] ?? 'empty') === 'aisle';
+                                        });
+
+                                        // If layout uses an "empty" cell between seats, treat it as an aisle placeholder.
+                                        $hasInlineGapPlaceholder = false;
+                                        foreach ($renderRow as $idx => $rowCell) {
+                                            if (($rowCell['cell_type'] ?? 'empty') !== 'empty') {
+                                                continue;
+                                            }
+
+                                            $prevType = $idx > 0 ? ($renderRow[$idx - 1]['cell_type'] ?? 'empty') : null;
+                                            $nextType = $idx < ($rowCount - 1) ? ($renderRow[$idx + 1]['cell_type'] ?? 'empty') : null;
+
+                                            if ($prevType === 'seat' && $nextType === 'seat') {
+                                                $hasInlineGapPlaceholder = true;
+                                                break;
+                                            }
+                                        }
+                                    @endphp
+
+                                    @foreach($renderRow as $cellIndex => $cell)
+                                        @if(! $isLastRow && ! $hasExplicitAisle && ! $hasInlineGapPlaceholder && $cellIndex === 2)
+                                            <div class="cell-aisle" title="Aisle"></div>
+                                        @endif
+
                                         @php
                                             $type = $cell['cell_type'] ?? 'empty';
                                             $isBookable = $cell['is_bookable'] ?? false;
@@ -273,6 +375,18 @@
                                             <div class="cell-door" title="Door">Door</div>
                                         @elseif($type === 'stairs')
                                             <div class="cell-door" title="Stairs">Stairs</div>
+                                        @elseif($type === 'aisle' && ! $isLastRow)
+                                            <div class="cell-aisle" title="Aisle"></div>
+                                        @elseif(
+                                            ! $isLastRow
+                                            &&
+                                            $type === 'empty'
+                                            && $cellIndex > 0
+                                            && $cellIndex < ($rowCount - 1)
+                                            && (($renderRow[$cellIndex - 1]['cell_type'] ?? 'empty') === 'seat')
+                                            && (($renderRow[$cellIndex + 1]['cell_type'] ?? 'empty') === 'seat')
+                                        )
+                                            <div class="cell-aisle" title="Aisle"></div>
                                         @else
                                             <div class="cell-empty"></div>
                                         @endif
@@ -363,6 +477,127 @@
 <script>
     const selectedSeats = new Map(); // seat_label -> fare
     const remainingAllowed = {{ $remainingAllowed ?? 5 }};
+    const tripOriginCity = @json($trip->route?->originCity?->name ?? '');
+    const tripDestinationCity = @json($trip->route?->destinationCity?->name ?? '');
+    const tripLocationEndpoint = @json(route('user.trip.location', $trip->id));
+
+    async function geocodeCity(cityName) {
+        if (!cityName) return null;
+
+        const query = encodeURIComponent(`${cityName}, Philippines`);
+        const endpoint = `https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${query}`;
+
+        try {
+            const response = await fetch(endpoint, {
+                headers: {
+                    'Accept': 'application/json'
+                }
+            });
+            if (!response.ok) return null;
+
+            const data = await response.json();
+            if (!Array.isArray(data) || data.length === 0) return null;
+
+            return {
+                lat: parseFloat(data[0].lat),
+                lng: parseFloat(data[0].lon)
+            };
+        } catch (error) {
+            return null;
+        }
+    }
+
+    async function initTripMap() {
+        const mapElement = document.getElementById('trip-map');
+        if (!mapElement || typeof L === 'undefined') return;
+
+        const defaultCenter = [12.8797, 121.7740]; // Philippines
+        const map = L.map('trip-map', {
+            zoomControl: true
+        }).setView(defaultCenter, 6);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
+
+        const [originCoords, destinationCoords] = await Promise.all([
+            geocodeCity(tripOriginCity),
+            geocodeCity(tripDestinationCity)
+        ]);
+
+        if (!originCoords || !destinationCoords) {
+            return;
+        }
+
+        const originLatLng = [originCoords.lat, originCoords.lng];
+        const destinationLatLng = [destinationCoords.lat, destinationCoords.lng];
+        const bounds = L.latLngBounds([originLatLng, destinationLatLng]);
+
+        L.marker(originLatLng)
+            .addTo(map)
+            .bindPopup(`<strong>Origin</strong><br>${tripOriginCity}`);
+
+        L.marker(destinationLatLng)
+            .addTo(map)
+            .bindPopup(`<strong>Destination</strong><br>${tripDestinationCity}`);
+
+        L.polyline([originLatLng, destinationLatLng], {
+            color: '#f97316',
+            weight: 4,
+            opacity: 0.9
+        }).addTo(map);
+
+        const fallbackBusPosition = [
+            (originCoords.lat + destinationCoords.lat) / 2,
+            (originCoords.lng + destinationCoords.lng) / 2
+        ];
+
+        const busMarker = L.circleMarker(fallbackBusPosition, {
+            radius: 8,
+            color: '#0369a1',
+            fillColor: '#0ea5e9',
+            fillOpacity: 0.9,
+            weight: 2
+        })
+            .addTo(map)
+            .bindPopup('<strong>Bus</strong><br>Waiting for live GPS location...');
+
+        async function refreshBusLocation() {
+            try {
+                const response = await fetch(tripLocationEndpoint, {
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+
+                if (!response.ok) return;
+
+                const payload = await response.json();
+                if (!payload || payload.has_location !== true) return;
+
+                const liveLatLng = [Number(payload.lat), Number(payload.lng)];
+                busMarker.setLatLng(liveLatLng);
+
+                const updatedAt = payload.last_updated_at
+                    ? new Date(payload.last_updated_at).toLocaleString()
+                    : 'just now';
+
+                busMarker.bindPopup(`<strong>Bus (Live)</strong><br>Updated: ${updatedAt}`);
+            } catch (error) {
+                // Keep last known marker location when polling fails.
+            }
+        }
+
+        map.fitBounds(bounds.pad(0.35));
+
+        await refreshBusLocation();
+        const pollerId = window.setInterval(refreshBusLocation, 5000);
+
+        window.addEventListener('beforeunload', () => {
+            window.clearInterval(pollerId);
+        });
+    }
 
     function toggleSeat(element) {
         const seatLabel = element.dataset.seat;
@@ -438,5 +673,7 @@
 
         totalSpan.textContent = total.toLocaleString();
     }
+
+    document.addEventListener('DOMContentLoaded', initTripMap);
 </script>
 @endpush

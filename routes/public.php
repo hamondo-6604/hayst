@@ -64,6 +64,7 @@ Route::middleware('auth')->group(function () {
     // Seat Selection
     Route::get('/select-seats/{trip_id}', [TicketBookingController::class, 'selectSeats'])->name('user.select.seats');
     Route::post('/select-seats/{trip_id}', [TicketBookingController::class, 'bookSeats'])->name('user.book.seats');
+    Route::get('/select-seats/{trip_id}/location', [TicketBookingController::class, 'tripLocation'])->name('user.trip.location');
 
     // Passenger Details
     Route::get('/booking/{booking_id}/details', [TicketBookingController::class, 'passengerDetails'])->name('user.booking.details');
