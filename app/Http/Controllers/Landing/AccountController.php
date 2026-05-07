@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
+use App\Services\Cloudinary;
 
 class AccountController extends Controller
 {
@@ -32,13 +33,15 @@ class AccountController extends Controller
         $data = $request->only('name', 'phone');
 
         if ($request->hasFile('image_url')) {
-            // Delete old image if it exists and isn't a default URL
-            if ($user->image_url && \Storage::disk('public')->exists($user->image_url)) {
-                \Storage::disk('public')->delete($user->image_url);
+            try {
+                $data['image_url'] = Cloudinary::upload(
+                    $request->file('image_url')->getRealPath(),
+                    ['folder' => 'profile_photos']
+                )->getSecurePath();
+            } catch (\Exception $e) {
+                \Log::error('Cloudinary upload failed: ' . $e->getMessage());
+                return back()->withErrors(['image_url' => 'Failed to upload image to the cloud. Error: ' . $e->getMessage()]);
             }
-            
-            $path = $request->file('image_url')->store('profile_photos', 'public');
-            $data['image_url'] = $path;
         }
 
         $user->update($data);

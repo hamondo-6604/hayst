@@ -29,7 +29,7 @@ class UserFactory extends Factory
             'user_type_id'     => $userType?->id,
             'discount_type_id' => null,   // no discount by default
             'status'           => 'active',
-            'profile_photo'    => null,
+            'image_url'        => null,
         ];
     }
 

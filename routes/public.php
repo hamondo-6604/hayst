@@ -45,6 +45,12 @@ Route::middleware('auth')->group(function () {
     Route::post('/my-bookings/{booking}/cancel', [ManageBookingController::class, 'cancel'])
         ->name('manage.bookings.cancel');
 
+    Route::delete('/my-bookings/{booking}', [ManageBookingController::class, 'destroy'])
+        ->name('manage.bookings.destroy');
+
+    Route::get('/my-bookings/{booking}/ticket', [ManageBookingController::class, 'ticket'])
+        ->name('manage.bookings.ticket');
+
     Route::post('/my-bookings/notifications/read', [ManageBookingController::class, 'markNotificationsRead'])
         ->name('manage.bookings.notifications.read');
 

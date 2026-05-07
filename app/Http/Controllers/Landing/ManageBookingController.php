@@ -21,6 +21,7 @@ class ManageBookingController extends Controller
             'trip.route.originCity',
             'trip.route.destinationCity',
             'trip.bus.type',
+            'trip.driver.user',
             'seat',
             'bookingSeats',
             'payment',
@@ -113,5 +114,34 @@ class ManageBookingController extends Controller
             ->update(['is_read' => true, 'read_at' => now()]);
 
         return back()->with('success', 'All notifications marked as read.');
+    }
+
+    public function ticket(Booking $booking)
+    {
+        abort_if($booking->user_id !== Auth::id(), 403);
+
+        if (! in_array($booking->status, ['confirmed', 'completed'])) {
+            return back()->with('error', 'Ticket is only available for confirmed or completed bookings.');
+        }
+
+        $booking->load([
+            'trip.route.originCity',
+            'trip.route.destinationCity',
+            'trip.bus.type',
+            'trip.driver.user',
+            'bookingSeats',
+            'user'
+        ]);
+
+        return view('pages.ticket', compact('booking'));
+    }
+
+    public function destroy(Booking $booking)
+    {
+        abort_if($booking->user_id !== Auth::id(), 403);
+
+        $booking->delete();
+
+        return back()->with('success', 'Booking record deleted.');
     }
 }

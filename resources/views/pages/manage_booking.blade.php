@@ -212,10 +212,10 @@
               <div class="flex flex-wrap gap-2">
                 {{-- Download ticket --}}
                 @if(in_array($booking->status, ['confirmed','completed']))
-                  <a href="#"
+                  <button onclick="openTicketModal({{ $booking->id }})"
                      class="inline-flex items-center gap-1.5 text-xs font-semibold text-primary-600 hover:text-primary-700">
-                    <i data-lucide="download" style="width:12px;height:12px"></i> E-Ticket
-                  </a>
+                    <i data-lucide="ticket" style="width:12px;height:12px"></i> E-Ticket
+                  </button>
                 @endif
                 {{-- View details --}}
                 <button onclick="openBookingDetail({{ $booking->id }})"
@@ -230,6 +230,14 @@
                         class="inline-flex items-center gap-1.5 text-xs font-semibold text-red-500 hover:text-red-600">
                   <i data-lucide="x-circle" style="width:12px;height:12px"></i> Cancel Booking
                 </button>
+              @elseif(in_array($booking->status, ['cancelled', 'completed']) || $isPast)
+                <form method="POST" action="{{ route('manage.bookings.destroy', $booking->id) }}" onsubmit="return confirm('Are you sure you want to delete this booking record?');" class="m-0 flex">
+                  @csrf
+                  @method('DELETE')
+                  <button type="submit" class="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-red-600 transition-colors">
+                    <i data-lucide="trash-2" style="width:12px;height:12px"></i> Delete
+                  </button>
+                </form>
               @endif
             </div>
 
@@ -269,8 +277,8 @@
     <h3 class="text-base font-extrabold text-slate-900 text-center mb-1">Cancel Booking?</h3>
     <p id="cancel-ref" class="text-sm text-slate-500 text-center mb-5"></p>
     <div class="mb-4">
-      <label class="block text-xs font-semibold text-slate-700 mb-1.5">Reason (optional)</label>
-      <select id="cancel-reason" class="w-full py-2.5 px-3 text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500">
+      <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Reason (optional)</label>
+      <select id="cancel-reason" class="w-full py-2.5 px-3 text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white text-slate-700 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-200">
         <option value="Customer request">Customer request</option>
         <option value="Change of plans">Change of plans</option>
         <option value="Duplicate booking">Duplicate booking</option>
@@ -292,6 +300,8 @@
       </form>
     </div>
   </div>
+</div>
+
 {{-- Detail Modal --}}
 <div id="detail-modal"
      class="hidden fixed inset-0 z-[9999] items-center justify-center modal-bg"
@@ -336,6 +346,10 @@
             <p class="text-xs text-slate-500 mb-1">Bus Type</p>
             <p id="dt-bus" class="text-sm font-bold text-slate-800"></p>
           </div>
+          <div>
+            <p class="text-xs text-slate-500 mb-1">Driver</p>
+            <p id="dt-driver" class="text-sm font-bold text-slate-800"></p>
+          </div>
         </div>
       </div>
 
@@ -362,6 +376,100 @@
       <button onclick="closeModal('detail-modal')" class="w-full py-2.5 bg-slate-200 hover:bg-slate-300 text-slate-800 text-sm font-bold rounded-xl transition-colors">
         Close
       </button>
+    </div>
+  </div>
+</div>
+
+{{-- Ticket Modal --}}
+<div id="ticket-modal"
+     class="hidden fixed inset-0 z-[9999] items-center justify-center modal-bg"
+     onclick="if(event.target===this)closeModal('ticket-modal')">
+  <div class="bg-white rounded-3xl shadow-2xl w-full max-w-5xl mx-4 overflow-hidden animate-slide-up flex flex-col md:flex-row relative max-h-[90vh]">
+    <button onclick="closeModal('ticket-modal')" class="absolute top-4 right-4 p-2 text-slate-400 hover:text-slate-600 transition-colors z-10 md:hidden">
+      <i data-lucide="x" style="width:20px;height:20px"></i>
+    </button>
+    
+    {{-- Left Side: Main Info --}}
+    <div class="p-6 md:p-8 flex-1 border-b md:border-b-0 md:border-r border-dashed border-slate-300 relative overflow-y-auto">
+      <div class="flex justify-between items-start mb-8">
+        <div>
+          <div class="flex items-center gap-2 mb-1">
+            <div class="w-8 h-8 bg-primary-600 rounded-lg flex items-center justify-center shrink-0">
+              <i data-lucide="bus" style="width:16px;height:16px;color:#fff"></i>
+            </div>
+            <span class="text-lg font-extrabold tracking-tight text-slate-900 hidden sm:inline">Mindanao<span class="text-primary-600">Express</span></span>
+          </div>
+          <p class="text-[10px] sm:text-xs font-semibold text-slate-500 uppercase tracking-wider mt-2">Official E-Ticket</p>
+        </div>
+        <div class="text-right">
+          <p class="text-[10px] sm:text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Booking Ref</p>
+          <p id="tk-ref" class="text-lg sm:text-xl font-mono font-extrabold text-slate-900"></p>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-between mb-8">
+        <div class="flex-1">
+          <p id="tk-origin" class="text-xl sm:text-3xl font-extrabold text-slate-900"></p>
+        </div>
+        <div class="px-2 sm:px-4 text-center shrink-0">
+          <i data-lucide="arrow-right" style="width:24px;height:24px;color:#cbd5e1" class="mx-auto"></i>
+        </div>
+        <div class="flex-1 text-right">
+          <p id="tk-dest" class="text-xl sm:text-3xl font-extrabold text-slate-900"></p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-4 bg-slate-50 rounded-2xl p-4 sm:p-6 border border-slate-100">
+        <div>
+          <p class="text-[10px] sm:text-xs text-slate-500 mb-1 font-semibold uppercase tracking-wider">Passenger</p>
+          <p class="text-xs sm:text-sm font-bold text-slate-900">{{ auth()->user()->name }}</p>
+        </div>
+        <div>
+          <p class="text-[10px] sm:text-xs text-slate-500 mb-1 font-semibold uppercase tracking-wider">Date & Time</p>
+          <p id="tk-date" class="text-xs sm:text-sm font-bold text-slate-900"></p>
+          <p id="tk-time" class="text-[10px] sm:text-xs font-semibold text-slate-600"></p>
+        </div>
+        <div>
+          <p class="text-[10px] sm:text-xs text-slate-500 mb-1 font-semibold uppercase tracking-wider">Seat(s)</p>
+          <p id="tk-seats" class="text-base sm:text-lg font-extrabold text-primary-600"></p>
+        </div>
+        <div>
+          <p class="text-[10px] sm:text-xs text-slate-500 mb-1 font-semibold uppercase tracking-wider">Bus Type</p>
+          <p id="tk-bus" class="text-xs sm:text-sm font-bold text-slate-900"></p>
+        </div>
+        <div>
+          <p class="text-[10px] sm:text-xs text-slate-500 mb-1 font-semibold uppercase tracking-wider">Driver</p>
+          <p id="tk-driver" class="text-xs sm:text-sm font-bold text-slate-900"></p>
+        </div>
+      </div>
+    </div>
+
+    {{-- Right Side: Stub --}}
+    <div class="p-6 md:p-8 w-full md:w-64 bg-slate-50 flex flex-col justify-between items-center text-center relative shrink-0">
+      <div class="absolute -left-3 top-[-12px] w-6 h-6 bg-slate-900/40 rounded-full hidden md:block mix-blend-multiply"></div>
+      <div class="absolute -left-3 bottom-[-12px] w-6 h-6 bg-slate-900/40 rounded-full hidden md:block mix-blend-multiply"></div>
+      <button onclick="closeModal('ticket-modal')" class="absolute top-4 right-4 p-2 text-slate-400 hover:text-slate-600 transition-colors z-10 hidden md:block">
+        <i data-lucide="x" style="width:20px;height:20px"></i>
+      </button>
+      
+      <div class="w-full mt-4 md:mt-8">
+        <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Boarding Pass</p>
+        <p id="tk-ref-small" class="text-base font-mono font-extrabold text-slate-900 mb-4 sm:mb-6"></p>
+        
+        <div class="bg-white p-3 sm:p-4 rounded-xl shadow-sm border border-slate-100 inline-block mb-4 sm:mb-6">
+          <i data-lucide="qr-code" style="width:64px;height:64px;color:#0f172a"></i>
+        </div>
+        
+        <div>
+          <p class="text-[10px] sm:text-xs text-slate-500 uppercase tracking-wider mb-1">Total Paid</p>
+          <p id="tk-total" class="text-xl sm:text-2xl font-extrabold text-slate-900"></p>
+          <span class="inline-block mt-2 px-3 py-1 bg-emerald-100 text-emerald-700 text-[10px] font-bold rounded-full uppercase tracking-wider">Paid</span>
+        </div>
+      </div>
+      
+      <a id="tk-print-btn" href="#" target="_blank" class="mt-6 w-full py-2.5 bg-primary-600 hover:bg-primary-700 text-white text-sm font-bold rounded-xl transition-colors inline-flex items-center justify-center gap-2">
+        <i data-lucide="printer" style="width:16px;height:16px"></i> Print PDF
+      </a>
     </div>
   </div>
 </div>
@@ -414,6 +522,7 @@
     document.getElementById('dt-route').textContent = `${origin} → ${dest}`;
     
     document.getElementById('dt-bus').textContent = booking.trip?.bus?.type?.name || 'Standard Bus';
+    document.getElementById('dt-driver').textContent = booking.trip?.driver?.user?.name || 'Assigned before departure';
     
     // Dates
     if(booking.trip?.departure_time) {
@@ -447,6 +556,46 @@
 
     lucide.createIcons();
     openModal('detail-modal');
+  }
+
+  function openTicketModal(id) {
+    const booking = bookingsData.find(b => b.id === id);
+    if(!booking) return;
+
+    document.getElementById('tk-ref').textContent = booking.booking_reference;
+    document.getElementById('tk-ref-small').textContent = booking.booking_reference;
+    
+    const origin = booking.trip?.route?.origin_city?.name || 'Origin';
+    const dest = booking.trip?.route?.destination_city?.name || 'Destination';
+    document.getElementById('tk-origin').textContent = origin;
+    document.getElementById('tk-dest').textContent = dest;
+    
+    document.getElementById('tk-bus').textContent = booking.trip?.bus?.type?.name || 'Standard Bus';
+    document.getElementById('tk-driver').textContent = booking.trip?.driver?.user?.name || 'Assigned before departure';
+    
+    if(booking.trip?.departure_time) {
+      const d = new Date(booking.trip.departure_time);
+      document.getElementById('tk-date').textContent = d.toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+      document.getElementById('tk-time').textContent = d.toLocaleString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+    } else {
+      document.getElementById('tk-date').textContent = '—';
+      document.getElementById('tk-time').textContent = '—';
+    }
+
+    let seats = '—';
+    if(booking.booking_seats && booking.booking_seats.length > 0) {
+      seats = booking.booking_seats.map(s => s.seat_number).join(', ');
+    } else if (booking.seat_number) {
+      seats = booking.seat_number;
+    }
+    document.getElementById('tk-seats').textContent = seats;
+
+    document.getElementById('tk-total').textContent = '₱' + parseFloat(booking.amount_paid || 0).toLocaleString('en-US', {minimumFractionDigits: 2});
+    
+    document.getElementById('tk-print-btn').href = '/my-bookings/' + id + '/ticket';
+
+    lucide.createIcons();
+    openModal('ticket-modal');
   }
 </script>
 @endpush

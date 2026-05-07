@@ -54,7 +54,7 @@
           <div class="flex items-center gap-4">
             <div class="relative group">
               @if(auth()->user()->image_url)
-                <img src="{{ asset('storage/' . auth()->user()->image_url) }}" alt="Profile Photo" class="w-16 h-16 rounded-2xl object-cover shrink-0 border border-slate-200">
+                <img src="{{ auth()->user()->avatar }}" alt="Profile Photo" class="w-16 h-16 rounded-2xl object-cover shrink-0 border border-slate-200">
               @else
                 <div class="w-16 h-16 rounded-2xl bg-primary-100 text-primary-700 text-2xl font-extrabold flex items-center justify-center shrink-0">
                   {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}

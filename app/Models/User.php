@@ -117,6 +117,22 @@ class User extends Authenticatable
         return $this->discount_type_id !== null;
     }
 
+    /**
+     * Get the full URL to the user's avatar (handles both local storage and Cloudinary URLs).
+     */
+    public function getAvatarAttribute(): ?string
+    {
+        if (! $this->image_url) {
+            return null;
+        }
+
+        if (\Illuminate\Support\Str::startsWith($this->image_url, ['http://', 'https://'])) {
+            return $this->image_url;
+        }
+
+        return asset('storage/' . $this->image_url);
+    }
+
     // ─── Scopes ───────────────────────────────────────────────────────────────
 
     public function scopeActive($query)

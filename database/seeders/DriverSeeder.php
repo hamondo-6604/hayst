@@ -11,7 +11,7 @@ class DriverSeeder extends Seeder
     public function run(): void
     {
         // Create profile for the fixed test driver user
-        $fixedDriverUser = User::where('email', 'driver@busbook.com')->first();
+        $fixedDriverUser = User::where('email', 'driver@busco.ph')->first();
 
         if ($fixedDriverUser && ! $fixedDriverUser->driver) {
             Driver::create([

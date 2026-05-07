@@ -48,6 +48,8 @@ class UserSeeder extends Seeder
             ]
         );
 
+        User::factory()->driver()->count(4)->create();
+
         // ── Customers ─────────────────────────────────────────────────────────
         User::updateOrCreate(
             ['email' => 'customer@busco.ph'],
