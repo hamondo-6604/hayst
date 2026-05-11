@@ -239,6 +239,33 @@
     [data-theme="dark"] .bg-primary-600 { background-color: var(--accent-primary); }
     [data-theme="dark"] .bg-primary-700 { background-color: var(--accent-primary); }
     
+    /* Policy sections dark mode fixes */
+    [data-theme="dark"] .bg-emerald-50 { background-color: rgba(16, 185, 129, 0.1); }
+    [data-theme="dark"] .bg-amber-50 { background-color: rgba(245, 158, 11, 0.1); }
+    [data-theme="dark"] .bg-red-50 { background-color: rgba(239, 68, 68, 0.1); }
+    [data-theme="dark"] .bg-blue-50 { background-color: rgba(14, 165, 233, 0.1); }
+    [data-theme="dark"] .bg-violet-50 { background-color: rgba(139, 92, 246, 0.1); }
+    
+    [data-theme="dark"] .border-emerald-200 { border-color: rgba(16, 185, 129, 0.3); }
+    [data-theme="dark"] .border-amber-200 { border-color: rgba(245, 158, 11, 0.3); }
+    [data-theme="dark"] .border-red-200 { border-color: rgba(239, 68, 68, 0.3); }
+    [data-theme="dark"] .border-blue-200 { border-color: rgba(14, 165, 233, 0.3); }
+    [data-theme="dark"] .border-violet-200 { border-color: rgba(139, 92, 246, 0.3); }
+    
+    [data-theme="dark"] .text-emerald-600 { color: #10b981; }
+    [data-theme="dark"] .text-amber-600 { color: #f59e0b; }
+    [data-theme="dark"] .text-red-600 { color: #ef4444; }
+    [data-theme="dark"] .text-blue-600 { color: #0ea5e9; }
+    [data-theme="dark"] .text-violet-600 { color: #8b5cf6; }
+    
+    [data-theme="dark"] .text-emerald-700 { color: #10b981; }
+    [data-theme="dark"] .text-amber-700 { color: #f59e0b; }
+    [data-theme="dark"] .text-violet-700 { color: #8b5cf6; }
+    
+    [data-theme="dark"] .bg-emerald-100 { background-color: rgba(16, 185, 129, 0.2); }
+    [data-theme="dark"] .bg-amber-100 { background-color: rgba(245, 158, 11, 0.2); }
+    [data-theme="dark"] .bg-violet-100 { background-color: rgba(139, 92, 246, 0.2); }
+    
     /* Dark mode for specific components */
     [data-theme="dark"] .glass { 
       background: rgba(30, 41, 59, 0.8);

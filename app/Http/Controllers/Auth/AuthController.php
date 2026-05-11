@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Laravel\Socialite\Facades\Socialite;
 
 class AuthController extends Controller
 {
@@ -103,5 +104,62 @@ class AuthController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
         return redirect()->route('landing.home');
+    }
+
+    /**
+     * Redirect to Google for authentication
+     */
+    public function redirectToGoogle()
+    {
+        return Socialite::driver('google')->redirect();
+    }
+
+    /**
+     * Handle Google callback
+     */
+    public function handleGoogleCallback(Request $request)
+    {
+        try {
+            $googleUser = Socialite::driver('google')->user();
+            
+            // Find or create user
+            $user = User::where('email', $googleUser->getEmail())->first();
+            
+            if ($user) {
+                // User exists, log them in
+                Auth::login($user);
+            } else {
+                // Create new user
+                $customerType = UserType::where('name', 'customer')->first();
+                
+                $user = User::create([
+                    'name' => $googleUser->getName(),
+                    'email' => $googleUser->getEmail(),
+                    'google_id' => $googleUser->getId(),
+                    'avatar' => $googleUser->getAvatar(),
+                    'password' => Hash::make(uniqid()), // Random password
+                    'role' => 'customer',
+                    'user_type_id' => $customerType?->id,
+                    'status' => 'active',
+                ]);
+                
+                Auth::login($user);
+            }
+
+            // Determine redirect
+            $redirect = route('landing.home');
+            
+            if ($user->isAdmin()) {
+                $redirect = route('admin.dashboard');
+            } elseif ($user->isDriver()) {
+                $redirect = route('driver.dashboard');
+            }
+
+            return redirect($redirect);
+
+        } catch (\Exception $e) {
+            return redirect()->route('landing.home', ['open_login' => 1])
+                ->with('error', 'Google authentication failed. Please try again.');
+        }
     }
 }

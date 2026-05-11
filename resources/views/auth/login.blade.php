@@ -56,6 +56,24 @@
                    text-white text-sm font-semibold rounded-xl transition-colors">
       <i data-lucide="log-in" style="width:14px;height:14px"></i> Sign In
     </button>
+
+    {{-- Divider --}}
+    <div class="relative my-4">
+      <div class="absolute inset-0 flex items-center">
+        <div class="w-full border-t border-slate-200"></div>
+      </div>
+      <div class="relative flex justify-center text-xs">
+        <span class="bg-white px-2 text-slate-500">Or continue with</span>
+      </div>
+    </div>
+
+    {{-- Google Login Button --}}
+    <button type="button" onclick="window.location.href='{{ route('auth.google') }}'"
+            class="w-full flex items-center justify-center gap-2 py-2.5 bg-white hover:bg-slate-50
+                   text-slate-700 text-sm font-semibold rounded-xl transition-colors border border-slate-200">
+      <i data-lucide="chrome" style="width:14px;height:14px;color:#4285F4"></i>
+      Continue with Google
+    </button>
   </form>
 
   <p class="text-center text-xs text-slate-500 mt-4">

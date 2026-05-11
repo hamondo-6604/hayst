@@ -773,8 +773,20 @@
 @endif
 
 {{-- ══════════════════════════════ CTA BANNER ══════════════════════════════ --}}
-<section class="py-16 bg-primary-600">
-  <div class="max-w-2xl mx-auto px-4 text-center">
+<section class="relative py-16 overflow-hidden" style="min-height: 400px;">
+  <!-- Parallax Background Image -->
+  <div class="parallax-bg absolute inset-0" 
+       style="background-image: url('{{ asset('bus.jpg') }}'); 
+              background-size: cover; 
+              background-position: center; 
+              background-repeat: no-repeat;
+              background-attachment: fixed;
+              z-index: 0;">
+  </div>
+  <!-- Overlay for better text visibility -->
+  <div class="absolute inset-0 bg-gradient-to-b from-black/40 to-black/60" style="z-index: 1;"></div>
+  
+  <div class="relative max-w-2xl mx-auto px-4 text-center" style="z-index: 2;">
     <i data-lucide="bus" style="width:36px;height:36px;color:rgba(255,255,255,.7);margin:0 auto 14px"></i>
     <h2 class="text-3xl font-extrabold text-white mb-3">Ready to ride?</h2>
     <p class="text-primary-100 text-base mb-7">
@@ -1208,5 +1220,42 @@
       return;
     }
   });
+
+  // Simple parallax effect for CTA banner
+  function initParallax() {
+    const parallaxElement = document.querySelector('.parallax-bg');
+    if (!parallaxElement) return;
+    
+    function updateParallax() {
+      const scrolled = window.pageYOffset;
+      const rect = parallaxElement.getBoundingClientRect();
+      const elementTop = rect.top + scrolled;
+      
+      // Apply parallax effect when element is in view
+      if (elementTop < window.innerHeight && elementTop > -rect.height) {
+        const speed = 0.3;
+        const yPos = -(scrolled * speed);
+        parallaxElement.style.transform = `translateY(${yPos}px)`;
+      }
+    }
+    
+    // Throttled scroll handler
+    let ticking = false;
+    function handleScroll() {
+      if (!ticking) {
+        requestAnimationFrame(updateParallax);
+        ticking = true;
+        setTimeout(() => { ticking = false; }, 100);
+      }
+    }
+    
+    // Initialize and add listeners
+    updateParallax();
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    window.addEventListener('resize', updateParallax, { passive: true });
+  }
+  
+  // Initialize parallax
+  initParallax();
 </script>
 @endpush

@@ -31,7 +31,7 @@
       @foreach($navLinks as $l)
         <a href="{{ route($l['route']) }}"
            class="flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium transition-all
-                  {{ $route === $l['route'] ? 'bg-secondary accent-primary font-semibold' : 'text-secondary hover:text-primary hover:bg-secondary' }}">
+                  {{ $route === $l['route'] ? 'bg-secondary accent-primary font-semibold' : 'text-secondary dark:text-secondary hover:text-primary dark:hover:text-primary hover:bg-slate-100 dark:hover:bg-tertiary' }}">
           @if($route === $l['route'])
             <i data-lucide="{{ $l['icon'] }}" style="width:14px;height:14px"></i>
           @endif
@@ -44,7 +44,7 @@
           @foreach($authLinks as $l)
             <a href="{{ route($l['route']) }}"
                class="flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium transition-all
-                      {{ $route === $l['route'] ? 'bg-primary-50 text-primary-700 font-semibold' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100' }}">
+                      {{ $route === $l['route'] ? 'bg-secondary accent-primary font-semibold' : 'text-secondary dark:text-secondary hover:text-primary dark:hover:text-primary hover:bg-slate-100 dark:hover:bg-tertiary' }}">
               @if($route === $l['route'])
                 <i data-lucide="{{ $l['icon'] }}" style="width:14px;height:14px"></i>
               @endif
@@ -150,7 +150,7 @@
 
       @else
         <button onclick="openModal('auth-modal'); authTab('login')"
-                class="px-4 py-2 text-sm font-semibold text-slate-700 hover:text-slate-900 hover:bg-slate-100 rounded-xl transition-colors">
+                class="px-4 py-2 text-sm font-semibold text-slate-700 dark:text-secondary hover:text-slate-900 dark:hover:text-primary hover:bg-slate-100 dark:hover:bg-tertiary rounded-xl transition-colors">
           Sign In
         </button>
         <button onclick="openModal('auth-modal'); authTab('register')"
@@ -172,7 +172,7 @@
       @foreach($navLinks as $l)
         <a href="{{ route($l['route']) }}"
            class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium
-                  {{ $route === $l['route'] ? 'bg-primary-50 text-primary-700' : 'text-slate-700 hover:bg-slate-50' }}">
+                  {{ $route === $l['route'] ? 'bg-primary-50 text-primary-700' : 'text-slate-700 dark:text-secondary hover:bg-slate-50 dark:hover:bg-tertiary' }}">
           @if($route === $l['route'])
             <i data-lucide="{{ $l['icon'] }}" style="width:16px;height:16px"></i>
           @endif
@@ -183,11 +183,11 @@
       @auth
         @if(auth()->user()->isAdmin() || auth()->user()->isDriver())
           @if(auth()->user()->isAdmin())
-            <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-slate-700 hover:bg-slate-50">
+            <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-slate-700 dark:text-secondary hover:bg-slate-50 dark:hover:bg-tertiary">
               <i data-lucide="layout-dashboard" style="width:16px;height:16px"></i> Dashboard
             </a>
           @else
-            <a href="{{ route('driver.dashboard') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-slate-700 hover:bg-slate-50">
+            <a href="{{ route('driver.dashboard') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-slate-700 dark:text-secondary hover:bg-slate-50 dark:hover:bg-tertiary">
               <i data-lucide="layout-dashboard" style="width:16px;height:16px"></i> Driver Portal
             </a>
           @endif
@@ -204,7 +204,7 @@
           @foreach($authLinks as $l)
             <a href="{{ route($l['route']) }}"
                class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium
-                      {{ $route === $l['route'] ? 'bg-primary-50 text-primary-700' : 'text-slate-700 hover:bg-slate-50' }}">
+                      {{ $route === $l['route'] ? 'bg-primary-50 text-primary-700' : 'text-slate-700 dark:text-secondary hover:bg-slate-50 dark:hover:bg-tertiary' }}">
               @if($route === $l['route'])
                 <i data-lucide="{{ $l['icon'] }}" style="width:16px;height:16px"></i>
               @endif
@@ -223,7 +223,7 @@
       @else
         <div class="pt-2 mt-1 border-t border-slate-100 grid grid-cols-2 gap-2">
           <button onclick="document.getElementById('mob-menu').classList.add('hidden'); openModal('auth-modal'); authTab('login')"
-                  class="py-2.5 text-sm font-semibold border border-slate-300 rounded-xl text-slate-700 hover:bg-slate-50 transition-colors">
+                  class="py-2.5 text-sm font-semibold border border-slate-300 rounded-xl text-slate-700 dark:text-secondary hover:bg-slate-50 dark:hover:bg-tertiary transition-colors">
             Sign In
           </button>
           <button onclick="document.getElementById('mob-menu').classList.add('hidden'); openModal('auth-modal'); authTab('register')"

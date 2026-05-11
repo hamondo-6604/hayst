@@ -89,4 +89,8 @@ Route::post('/login',           [AuthController::class, 'login_post'])->name('lo
 Route::post('/register',        [AuthController::class, 'register_post'])->name('register_post');
 Route::post('/forgot-password', [AuthController::class, 'forgotPassword'])->name('forgot-password');
 
+// Google Authentication
+Route::get('/auth/google',       [AuthController::class, 'redirectToGoogle'])->name('auth.google');
+Route::get('/auth/google/callback', [AuthController::class, 'handleGoogleCallback'])->name('auth.google.callback');
+
 Route::middleware('auth')->post('/logout', [AuthController::class, 'logout'])->name('logout');
