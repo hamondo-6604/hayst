@@ -60,19 +60,26 @@
         {{-- Region filter --}}
         @if($regions->isNotEmpty())
           <div>
-            <label class="block text-xs font-bold text-slate-700 mb-2">Region</label>
-            <div class="space-y-1.5">
-              <label class="flex items-center gap-2 text-sm text-slate-600 cursor-pointer hover:text-slate-900">
-                <input type="radio" name="region-filter" value="" onchange="applyFilters()" checked
-                       class="accent-primary-600"> All Regions
-              </label>
-              @foreach($regions as $region)
+            <button type="button" onclick="toggleDropdown('region-dropdown')" 
+                    class="w-full flex items-center justify-between py-2 px-3 text-sm border border-slate-200 rounded-xl
+                           focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white hover:bg-slate-50">
+              <span class="text-slate-700">Region</span>
+              <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400 transition-transform" id="region-chevron"></i>
+            </button>
+            <div id="region-dropdown" class="hidden mt-2 p-3 border border-slate-200 rounded-xl bg-white max-h-48 overflow-y-auto">
+              <div class="space-y-2">
                 <label class="flex items-center gap-2 text-sm text-slate-600 cursor-pointer hover:text-slate-900">
-                  <input type="radio" name="region-filter" value="{{ strtolower($region) }}"
-                         onchange="applyFilters()" class="accent-primary-600">
-                  {{ $region }}
+                  <input type="radio" name="region-filter" value="" onchange="applyFilters()" checked
+                         class="accent-primary-600"> All Regions
                 </label>
-              @endforeach
+                @foreach($regions as $region)
+                  <label class="flex items-center gap-2 text-sm text-slate-600 cursor-pointer hover:text-slate-900">
+                    <input type="radio" name="region-filter" value="{{ strtolower($region) }}"
+                           onchange="applyFilters()" class="accent-primary-600">
+                    {{ $region }}
+                  </label>
+                @endforeach
+              </div>
             </div>
           </div>
         @endif
@@ -80,32 +87,50 @@
         {{-- Amenity Filter --}}
         @if($amenities->isNotEmpty())
           <div>
-            <label class="block text-xs font-bold text-slate-700 mb-2">Amenities</label>
-            <div class="space-y-1.5 max-h-48 overflow-y-auto pr-2">
-              @foreach($amenities as $amenity)
-                <label class="flex items-center gap-2 text-sm text-slate-600 cursor-pointer hover:text-slate-900">
-                  <input type="checkbox" name="amenity-filter" value="{{ $amenity->id }}"
-                         onchange="applyFilters()" class="accent-primary-600 rounded">
-                  <i data-lucide="{{ $amenity->icon ?? 'check' }}" style="width:14px;height:14px;color:#94a3b8"></i>
-                  {{ $amenity->display_name }}
-                </label>
-              @endforeach
+            <button type="button" onclick="toggleDropdown('amenities-dropdown')" 
+                    class="w-full flex items-center justify-between py-2 px-3 text-sm border border-slate-200 rounded-xl
+                           focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white hover:bg-slate-50">
+              <span class="text-slate-700">Amenities</span>
+              <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400 transition-transform" id="amenities-chevron"></i>
+            </button>
+            <div id="amenities-dropdown" class="hidden mt-2 p-3 border border-slate-200 rounded-xl bg-white max-h-48 overflow-y-auto">
+              <div class="space-y-2">
+                @foreach($amenities as $amenity)
+                  <label class="flex items-center gap-2 text-sm text-slate-600 cursor-pointer hover:text-slate-900">
+                    <input type="checkbox" name="amenity-filter" value="{{ $amenity->id }}"
+                           onchange="applyFilters()" class="accent-primary-600 rounded">
+                    {{ $amenity->display_name }}
+                  </label>
+                @endforeach
+              </div>
             </div>
           </div>
         @endif
 
-        {{-- Sort --}}
-        <div>
-          <label class="block text-xs font-bold text-slate-700 mb-2">Sort By</label>
-          <select id="route-sort" onchange="applySort(this.value)"
-                  class="w-full py-2 px-3 text-sm border border-slate-200 rounded-xl
-                         focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white">
-            <option value="popular">Most Popular</option>
-            <option value="fare_asc">Lowest Fare</option>
-            <option value="distance">Shortest Distance</option>
-          </select>
-        </div>
+        {{-- Bus Type Filter --}}
+        @if($busTypes->isNotEmpty())
+          <div>
+            <button type="button" onclick="toggleDropdown('bus-types-dropdown')" 
+                    class="w-full flex items-center justify-between py-2 px-3 text-sm border border-slate-200 rounded-xl
+                           focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white hover:bg-slate-50">
+              <span class="text-slate-700">Bus Type</span>
+              <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400 transition-transform" id="bus-types-chevron"></i>
+            </button>
+            <div id="bus-types-dropdown" class="hidden mt-2 p-3 border border-slate-200 rounded-xl bg-white max-h-48 overflow-y-auto">
+              <div class="space-y-2">
+                @foreach($busTypes as $busType)
+                  <label class="flex items-center gap-2 text-sm text-slate-600 cursor-pointer hover:text-slate-900">
+                    <input type="checkbox" name="bus-type-filter" value="{{ $busType->id }}"
+                           onchange="applyFilters()" class="accent-primary-600 rounded">
+                    {{ $busType->type_name }}
+                  </label>
+                @endforeach
+              </div>
+            </div>
+          </div>
+        @endif
 
+        
         {{-- CTA --}}
         <a href="{{ route('landing.ticket_booking') }}"
            class="flex items-center justify-center gap-2 py-2.5 bg-primary-600 hover:bg-primary-700
@@ -118,14 +143,30 @@
     {{-- ── MAIN ────────────────────────────────────────────────── --}}
     <div class="flex-1 min-w-0">
 
-      {{-- Route count --}}
-      <div class="flex items-center gap-2 mb-5">
-        <i data-lucide="route" style="width:16px;height:16px;color:#ea580c"></i>
-        <h2 class="text-base font-extrabold text-slate-900">Active Routes</h2>
-        <span id="route-count"
-              class="text-xs font-semibold text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full">
-          {{ $routes->total() }}
-        </span>
+      {{-- Route count and sort bar --}}
+      <div class="flex items-center justify-between px-4 py-3 mb-5 bg-white border border-slate-200 rounded-xl">
+        <div class="flex items-center gap-2">
+          <i data-lucide="route" style="width:16px;height:16px;color:#ea580c"></i>
+          <span class="text-sm font-medium text-slate-700">
+            {{ $routes->total() }} route{{ $routes->total() !== 1 ? 's' : '' }} found
+          </span>
+        </div>
+        
+        <div class="flex items-center gap-4">
+          <span class="text-sm text-slate-600">Sort by:</span>
+          <button id="popular-sort-button" onclick="togglePopularSort()" 
+                  class="flex items-center gap-1 text-sm text-slate-700 hover:text-primary-600 font-medium transition-colors">
+            Most Popular <i id="popular-sort-icon" data-lucide="arrow-down" style="width:14px;height:14px;color:#64748b;display:none"></i>
+          </button>
+          <button id="price-sort-button" onclick="togglePriceSort()" 
+                  class="flex items-center gap-1 text-sm text-slate-700 hover:text-primary-600 font-medium transition-colors">
+            Price <i id="price-sort-icon" data-lucide="arrow-down" style="width:14px;height:14px;color:#64748b;display:none"></i>
+          </button>
+          <button id="distance-sort-button" onclick="toggleDistanceSort()" 
+                  class="flex items-center gap-1 text-sm text-slate-700 hover:text-primary-600 font-medium transition-colors">
+            Distance <i id="distance-sort-icon" data-lucide="arrow-down" style="width:14px;height:14px;color:#64748b;display:none"></i>
+          </button>
+        </div>
       </div>
 
       {{-- ── ROUTE CARDS ──────────────────────────────────────── --}}
@@ -145,6 +186,11 @@
                                        ->unique()
                                        ->implode(',');
 
+            // Extract unique bus type IDs from trips
+            $busTypeIds = $route->trips->flatMap(fn($t) => $t->bus?->type ? collect([$t->bus->type->id]) : collect())
+                                      ->unique()
+                                      ->implode(',');
+
             // ── KEY FIX ─────────────────────────────────────────────
             // Do NOT pass today's date — let TicketBookingController
             // find the nearest available trip date automatically.
@@ -162,6 +208,7 @@
                data-trips="{{ $upcomingCount }}"
                data-distance="{{ $route->distance_km ?? 9999 }}"
                data-amenities="{{ $amenityIds }}"
+               data-bus-types="{{ $busTypeIds }}"
                onclick="location.href='{{ $searchUrl }}'">
 
             {{-- Header row --}}
@@ -300,11 +347,26 @@
 
 @push('scripts')
 <script>
-  // ── Combined filter (search + region + amenities) ───────────────────────────
+  // ── Toggle dropdown ─────────────────────────────────────────────────────
+  function toggleDropdown(dropdownId) {
+    const dropdown = document.getElementById(dropdownId);
+    const chevron = document.getElementById(dropdownId.replace('-dropdown', '-chevron'));
+    
+    if (dropdown.classList.contains('hidden')) {
+      dropdown.classList.remove('hidden');
+      chevron.style.transform = 'rotate(180deg)';
+    } else {
+      dropdown.classList.add('hidden');
+      chevron.style.transform = 'rotate(0deg)';
+    }
+  }
+
+  // ── Combined filter (search + region + amenities + bus types) ───────────────────────────
   function applyFilters() {
     const q      = (document.getElementById('route-search')?.value ?? '').toLowerCase();
     const region = document.querySelector('input[name="region-filter"]:checked')?.value ?? '';
     const checkedAmenities = Array.from(document.querySelectorAll('input[name="amenity-filter"]:checked')).map(cb => cb.value);
+    const checkedBusTypes = Array.from(document.querySelectorAll('input[name="bus-type-filter"]:checked')).map(cb => cb.value);
     
     const rows   = document.querySelectorAll('.route-row');
     let visible  = 0;
@@ -316,7 +378,10 @@
       const routeAmenities = row.dataset.amenities ? row.dataset.amenities.split(',') : [];
       const amenityMatch = checkedAmenities.every(id => routeAmenities.includes(id));
 
-      const show        = nameMatch && regionMatch && amenityMatch;
+      const routeBusTypes = row.dataset.busTypes ? row.dataset.busTypes.split(',') : [];
+      const busTypeMatch = checkedBusTypes.every(id => routeBusTypes.includes(id));
+
+      const show        = nameMatch && regionMatch && amenityMatch && busTypeMatch;
       row.style.display = show ? '' : 'none';
       if (show) visible++;
     });
@@ -325,14 +390,122 @@
     if (cnt) cnt.textContent = visible;
   }
 
+  // ── Most Popular sort toggle ───────────────────────────────────────────────
+  let popularSortState = 'desc'; // Start with descending (most to least)
+  let popularFirstClick = true; // Track if this is the first click
+  
+  function togglePopularSort() {
+    const icon = document.getElementById('popular-sort-icon');
+    
+    // Hide other arrows
+    document.getElementById('price-sort-icon').style.display = 'none';
+    document.getElementById('distance-sort-icon').style.display = 'none';
+    
+    // Show icon on first click
+    if (popularFirstClick) {
+      icon.style.display = 'inline';
+      popularFirstClick = false;
+    } else {
+      icon.style.display = 'inline';
+    }
+    
+    if (popularSortState === 'desc') {
+      popularSortState = 'asc';
+      icon.setAttribute('data-lucide', 'arrow-up');
+      applySort('popular_asc');
+    } else {
+      popularSortState = 'desc';
+      icon.setAttribute('data-lucide', 'arrow-down');
+      applySort('popular');
+    }
+    
+    // Re-initialize lucide icons
+    if (window.lucide) {
+      lucide.createIcons();
+    }
+  }
+
+  // ── Price sort toggle ─────────────────────────────────────────────────────
+  let priceSortState = 'desc'; // Start with descending (high to low)
+  let priceFirstClick = true; // Track if this is the first click
+  
+  function togglePriceSort() {
+    const icon = document.getElementById('price-sort-icon');
+    
+    // Hide other arrows
+    document.getElementById('popular-sort-icon').style.display = 'none';
+    document.getElementById('distance-sort-icon').style.display = 'none';
+    
+    // Show icon on first click
+    if (priceFirstClick) {
+      icon.style.display = 'inline';
+      priceFirstClick = false;
+    } else {
+      icon.style.display = 'inline';
+    }
+    
+    if (priceSortState === 'desc') {
+      priceSortState = 'asc';
+      icon.setAttribute('data-lucide', 'arrow-up');
+      applySort('fare_asc');
+    } else {
+      priceSortState = 'desc';
+      icon.setAttribute('data-lucide', 'arrow-down');
+      applySort('fare_desc');
+    }
+    
+    // Re-initialize lucide icons
+    if (window.lucide) {
+      lucide.createIcons();
+    }
+  }
+
+  // ── Distance sort toggle ───────────────────────────────────────────────────
+  let distanceSortState = 'desc'; // Start with descending (longest to shortest)
+  let distanceFirstClick = true; // Track if this is the first click
+  
+  function toggleDistanceSort() {
+    const icon = document.getElementById('distance-sort-icon');
+    
+    // Hide other arrows
+    document.getElementById('popular-sort-icon').style.display = 'none';
+    document.getElementById('price-sort-icon').style.display = 'none';
+    
+    // Show icon on first click
+    if (distanceFirstClick) {
+      icon.style.display = 'inline';
+      distanceFirstClick = false;
+    } else {
+      icon.style.display = 'inline';
+    }
+    
+    if (distanceSortState === 'desc') {
+      distanceSortState = 'asc';
+      icon.setAttribute('data-lucide', 'arrow-up');
+      applySort('distance_asc');
+    } else {
+      distanceSortState = 'desc';
+      icon.setAttribute('data-lucide', 'arrow-down');
+      applySort('distance');
+    }
+    
+    // Re-initialize lucide icons
+    if (window.lucide) {
+      lucide.createIcons();
+    }
+  }
+
   // ── Sort ─────────────────────────────────────────────────────────
   function applySort(key) {
     const grid = document.getElementById('routes-grid');
     const rows = [...grid.querySelectorAll('.route-row')];
     const getVal = {
       popular:  r => -parseInt(r.dataset.trips  ?? 0),
+      popular_asc: r =>  parseInt(r.dataset.trips  ?? 0),
       fare_asc: r =>  parseFloat(r.dataset.fare ?? 9999),
+      fare_desc: r => -parseFloat(r.dataset.fare ?? 9999),
       distance: r =>  parseInt(r.dataset.distance ?? 9999),
+      distance_asc: r => -parseInt(r.dataset.distance ?? 9999),
     };
     rows.sort((a, b) => getVal[key](a) - getVal[key](b));
     rows.forEach(r => grid.appendChild(r));

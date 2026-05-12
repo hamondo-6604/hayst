@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Landing;
 
 use App\Http\Controllers\Controller;
 use App\Models\BusRoute;
+use App\Models\BusType;
 use App\Models\City;
 use App\Models\Terminal;
 use App\Models\Trip;
@@ -21,6 +22,7 @@ class BookingRoutesController extends Controller
             'trips' => fn ($q) => $q->where('status', 'scheduled')
                                     ->where('trip_date', '>=', today())
                                     ->with('bus.amenities')
+                                    ->with('bus.type')
         ])
             ->where('status', 'active')
             ->withCount(['trips as upcoming_trips_count' => fn ($q) =>
@@ -49,6 +51,7 @@ class BookingRoutesController extends Controller
         $terminals = Terminal::with('city')->where('status', 'active')->orderBy('name')->get();
         $regions   = City::whereNotNull('region')->distinct()->orderBy('region')->pluck('region');
         $amenities = \App\Models\Amenity::where('is_active', true)->orderBy('display_name')->get();
+        $busTypes  = BusType::where('status', 'active')->orderBy('type_name')->get();
 
         $stats = [
             'totalRoutes'    => BusRoute::where('status', 'active')->count(),
@@ -59,6 +62,6 @@ class BookingRoutesController extends Controller
                                     ->min('fare') ?? 0,
         ];
 
-        return view('pages.booking_routes', compact('routes', 'terminals', 'regions', 'amenities', 'stats'));
+        return view('pages.booking_routes', compact('routes', 'terminals', 'regions', 'amenities', 'busTypes', 'stats'));
     }
 }
