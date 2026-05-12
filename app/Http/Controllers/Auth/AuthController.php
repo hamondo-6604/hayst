@@ -61,11 +61,13 @@ class AuthController extends Controller
     public function register_post(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'name'             => 'required|string|max:255',
+            'name'             => ['required', 'string', 'min:3', 'max:255', 'regex:/^[a-zA-Z\-\']+$/'],
             'email'            => 'required|string|email|max:255|unique:users',
             'phone'            => 'nullable|string|max:20',
             'discount_type_id' => 'required|exists:discount_types,id',
             'password'         => 'required|string|min:6|confirmed',
+        ], [
+            'name.regex' => 'Username must contain only letters, apostrophes, or hyphens (no numbers, spaces, or special characters).',
         ]);
 
         if ($validator->fails()) {
@@ -88,6 +90,8 @@ class AuthController extends Controller
             'discount_type_id' => $request->discount_type_id,
             'status'           => 'active',
         ]);
+
+        event(new \Illuminate\Auth\Events\Registered($user));
 
         // Notify admins
         $admins = User::where('role', 'admin')->get();

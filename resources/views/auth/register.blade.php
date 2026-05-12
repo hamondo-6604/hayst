@@ -7,9 +7,9 @@
   <form id="f-register" class="space-y-4" onsubmit="doRegister(event)">
     @csrf
 
-    {{-- Full name --}}
+    {{-- Username --}}
     <div>
-      <label class="block text-xs font-semibold text-slate-700 mb-1.5">Full Name</label>
+      <label class="block text-xs font-semibold text-slate-700 mb-1.5">Username</label>
       <div class="relative">
         <i data-lucide="user"
            style="width:14px;height:14px;position:absolute;left:11px;top:50%;transform:translateY(-50%);color:#94a3b8"></i>
@@ -53,10 +53,10 @@
 
     {{-- ── PASSENGER TYPE ──────────────────────────────────────── --}}
     <div>
-      <label class="block text-xs font-semibold text-slate-700 mb-1">
+      <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
         Passenger Type
       </label>
-      <p class="text-[11px] text-slate-400 mb-2.5">
+      <p class="text-[11px] text-slate-400 dark:text-slate-500 mb-2.5">
         Select the category that applies to you for automatic fare discounts.
       </p>
 
@@ -64,12 +64,12 @@
         @foreach($discountTypes as $dt)
           @php
             $cfg = [
-              'regular'        => ['user',           'border-slate-200 bg-slate-50',       'border-primary-500 bg-primary-50 ring-1 ring-primary-400'],
-              'senior_citizen' => ['user-check',     'border-amber-200 bg-amber-50/50',    'border-amber-500  bg-amber-50   ring-1 ring-amber-400'],
-              'pwd'            => ['accessibility',  'border-blue-200  bg-blue-50/50',     'border-blue-500   bg-blue-50    ring-1 ring-blue-400'],
-              'student'        => ['graduation-cap', 'border-violet-200 bg-violet-50/50',  'border-violet-500 bg-violet-50  ring-1 ring-violet-400'],
+              'regular'        => ['user',           'border-slate-200 bg-slate-50 dark:border-slate-700 dark:bg-slate-800/50',       'border-primary-500 bg-primary-50 dark:bg-primary-900/30 dark:border-primary-500 ring-1 ring-primary-400 dark:ring-primary-500'],
+              'senior_citizen' => ['user-check',     'border-amber-200 bg-amber-50/50 dark:border-slate-700 dark:bg-slate-800/50',    'border-amber-500  bg-amber-50 dark:bg-amber-900/30  dark:border-amber-500 ring-1 ring-amber-400 dark:ring-amber-500'],
+              'pwd'            => ['accessibility',  'border-blue-200  bg-blue-50/50 dark:border-slate-700 dark:bg-slate-800/50',     'border-blue-500   bg-blue-50 dark:bg-blue-900/30    dark:border-blue-500 ring-1 ring-blue-400 dark:ring-blue-500'],
+              'student'        => ['graduation-cap', 'border-violet-200 bg-violet-50/50 dark:border-slate-700 dark:bg-slate-800/50',  'border-violet-500 bg-violet-50 dark:bg-violet-900/30  dark:border-violet-500 ring-1 ring-violet-400 dark:ring-violet-500'],
             ];
-            [$ico, $baseCls, $selCls] = $cfg[$dt->name] ?? ['user','border-slate-200 bg-slate-50','border-primary-500 bg-primary-50 ring-1 ring-primary-400'];
+            [$ico, $baseCls, $selCls] = $cfg[$dt->name] ?? ['user','border-slate-200 bg-slate-50 dark:border-slate-700 dark:bg-slate-800/50','border-primary-500 bg-primary-50 dark:bg-primary-900/30 dark:border-primary-500 ring-1 ring-primary-400 dark:ring-primary-500'];
             $isDefault = $dt->name === 'regular';
           @endphp
 
@@ -84,19 +84,19 @@
                  onclick="pickType(this)">
 
             <div class="w-8 h-8 rounded-xl flex items-center justify-center shrink-0
-                        @if($dt->name==='regular') bg-primary-100 text-primary-700
-                        @elseif($dt->name==='senior_citizen') bg-amber-100 text-amber-700
-                        @elseif($dt->name==='pwd') bg-blue-100 text-blue-700
-                        @else bg-violet-100 text-violet-700 @endif">
+                        @if($dt->name==='regular') bg-primary-100 text-primary-700 dark:bg-primary-900/50 dark:text-primary-400
+                        @elseif($dt->name==='senior_citizen') bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-400
+                        @elseif($dt->name==='pwd') bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-400
+                        @else bg-violet-100 text-violet-700 dark:bg-violet-900/50 dark:text-violet-400 @endif">
               <i data-lucide="{{ $ico }}" style="width:15px;height:15px"></i>
             </div>
 
             <div class="min-w-0 flex-1">
-              <div class="text-xs font-bold text-slate-800 leading-tight">
+              <div class="text-xs font-bold text-slate-800 dark:text-white leading-tight">
                 {{ $dt->display_name }}
               </div>
               <div class="text-[10px] mt-0.5 font-semibold
-                          {{ $dt->percentage > 0 ? 'text-emerald-600' : 'text-slate-400' }}">
+                          {{ $dt->percentage > 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-400 dark:text-slate-400' }}">
                 {{ $dt->percentage > 0
                     ? number_format($dt->percentage * 100, 0).'% discount'
                     : 'Standard fare' }}
@@ -104,7 +104,7 @@
             </div>
 
             <div class="ptype-check absolute top-2 right-2 w-4 h-4 rounded-full border-2 flex items-center justify-center
-                        {{ $isDefault ? 'border-primary-500 bg-primary-500' : 'border-slate-300 bg-white' }}">
+                        {{ $isDefault ? 'border-primary-500 bg-primary-500' : 'border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800' }}">
               <i data-lucide="check"
                  style="width:9px;height:9px;color:white;{{ $isDefault ? '' : 'display:none' }}"
                  class="check-icon"></i>

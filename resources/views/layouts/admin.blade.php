@@ -275,6 +275,9 @@
 
             {{-- System --}}
             <div class="nav-group-label">System</div>
+            <a href="{{ route('admin.cms.landing') }}" class="nav-item {{ request()->routeIs('admin.cms.*') ? 'active' : '' }}">
+                <span class="nav-icon"><i class="fa-solid fa-laptop-code"></i></span> Content Management
+            </a>
             <a href="{{ route('admin.roles.index') }}" class="nav-item {{ request()->routeIs('admin.roles.*') ? 'active' : '' }}">
                 <span class="nav-icon"><i class="fa-solid fa-shield-halved"></i></span> Roles &amp; Permissions
             </a>

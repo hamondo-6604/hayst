@@ -23,23 +23,49 @@
 <section class="relative bg-slate-900">
   <div class="swiper hero-swiper">
     <div class="swiper-wrapper">
-      
-      <!-- Slide 1 -->
+      @php
+          $heroSlides = $cmsSettings['hero_slides'] ?? [];
+          if (empty($heroSlides)) {
+              $heroSlides = [
+                  [
+                      'image' => 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&q=80&w=2000',
+                      'badge' => 'Instant e-ticket confirmation',
+                      'title' => 'Travel Mindanao<br><span class="text-primary-400">Your Way</span>',
+                      'subtitle' => 'Book intercity bus trips in seconds. Pick your seat, pay securely, and receive your QR e-ticket instantly.',
+                  ],
+                  [
+                      'image' => 'https://images.unsplash.com/photo-1570125909232-eb263c188f7e?auto=format&fit=crop&q=80&w=2000',
+                      'badge' => 'Premium Comfort',
+                      'title' => 'First Class<br><span class="text-primary-400">Experience</span>',
+                      'subtitle' => 'Enjoy spacious seating, full air-conditioning, and smooth rides across the beautiful landscapes of Mindanao.',
+                  ],
+                  [
+                      'image' => 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&q=80&w=2000',
+                      'badge' => 'Discover More',
+                      'title' => 'Your Journey<br><span class="text-primary-400">Starts Here</span>',
+                      'subtitle' => 'Join thousands of daily passengers who trust Mindanao Express for their daily commute and long-distance travel.',
+                  ]
+              ];
+          }
+      @endphp
+      @foreach($heroSlides as $index => $slide)
       <div class="swiper-slide">
-        <!-- User will replace src -->
-        <img src="https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&q=80&w=2000" alt="Bus" loading="eager" fetchpriority="high" decoding="async">
+        <img src="{{ !empty($slide['image']) ? $slide['image'] : 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&q=80&w=2000' }}" alt="Hero Image" loading="{{ $index === 0 ? 'eager' : 'lazy' }}" fetchpriority="{{ $index === 0 ? 'high' : 'auto' }}" decoding="async">
         <div class="hero-overlay"></div>
         <div class="absolute inset-0 flex items-center">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full pt-10">
+                @if(!empty($slide['badge']))
                 <span class="inline-flex items-center gap-2 bg-primary-500/20 text-primary-300 text-xs font-bold px-3 py-1.5 rounded-full mb-6 backdrop-blur-md">
-                  <i data-lucide="zap" style="width:11px;height:11px"></i> Instant e-ticket confirmation
+                  <i data-lucide="zap" style="width:11px;height:11px"></i> {{ $slide['badge'] }}
                 </span>
+                @endif
                 <h1 class="text-5xl sm:text-7xl font-extrabold text-white leading-[1.1] mb-5 tracking-tight">
-                  Travel Mindanao<br><span class="text-primary-400">Your Way</span>
+                  {!! $slide['title'] !!}
                 </h1>
                 <p class="text-slate-300 text-lg leading-relaxed mb-8 max-w-lg">
-                  Book intercity bus trips in seconds. Pick your seat, pay securely, and receive your QR e-ticket instantly.
+                  {{ $slide['subtitle'] }}
                 </p>
+                @if($index === 0)
                 <div class="flex flex-wrap gap-5">
                   @foreach([
                     ['shield-check', 'LTO Accredited'],
@@ -51,49 +77,13 @@
                     </div>
                   @endforeach
                 </div>
-            </div>
-        </div>
-      </div>
-
-      <!-- Slide 2 -->
-      <div class="swiper-slide">
-        <img src="https://images.unsplash.com/photo-1570125909232-eb263c188f7e?auto=format&fit=crop&q=80&w=2000" alt="Comfort" loading="lazy" decoding="async">
-        <div class="hero-overlay"></div>
-        <div class="absolute inset-0 flex items-center">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full pt-10">
-                <span class="inline-flex items-center gap-2 bg-primary-500/20 text-primary-300 text-xs font-bold px-3 py-1.5 rounded-full mb-6 backdrop-blur-md">
-                  <i data-lucide="star" style="width:11px;height:11px"></i> Premium Comfort
-                </span>
-                <h1 class="text-5xl sm:text-7xl font-extrabold text-white leading-[1.1] mb-5 tracking-tight">
-                  First Class<br><span class="text-primary-400">Experience</span>
-                </h1>
-                <p class="text-slate-300 text-lg leading-relaxed mb-8 max-w-lg">
-                  Enjoy spacious seating, full air-conditioning, and smooth rides across the beautiful landscapes of Mindanao.
-                </p>
+                @elseif($index === 1)
                 <div class="flex flex-wrap gap-3">
                   <a href="{{ route('landing.booking_routes') }}" class="inline-flex items-center gap-2 px-6 py-3 bg-white text-slate-900 font-bold text-sm rounded-xl hover:bg-slate-100 transition-colors">
                     Browse Routes
                   </a>
                 </div>
-            </div>
-        </div>
-      </div>
-
-      <!-- Slide 3 -->
-      <div class="swiper-slide">
-        <img src="https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&q=80&w=2000" alt="Journey" loading="lazy" decoding="async">
-        <div class="hero-overlay"></div>
-        <div class="absolute inset-0 flex items-center">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full pt-10">
-                <span class="inline-flex items-center gap-2 bg-primary-500/20 text-primary-300 text-xs font-bold px-3 py-1.5 rounded-full mb-6 backdrop-blur-md">
-                  <i data-lucide="map" style="width:11px;height:11px"></i> Discover More
-                </span>
-                <h1 class="text-5xl sm:text-7xl font-extrabold text-white leading-[1.1] mb-5 tracking-tight">
-                  Your Journey<br><span class="text-primary-400">Starts Here</span>
-                </h1>
-                <p class="text-slate-300 text-lg leading-relaxed mb-8 max-w-lg">
-                  Join thousands of daily passengers who trust Mindanao Express for their daily commute and long-distance travel.
-                </p>
+                @elseif($index === 2)
                 <div class="inline-flex items-center gap-4 bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl px-6 py-4">
                   <div class="flex items-center gap-2">
                     <div class="w-3 h-3 bg-emerald-400 rounded-full animate-pulse"></div>
@@ -102,10 +92,11 @@
                     </span>
                   </div>
                 </div>
+                @endif
             </div>
         </div>
       </div>
-
+      @endforeach
     </div>
     
     <!-- Navigation -->
@@ -269,8 +260,8 @@
     <div class="flex items-end justify-between mb-10">
       <div>
         <p class="text-xs font-bold text-primary-600 uppercase tracking-widest mb-1">Popular Destinations</p>
-        <h2 class="text-3xl font-extrabold text-slate-900">Popular <span class="text-primary-600">Routes</span></h2>
-        <p class="text-slate-500 text-sm mt-1.5">Our most-booked intercity routes — reserve early for the best fares.</p>
+        <h2 class="text-3xl font-extrabold text-slate-900">{{ $cmsSettings['popular_routes_title'] ?? 'Popular Routes' }}</h2>
+        <p class="text-slate-500 text-sm mt-1.5">{{ $cmsSettings['popular_routes_subtitle'] ?? 'Our most-booked intercity routes — reserve early for the best fares.' }}</p>
       </div>
       <a href="{{ route('landing.booking_routes') }}"
          class="hidden sm:flex items-center gap-1.5 text-sm font-semibold text-primary-600 hover:text-primary-700 transition-colors">
@@ -376,19 +367,22 @@
       <p class="text-slate-500 text-sm mt-1.5">From search to seat confirmation in under 2 minutes.</p>
     </div>
     <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
-      @foreach([
-        ['search',      '1', 'Search Your Trip',  'Enter your origin, destination, and travel date. See all available buses instantly.'],
-        ['armchair',    '2', 'Pick Your Seat',     'View the live seat map. Choose economy, business, or sleeper — window or aisle.'],
-        ['credit-card', '3', 'Pay Securely',       'GCash, Maya, card, or OTC. 256-bit SSL encrypted. Zero hidden fees.'],
-        ['ticket',      '4', 'Board & Ride',       'Show your QR e-ticket at the terminal gate. Sit back and enjoy the journey.'],
-      ] as [$icon,$num,$title,$desc])
+      @php
+        $steps = $cmsSettings['how_it_works'] ?? [
+          ['icon' => 'search',      'title' => 'Search Your Trip',  'desc' => 'Enter your origin, destination, and travel date. See all available buses instantly.'],
+          ['icon' => 'armchair',    'title' => 'Pick Your Seat',     'desc' => 'View the live seat map. Choose economy, business, or sleeper — window or aisle.'],
+          ['icon' => 'credit-card', 'title' => 'Pay Securely',       'desc' => 'GCash, Maya, card, or OTC. 256-bit SSL encrypted. Zero hidden fees.'],
+          ['icon' => 'ticket',      'title' => 'Board & Ride',       'desc' => 'Show your QR e-ticket at the terminal gate. Sit back and enjoy the journey.'],
+        ];
+      @endphp
+      @foreach($steps as $index => $step)
         <div class="relative bg-slate-50 border border-slate-200 rounded-2xl p-5">
-          <div class="absolute -top-3 -left-3 w-7 h-7 bg-primary-600 text-white text-xs font-extrabold rounded-full flex items-center justify-center shadow-md shadow-primary-200">{{ $num }}</div>
+          <div class="absolute -top-3 -left-3 w-7 h-7 bg-primary-600 text-white text-xs font-extrabold rounded-full flex items-center justify-center shadow-md shadow-primary-200">{{ $index + 1 }}</div>
           <div class="w-10 h-10 bg-primary-100 rounded-xl flex items-center justify-center mb-3.5">
-            <i data-lucide="{{ $icon }}" style="width:19px;height:19px;color:#ea580c"></i>
+            <i data-lucide="{{ $step['icon'] ?? 'check' }}" style="width:19px;height:19px;color:#ea580c"></i>
           </div>
-          <h3 class="text-sm font-bold text-slate-900 mb-1">{{ $title }}</h3>
-          <p class="text-xs text-slate-500 leading-relaxed">{{ $desc }}</p>
+          <h3 class="text-sm font-bold text-slate-900 mb-1">{{ $step['title'] ?? '' }}</h3>
+          <p class="text-xs text-slate-500 leading-relaxed">{{ $step['desc'] ?? '' }}</p>
         </div>
       @endforeach
     </div>
@@ -505,20 +499,23 @@
     </div>
 
     <div class="space-y-4">
-      @foreach([
-        ['What is your luggage policy?', 'Each passenger is allowed 1 hand-carry bag (up to 7kg) and 1 checked bag (up to 15kg). Excess luggage is subject to additional fees at the terminal.'],
-        ['Are pets allowed on the bus?', 'Yes, small pets are allowed but they must be placed in a secure, leak-proof pet carrier. They can be placed under the seat or in the cargo hold depending on the bus type.'],
-        ['Can I cancel or reschedule my ticket?', 'Tickets can be rescheduled at least 24 hours before departure with a minor rebooking fee. Cancellations are non-refundable but can be converted to travel credits.'],
-        ['Do children or infants travel for free?', 'Infants under 2 years old travel for free provided they sit on an adult\'s lap. Children 3 years and above require a regular ticket. Student discounts apply.'],
-        ['How do I claim my Senior Citizen or PWD discount?', 'You can select the discount type during checkout. However, you MUST present your valid Senior Citizen or PWD ID to the bus conductor before boarding. Failure to do so will require you to pay the fare difference.']
-      ] as $i => [$q, $a])
+      @php
+        $faqs = $cmsSettings['faqs'] ?? [
+          ['q' => 'What is your luggage policy?', 'a' => 'Each passenger is allowed 1 hand-carry bag (up to 7kg) and 1 checked bag (up to 15kg). Excess luggage is subject to additional fees at the terminal.'],
+          ['q' => 'Are pets allowed on the bus?', 'a' => 'Yes, small pets are allowed but they must be placed in a secure, leak-proof pet carrier. They can be placed under the seat or in the cargo hold depending on the bus type.'],
+          ['q' => 'Can I cancel or reschedule my ticket?', 'a' => 'Tickets can be rescheduled at least 24 hours before departure with a minor rebooking fee. Cancellations are non-refundable but can be converted to travel credits.'],
+          ['q' => 'Do children or infants travel for free?', 'a' => 'Infants under 2 years old travel for free provided they sit on an adult\'s lap. Children 3 years and above require a regular ticket. Student discounts apply.'],
+          ['q' => 'How do I claim my Senior Citizen or PWD discount?', 'a' => 'You can select the discount type during checkout. However, you MUST present your valid Senior Citizen or PWD ID to the bus conductor before boarding. Failure to do so will require you to pay the fare difference.']
+        ];
+      @endphp
+      @foreach($faqs as $i => $faq)
         <div class="border border-slate-200 rounded-2xl overflow-hidden bg-white">
           <button onclick="toggleFaq({{ $i }})" class="w-full flex items-center justify-between p-5 text-left bg-white hover:bg-slate-50 transition-colors focus:outline-none">
-            <span class="font-bold text-slate-900 text-sm">{{ $q }}</span>
+            <span class="font-bold text-slate-900 text-sm">{{ $faq['q'] ?? '' }}</span>
             <i data-lucide="chevron-down" id="faq-icon-{{ $i }}" style="width:16px;height:16px;color:#64748b;transition:transform 0.3s"></i>
           </button>
           <div id="faq-content-{{ $i }}" class="hidden px-5 pb-5 pt-2 text-sm text-slate-600 leading-relaxed bg-white">
-            {{ $a }}
+            {{ $faq['a'] ?? '' }}
           </div>
         </div>
       @endforeach
@@ -788,9 +785,9 @@
   
   <div class="relative max-w-2xl mx-auto px-4 text-center" style="z-index: 2;">
     <i data-lucide="bus" style="width:36px;height:36px;color:rgba(255,255,255,.7);margin:0 auto 14px"></i>
-    <h2 class="text-3xl font-extrabold text-white mb-3">Ready to ride?</h2>
+    <h2 class="text-3xl font-extrabold text-white mb-3">{{ $cmsSettings['cta_title'] ?? 'Ready to ride?' }}</h2>
     <p class="text-primary-100 text-base mb-7">
-      Search from {{ $stats['totalRoutes'] ?? 0 }}+ routes and book your seat in under 2 minutes.
+      {{ $cmsSettings['cta_description'] ?? "Search from ".($stats['totalRoutes'] ?? 0)."+ routes and book your seat in under 2 minutes." }}
     </p>
     <a href="{{ route('landing.ticket_booking') }}"
        class="inline-flex items-center gap-2 px-8 py-3.5 bg-white text-primary-700 font-extrabold rounded-2xl hover:bg-primary-50 transition-colors shadow-lg">

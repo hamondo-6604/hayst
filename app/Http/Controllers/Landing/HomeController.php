@@ -160,6 +160,11 @@ class HomeController extends Controller
             return $map;
         });
 
+        // CMS Settings (cache)
+        $cmsSettings = Cache::remember('home:cmsSettings', now()->addMinutes(60), function () {
+            return \App\Models\LandingPage::pluck('content', 'section_key')->toArray();
+        });
+
         return view('pages.home', compact(
             'heroTrip',
             'featuredRoutes',
@@ -173,7 +178,8 @@ class HomeController extends Controller
             'liveStats',
             'reviews',
             'busTypes',
-            'topSchedules'
+            'topSchedules',
+            'cmsSettings'
         ));
     }
 

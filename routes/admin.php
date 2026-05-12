@@ -18,6 +18,7 @@ use App\Http\Controllers\Admin\FeedbackController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\NotificationController;
 use App\Http\Controllers\Admin\TrashController;
+use App\Http\Controllers\Admin\CmsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -67,3 +68,7 @@ Route::resource('cities', CityController::class);
 Route::get('/trash', [TrashController::class, 'index'])->name('trash.index');
 Route::post('/trash/{type}/{id}/restore', [TrashController::class, 'restore'])->name('trash.restore');
 Route::delete('/trash/{type}/{id}/force-delete', [TrashController::class, 'forceDelete'])->name('trash.force-delete');
+
+// CMS
+Route::get('/cms/landing', [CmsController::class, 'landing'])->name('cms.landing');
+Route::post('/cms/landing', [CmsController::class, 'updateLanding'])->name('cms.landing.update');
