@@ -249,12 +249,24 @@
             </a>
 
             {{-- People --}}
+            @php
+                $newUserCount = auth()->user()->appNotifications()
+                    ->unread()
+                    ->where('type', 'new_user')
+                    ->count();
+                $newDriverCount = auth()->user()->appNotifications()
+                    ->unread()
+                    ->where('type', 'new_driver')
+                    ->count();
+            @endphp
             <div class="nav-group-label">People</div>
             <a href="{{ route('admin.users.index') }}" class="nav-item {{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
                 <span class="nav-icon"><i class="fa-solid fa-users"></i></span> Users
+                <span id="sidebar-users-badge" class="nav-badge {{ $newUserCount > 0 ? '' : 'hidden' }}">{{ $newUserCount }}</span>
             </a>
             <a href="{{ route('admin.drivers.index') }}" class="nav-item {{ request()->routeIs('admin.drivers.*') ? 'active' : '' }}">
                 <span class="nav-icon"><i class="fa-solid fa-id-badge"></i></span> Drivers
+                <span id="sidebar-drivers-badge" class="nav-badge {{ $newDriverCount > 0 ? '' : 'hidden' }}">{{ $newDriverCount }}</span>
             </a>
             <a href="{{ route('admin.feedback.index') }}" class="nav-item {{ request()->routeIs('admin.feedback.*') ? 'active' : '' }}">
                 <span class="nav-icon"><i class="fa-solid fa-comments"></i></span> Feedback
@@ -556,6 +568,28 @@
               feedbackBadge.classList.remove('hidden');
             } else {
               feedbackBadge.classList.add('hidden');
+            }
+          }
+
+          // Update sidebar users badge
+          const usersBadge = document.getElementById('sidebar-users-badge');
+          if (usersBadge) {
+            if (data.new_user_count > 0) {
+              usersBadge.textContent = data.new_user_count;
+              usersBadge.classList.remove('hidden');
+            } else {
+              usersBadge.classList.add('hidden');
+            }
+          }
+
+          // Update sidebar drivers badge
+          const driversBadge = document.getElementById('sidebar-drivers-badge');
+          if (driversBadge) {
+            if (data.new_driver_count > 0) {
+              driversBadge.textContent = data.new_driver_count;
+              driversBadge.classList.remove('hidden');
+            } else {
+              driversBadge.classList.add('hidden');
             }
           }
         })

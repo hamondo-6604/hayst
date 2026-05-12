@@ -89,6 +89,20 @@ class AuthController extends Controller
             'status'           => 'active',
         ]);
 
+        // Notify admins
+        $admins = User::where('role', 'admin')->get();
+        foreach ($admins as $admin) {
+            \App\Models\Notification::create([
+                'user_id' => $admin->id,
+                'title' => 'New User Registered',
+                'message' => "User {$user->name} has just registered.",
+                'type' => 'new_user',
+                'notifiable_type' => User::class,
+                'notifiable_id' => $user->id,
+                'is_read' => false,
+            ]);
+        }
+
         return response()->json([
             'success' => true,
             'message'  => 'Registration successful! You can now sign in.',
@@ -110,9 +124,11 @@ class AuthController extends Controller
      * Redirect to Google for authentication
      */
     public function redirectToGoogle()
-    {
-        return Socialite::driver('google')->redirect();
-    }
+{
+    return Socialite::driver('google')
+        ->scopes(['openid', 'profile', 'email'])
+        ->redirect();
+}
 
     /**
      * Handle Google callback
@@ -120,7 +136,7 @@ class AuthController extends Controller
     public function handleGoogleCallback(Request $request)
     {
         try {
-            $googleUser = Socialite::driver('google')->user();
+            $googleUser = Socialite::driver('google')->stateless()->user();
             
             // Find or create user
             $user = User::where('email', $googleUser->getEmail())->first();
@@ -142,6 +158,20 @@ class AuthController extends Controller
                     'user_type_id' => $customerType?->id,
                     'status' => 'active',
                 ]);
+                
+                // Notify admins
+                $admins = User::where('role', 'admin')->get();
+                foreach ($admins as $admin) {
+                    \App\Models\Notification::create([
+                        'user_id' => $admin->id,
+                        'title' => 'New User Registered',
+                        'message' => "User {$user->name} has just registered via Google.",
+                        'type' => 'new_user',
+                        'notifiable_type' => User::class,
+                        'notifiable_id' => $user->id,
+                        'is_read' => false,
+                    ]);
+                }
                 
                 Auth::login($user);
             }

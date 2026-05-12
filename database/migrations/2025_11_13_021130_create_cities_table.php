@@ -15,6 +15,7 @@ return new class extends Migration
             $table->string('region')->nullable();     // e.g. NCR, Region VII
             $table->string('image_url')->nullable();
             $table->enum('status', ['active', 'inactive'])->default('active');
+            $table->softDeletes();
             $table->timestamps();
         });
     }

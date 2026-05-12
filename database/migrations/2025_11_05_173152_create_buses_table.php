@@ -26,6 +26,13 @@ return new class extends Migration
       // ⭐ Hybrid seat-type support
       $table->string('default_seat_type')->nullable();
 
+      $table->foreignId('default_seat_type_id')
+        ->nullable()
+        ->constrained('seat_types')
+        ->onDelete('set null');
+
+      $table->softDeletes();
+
       $table->string('image_url')->nullable();
       $table->enum('status', ['active', 'inactive', 'maintenance'])->default('active');
       $table->text('description')->nullable();

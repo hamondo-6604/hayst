@@ -25,6 +25,7 @@ return new class extends Migration
             $table->integer('estimated_duration_minutes')->nullable();
             $table->enum('status', ['active', 'inactive'])->default('active');
             $table->text('description')->nullable();
+            $table->softDeletes();
             $table->timestamps();
         });
     }

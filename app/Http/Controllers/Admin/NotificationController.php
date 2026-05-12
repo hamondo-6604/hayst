@@ -46,6 +46,16 @@ class NotificationController extends Controller
             ->unread()
             ->where('type', 'new_feedback')
             ->count();
+            
+        $newUserCount = auth()->user()->appNotifications()
+            ->unread()
+            ->where('type', 'new_user')
+            ->count();
+            
+        $newDriverCount = auth()->user()->appNotifications()
+            ->unread()
+            ->where('type', 'new_driver')
+            ->count();
         
         $html = view('admin.notifications.partials.dropdown-items', compact('unreadNotifs'))->render();
         
@@ -53,7 +63,9 @@ class NotificationController extends Controller
             'count' => $unreadCount,
             'html' => $html,
             'new_bookings_count' => $newBookingsCount,
-            'pending_feedback_count' => $newFeedbackCount
+            'pending_feedback_count' => $newFeedbackCount,
+            'new_user_count' => $newUserCount,
+            'new_driver_count' => $newDriverCount
         ]);
     }
 }

@@ -43,6 +43,10 @@ return new class extends Migration
 
             $table->boolean('is_active')->default(true);
             $table->text('notes')->nullable();
+            $table->decimal('current_lat', 10, 7)->nullable();
+            $table->decimal('current_lng', 10, 7)->nullable();
+            $table->timestamp('last_location_updated_at')->nullable();
+            $table->softDeletes();
             $table->timestamps();
         });
     }

@@ -56,7 +56,28 @@ class UserController extends Controller
 
         $validated['password'] = Hash::make($validated['password']);
 
-        User::create($validated);
+        $user = User::create($validated);
+
+        // Notify admins
+        $admins = User::where('role', 'admin')->get();
+        
+        $type = $user->role === 'driver' ? 'new_driver' : 'new_user';
+        $title = $user->role === 'driver' ? 'New Driver Added' : 'New User Added';
+        $message = $user->role === 'driver' 
+            ? "A new driver ({$user->name}) has been created by an admin." 
+            : "A new user ({$user->name}) has been created by an admin.";
+
+        foreach ($admins as $admin) {
+            \App\Models\Notification::create([
+                'user_id' => $admin->id,
+                'title' => $title,
+                'message' => $message,
+                'type' => $type,
+                'notifiable_type' => User::class,
+                'notifiable_id' => $user->id,
+                'is_read' => false,
+            ]);
+        }
 
         if ($request->wantsJson() || $request->ajax()) {
             return response()->json(['success' => true, 'message' => 'User created successfully.']);

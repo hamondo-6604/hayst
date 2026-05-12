@@ -21,6 +21,11 @@ return new class extends Migration
       // NULL = inherits bus.default_seat_type
       $table->string('seat_type')->nullable();
 
+      $table->foreignId('seat_type_id')
+        ->nullable()
+        ->constrained('seat_types')
+        ->onDelete('set null');
+
       $table->enum('status', ['available', 'booked', 'blocked'])
         ->default('available');
 

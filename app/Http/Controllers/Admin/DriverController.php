@@ -47,7 +47,24 @@ class DriverController extends Controller
             'status' => 'required|in:available,on_trip,off_duty,suspended',
         ]);
 
-        Driver::create($validated);
+        $driver = Driver::create($validated);
+
+        // Notify admins
+        $admins = User::where('role', 'admin')->get();
+        $user = User::find($validated['user_id']);
+        $userName = $user ? $user->name : 'Unknown User';
+
+        foreach ($admins as $admin) {
+            \App\Models\Notification::create([
+                'user_id' => $admin->id,
+                'title' => 'New Driver Profile Created',
+                'message' => "A new driver profile for {$userName} has been created by an admin.",
+                'type' => 'new_driver',
+                'notifiable_type' => Driver::class,
+                'notifiable_id' => $driver->id,
+                'is_read' => false,
+            ]);
+        }
 
         if ($request->wantsJson() || $request->ajax()) {
             return response()->json(['success' => true, 'message' => 'Driver created successfully.']);
